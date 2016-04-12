@@ -10,6 +10,9 @@ cat ${DIR}/RELEASE 2>/dev/null || echo "No release set"
 
 php ${DIR}/rumi cache:restore /cache $GIT_URL
 php ${DIR}/rumi checkout $GIT_URL $GIT_COMMIT
+if [ -z "$REGISTRY_USERNAME" ] && [ -z "$REGISTRY_PASSWORD" ]; then
+    docker login -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD -e "a@b.pl"
+fi
 php ${DIR}/rumi run $DOCKER_DATA_VOLUME
 # set -e guarantees that we don't reach it for failed builds
 php ${DIR}/rumi cache:store /cache $GIT_URL $GIT_BRANCH
