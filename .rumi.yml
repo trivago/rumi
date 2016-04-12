@@ -18,10 +18,8 @@ stages:
     Unit tests PHP:
       docker:
         www:
-          image: trivago/rumi-dev:latest
+          image: trivago/rumi:dev-latest
           volumes:
             - ".:/var/www/html:rw"
-          ports:
-            - "80:80"
       commands:
         - cd /var/www/html && bin/phpunit
