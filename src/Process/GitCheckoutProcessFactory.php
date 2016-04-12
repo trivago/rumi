@@ -16,7 +16,7 @@ class GitCheckoutProcessFactory
     public function getFullCloneProcess($_sRepositoryUrl)
     {
         $_oProcess = new Process(
-            "git init && git remote add origin && " . $_sRepositoryUrl . ' ' . $this->fetch_command
+            "git init && git remote add origin " . $_sRepositoryUrl . ' && ' . $this->fetch_command
         );
         $_oProcess->setTimeout(600)->setIdleTimeout(600);
 
