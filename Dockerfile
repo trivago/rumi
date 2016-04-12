@@ -1,4 +1,4 @@
-FROM    trivago/rumi-php:latest
+FROM    trivago/rumi:php-latest
 
 ADD     .   /rumi
 
