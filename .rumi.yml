@@ -18,7 +18,7 @@ stages:
     Unit tests PHP:
       docker:
         www:
-          image: trivago/rumi:dev-latest
+          image: trivago/rumi:php-dev-latest
           volumes:
             - ".:/var/www/html:rw"
       commands:
