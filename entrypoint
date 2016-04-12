@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+GIT_URL=$1
+GIT_COMMIT=$2
+GIT_BRANCH=$3
+DOCKER_DATA_VOLUME=$4
+set -e
+
+cat ${DIR}/RELEASE 2>/dev/null || echo "No release set"
+
+php ${DIR}/rumi cache:restore /cache $GIT_URL
+php ${DIR}/rumi checkout $GIT_URL $GIT_COMMIT
+php ${DIR}/rumi run $DOCKER_DATA_VOLUME
+# set -e guarantees that we don't reach it for failed builds
+php ${DIR}/rumi cache:store /cache $GIT_URL $GIT_BRANCH

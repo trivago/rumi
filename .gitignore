@@ -1,0 +1,5 @@
+/vendor
+/bin
+/clover-html
+clover.xml
+rumi.phar

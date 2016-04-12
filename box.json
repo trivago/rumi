@@ -1,0 +1,15 @@
+{
+  "chmod": "0755",
+  "directories": [
+    "src",
+    "config",
+    "vendor"
+  ],
+  "files": [
+    "runner"
+  ],
+  "git-version": "package_version",
+  "main": "runner",
+  "output": "rumi.phar",
+  "stub": true
+}

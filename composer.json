@@ -1,0 +1,35 @@
+{
+    "name": "jakubsacha/runner",
+    "require": {
+        "symfony/console": "^3.0",
+        "symfony/yaml": "^3.0",
+        "symfony/process": "^3.0",
+        "symfony/dependency-injection": "^3.0",
+        "symfony/config": "^3.0"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jakub Sacha",
+            "email": "jakub.sacha@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "jakubsacha\\Rumi\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "jakubsacha\\Rumi\\": "test/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.2",
+        "symfony/var-dumper": "^3.0",
+        "mikey179/vfsStream": "^1.6"
+    },
+    "config": {
+        "bin-dir": "bin"
+    }
+}

@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+docker run -it -v ${PWD}:/src -w /src trivago/rumi-php-dev bin/phpunit

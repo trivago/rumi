@@ -1,0 +1,27 @@
+cache:
+  - .git
+  - vendor
+  - bin
+
+stages:
+  Prepare:
+    Install composer dependencies:
+      docker:
+        www:
+          image: composer/composer
+          volumes:
+            - ".:/app:rw"
+      commands:
+        - composer install --no-scripts
+
+  Test:
+    Unit tests PHP:
+      docker:
+        www:
+          image: trivago/rumi-dev:latest
+          volumes:
+            - ".:/var/www/html:rw"
+          ports:
+            - "80:80"
+      commands:
+        - cd /var/www/html && bin/phpunit

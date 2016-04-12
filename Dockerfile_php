@@ -1,0 +1,5 @@
+FROM    gliderlabs/alpine:edge
+
+ADD docker/.gitconfig /root/.gitconfig
+
+RUN cat /etc/apk/repositories && echo "http://mirror1.hs-esslingen.de/pub/Mirrors/alpine/edge/main" > /etc/apk/repositories && echo "http://mirror1.hs-esslingen.de/pub/Mirrors/alpine/edge/community" >> /etc/apk/repositories && apk add --update php php-ctype php-json php-phar php-dom php-openssl curl bash wget rsync git ca-certificates && rm /var/cache/apk/*
