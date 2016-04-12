@@ -25,7 +25,7 @@ class GitCheckoutProcessFactoryTest extends \PHPUnit_Framework_TestCase
         $oProcess = $this->oSUT->getFullCloneProcess('abc');
 
         //then
-        $this->assertEquals('git init && git remote add origin abc && git fetch origin', $oProcess->getCommandLine());
+        $this->assertEquals('git init && git remote add origin abc && GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git fetch origin', $oProcess->getCommandLine());
         $this->assertEquals(600, $oProcess->getTimeout());
         $this->assertEquals(600, $oProcess->getIdleTimeout());
     }
@@ -38,7 +38,7 @@ class GitCheckoutProcessFactoryTest extends \PHPUnit_Framework_TestCase
         $oProcess = $this->oSUT->getFetchProcess();
 
         //then
-        $this->assertEquals('git fetch origin', $oProcess->getCommandLine());
+        $this->assertEquals('GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git fetch origin', $oProcess->getCommandLine());
         $this->assertEquals(600, $oProcess->getTimeout());
         $this->assertEquals(600, $oProcess->getIdleTimeout());
     }

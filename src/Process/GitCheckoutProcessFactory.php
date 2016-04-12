@@ -11,10 +11,12 @@ use Symfony\Component\Process\Process;
 
 class GitCheckoutProcessFactory
 {
+    protected $fetch_command = 'GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git fetch origin';
+
     public function getFullCloneProcess($_sRepositoryUrl)
     {
         $_oProcess = new Process(
-            "git init && git remote add origin " . $_sRepositoryUrl . " && git fetch origin"
+            "git init && git remote add origin && " . $_sRepositoryUrl . ' ' . $this->fetch_command
         );
         $_oProcess->setTimeout(600)->setIdleTimeout(600);
 
@@ -23,9 +25,7 @@ class GitCheckoutProcessFactory
 
     public function getFetchProcess()
     {
-        $_oProcess = new Process(
-            "git fetch origin"
-        );
+        $_oProcess = new Process($this->fetch_command);
         $_oProcess->setTimeout(600)->setIdleTimeout(600);
 
         return $_oProcess;
