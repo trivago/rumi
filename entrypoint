@@ -10,7 +10,7 @@ cat ${DIR}/RELEASE 2>/dev/null || echo "No release set"
 
 php ${DIR}/rumi cache:restore /cache $GIT_URL
 php ${DIR}/rumi checkout $GIT_URL $GIT_COMMIT
-if [ -z "$REGISTRY_USERNAME" ] && [ -z "$REGISTRY_PASSWORD" ]; then
+if [[ ! -z "$REGISTRY_USERNAME" ]] && [[ ! -z "$REGISTRY_PASSWORD" ]]; then
     echo "Performing docker login:"
     docker login -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD -e "a@b.pl"
 fi
