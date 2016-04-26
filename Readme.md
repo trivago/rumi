@@ -69,8 +69,11 @@ Its experimental.
 
 * **You need to have docker installed and running on your machine**
 
-* Use below code to install phar distribution:
+1. Download phar from latest stable release attachment:
+https://github.com/trivago/rumi/releases
+2. Use below code to install phar distribution:
 ```
-// todo
+mv rumi.phar /usr/local/bin/rumi
+chmod +x /usr/local/bin/rumi
 ```
-* In your project directory where .rumi.yml file is located execute it with rumi.phar.
+* Execute it with ```rumi``` command in your project directory (where .rumi.yml file is located).
