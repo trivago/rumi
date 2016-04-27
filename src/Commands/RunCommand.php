@@ -108,7 +108,7 @@ class RunCommand extends Command
         } catch (\Exception $e)
         {
             $output->writeln("<error>" . $e->getMessage() . "</error>");
-            return -1;
+            return $e->getCode() > 0 ? $e->getCode(): ReturnCodes::FAILED;
         }
         return 0;
     }
@@ -121,7 +121,7 @@ class RunCommand extends Command
     {
         if (!file_exists($this->getWorkingDir().self::CONFIG_FILE))
         {
-            throw new \Exception('Required file \'' . RunCommand::CONFIG_FILE . '\' does not exist');
+            throw new \Exception('Required file \'' . RunCommand::CONFIG_FILE . '\' does not exist', ReturnCodes::RUMI_YML_DOES_NOT_EXIST);
         }
         $aParser = new Parser();
 
@@ -203,7 +203,7 @@ class RunCommand extends Command
                 }
             }
 
-            throw new \Exception("Stage failed");
+            throw new \Exception("Stage failed", ReturnCodes::FAILED);
         }
     }
 }

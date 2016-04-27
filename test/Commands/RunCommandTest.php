@@ -60,7 +60,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         // then
         $this->assertSame("Required file '" . RunCommand::CONFIG_FILE . "' does not exist", trim($this->output->fetch()));
-        $this->assertEquals(-1, $returnCode);
+        $this->assertEquals(ReturnCodes::RUMI_YML_DOES_NOT_EXIST, $returnCode);
     }
 
     public function testGivenCiYamlSyntaxIsWrong_WhenExecuted_ThenDisplaysErrorMessage()
@@ -73,7 +73,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         // then
         $this->assertSame('Unable to parse at line 2 (near "::yaml_file").', trim($this->output->fetch()));
-        $this->assertEquals(-1, $returnCode);
+        $this->assertEquals(ReturnCodes::FAILED, $returnCode);
     }
 
     public function testGivenValidCiYamlAndBuildIsOk_WhenExecuted_ThenDisplaysConfirmationMessage()
@@ -122,7 +122,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->assertStringStartsWith('Stage: "Stage one"', trim($sCommandOutput));
         $this->assertContains('failed', $sCommandOutput);
-        $this->assertEquals(-1, $returnCode);
+        $this->assertEquals(ReturnCodes::FAILED, $returnCode);
     }
 
     /**
