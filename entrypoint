@@ -12,7 +12,7 @@ php ${DIR}/rumi cache:restore /cache $GIT_URL
 php ${DIR}/rumi checkout $GIT_URL $GIT_COMMIT
 if [[ ! -z "$REGISTRY_USERNAME" ]] && [[ ! -z "$REGISTRY_PASSWORD" ]]; then
     echo "Performing docker login:"
-    docker login -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD -e "a@b.pl"
+    docker login -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD
 fi
 php ${DIR}/rumi run $DOCKER_DATA_VOLUME
 # set -e guarantees that we don't reach it for failed builds
