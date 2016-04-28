@@ -69,13 +69,14 @@ Job is marked as failed if return status of *ci_image* is other then zero.
 ## How can i execute jobs locally?
 Its experimental.
 
-* **You need to have docker installed and running on your machine**
+1. **You need to have docker installed and running on your machine**
 
-1. Download phar from latest stable release attachment:
+2. Download phar from latest stable release attachment:
 https://github.com/trivago/rumi/releases
-2. Use below code to install phar distribution:
+
+3. Use below code to install phar distribution:
 ```
 mv rumi.phar /usr/local/bin/rumi
 chmod +x /usr/local/bin/rumi
 ```
-* Execute it with ```rumi``` command in your project directory (where .rumi.yml file is located).
+4. Execute it with ```rumi``` command in your project directory (where .rumi.yml file is located).
