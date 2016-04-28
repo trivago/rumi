@@ -186,9 +186,17 @@ class CacheStoreCommand extends Command
      */
     protected function SkipIfNotMasterAndCacheFilled($argument, $sCacheDir)
     {
-        if ($argument != 'origin/master' && file_exists($sCacheDir))
+        if ($argument == 'origin/master' || $argument == 'master')
         {
-            throw new SkipException("Cache is written only for the first build and master branch. Skipping.");
+            return;
         }
+
+        if (!file_exists($sCacheDir))
+        {
+            return ;
+        }
+
+        throw new SkipException("Cache is written only for the first build and master branch. Skipping.");
+
     }
 }

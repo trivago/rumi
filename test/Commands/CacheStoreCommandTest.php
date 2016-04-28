@@ -175,7 +175,7 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Cache is written only for the first build and master branch. Skipping.', trim($this->output->fetch()));
     }
 
-    public function testGivenCiCacheConfigIsCorrect_WhenCacheStoreRun_ThenItStoresCache()
+    public function testGivenCiCacheConfigIsCorrect_WhenCacheStoreRunWithOriginMasterBranch_ThenItStoresCache()
     {
         // given
         file_put_contents(vfsStream::url('directory').'/' . RunCommand::CONFIG_FILE, 'cache:'.PHP_EOL.'   - .git');
@@ -184,6 +184,57 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
         /** @var CacheProcessFactory $oFactory */
         $oFactory = $this->prophesize(CacheProcessFactory::class);
         $sCacheDir = vfsStream::url('directory') . '/cache/' . md5('abc');
+        mkdir($sCacheDir);
+
+        $oFactory
+            ->getCreateCacheDirectoryProcess($sCacheDir)
+            ->willReturn($this->prophesize(Process::class)->reveal())
+            ->shouldBeCalled();
+
+        $oCacheStoreProcess = $this->prophesize(Process::class);
+        $oCacheStoreProcess
+            ->run()
+            ->shouldBeCalled();
+
+        $oCacheStoreProcess
+            ->isSuccessful()
+            ->willReturn(true)
+            ->shouldBeCalled();
+
+        $oFactory
+            ->getCacheStoreProcess('.git', $sCacheDir)
+            ->willReturn($oCacheStoreProcess->reveal())
+            ->shouldBeCalled();
+
+        $this->container->set('jakubsacha.rumi.process.cache_process_factory', $oFactory->reveal());
+
+
+        // when
+        $this->oSUT->run(
+            new ArrayInput(
+                [
+                    'cache_dir' => vfsStream::url('directory') . '/cache',
+                    'git_repository' => 'abc',
+                    'git_branch'=> 'origin/master'
+                ]
+            ),
+            $this->output
+        );
+
+        // then
+    }
+
+    public function testGivenCiCacheConfigIsCorrect_WhenCacheStoreRunWithMasterBranch_ThenItStoresCache()
+    {
+        // given
+        file_put_contents(vfsStream::url('directory').'/' . RunCommand::CONFIG_FILE, 'cache:'.PHP_EOL.'   - .git');
+        mkdir(vfsStream::url('directory') . '/cache');
+
+        /** @var CacheProcessFactory $oFactory */
+        $oFactory = $this->prophesize(CacheProcessFactory::class);
+        $sCacheDir = vfsStream::url('directory') . '/cache/' . md5('abc');
+        mkdir($sCacheDir);
+
         $oFactory
             ->getCreateCacheDirectoryProcess($sCacheDir)
             ->willReturn($this->prophesize(Process::class)->reveal())
