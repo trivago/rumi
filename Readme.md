@@ -57,7 +57,9 @@ You can define unlimited amount of stages and jobs. Stage and job names can be d
 Job is marked as failed if return status of *ci_image* is other then zero.
 
 ### Limitations
-Port configuration in the yml definition is discarded. CI jobs are not able to expose ports. This is likely to change in the later versions. In case you need communication between your containers link docker containers with each other.
+1. Port configuration in the yml definition is discarded. CI jobs are not able to expose ports. This is likely to change in the later versions. In case you need communication between your containers link docker containers with each other.
+
+2. ``build`` flag from docker-compose syntax is not supported. You need to pre-build your image, push it to registry and use it with ``image`` flag.
 
 ### Sample configurations
 // todo
