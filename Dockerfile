@@ -18,8 +18,7 @@ RUN ls -l scripts && apk add --update docker && \
         && rm /var/cache/apk/*
 
 
-ARG CONT_IMG_BUILD
-RUN echo "CI RUNNER BUILD: $CONT_IMG_BUILD" > /rumi/RELEASE
+RUN cd /rumi && echo "CI RUNNER BUILD: $(git rev-parse HEAD)" > /rumi/RELEASE
 
 WORKDIR /workdir
 
