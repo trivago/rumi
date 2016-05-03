@@ -1,6 +1,7 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 21/02/16 22:32
  */
 
@@ -20,7 +21,7 @@ class RunningProcessesFactory
     public function getJobStartProcess($sYamlPath, $sTmpName, $sCiImage)
     {
         $oProcess = new Process(
-            "docker-compose -f " . $sYamlPath . " run --name " . $sTmpName . " " . $sCiImage
+            'docker-compose -f ' . $sYamlPath . ' run --name ' . $sTmpName . ' ' . $sCiImage
         );
         $oProcess->setTimeout(1200)->setIdleTimeout(1200);
 

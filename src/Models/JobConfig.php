@@ -1,11 +1,11 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 11/12/15 22:39
  */
 
 namespace jakubsacha\Rumi\Models;
-
 
 class JobConfig extends AbstractRunnableConfig
 {

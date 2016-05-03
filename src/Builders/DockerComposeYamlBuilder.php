@@ -1,6 +1,7 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 19/02/16 23:08
  */
 
@@ -24,10 +25,11 @@ class DockerComposeYamlBuilder
     }
 
     /**
-     * Builds docker-compose.yml file based on JobConfig entity
+     * Builds docker-compose.yml file based on JobConfig entity.
      *
      * @param JobConfig $oStageConfig
-     * @param string $sVolume docker volume or path to project files
+     * @param string    $sVolume      docker volume or path to project files
+     *
      * @return string
      */
     public function build(JobConfig $oStageConfig, $sVolume)
@@ -40,36 +42,30 @@ class DockerComposeYamlBuilder
         $_sEntryPoint = $oStageConfig->getEntryPoint();
 
         // if the entry point is specified, use it
-        if (!empty($_sEntryPoint))
-        {
+        if (!empty($_sEntryPoint)) {
             $_aPDC[$_sCiContainerName]['entrypoint'] = $_sEntryPoint;
         }
         // otherwise we check do we have any commands specified, in case yes - we use default "sh" shell
-        else if (!empty($_sCommand))
-        {
+        elseif (!empty($_sCommand)) {
             $_aPDC[$_sCiContainerName]['entrypoint'] = self::DEFAULT_SHELL;
         }
 
         // if we have any commands specified in yaml file, we put them into command part of compose file
-        if (!empty($_sCommand))
-        {
+        if (!empty($_sCommand)) {
             $_aPDC[$_sCiContainerName]['command'] =
                 // escape $ to support docker syntax
                 ['-c', str_replace('$', '$$', $_sCommand)];
         }
 
         // remove all port mappings (we do not want to expose anything) and fix volumes settings
-        foreach ($_aPDC as $_sContainer => $_aSettings)
-        {
+        foreach ($_aPDC as $_sContainer => $_aSettings) {
             unset($_aPDC[$_sContainer]['ports']);
 
-            if (!isset($_aPDC[$_sContainer]['volumes']))
-            {
+            if (!isset($_aPDC[$_sContainer]['volumes'])) {
                 continue;
             }
 
-            foreach ($_aPDC[$_sContainer]['volumes'] as $_sVolumeKey => $_sVolumeSpec)
-            {
+            foreach ($_aPDC[$_sContainer]['volumes'] as $_sVolumeKey => $_sVolumeSpec) {
                 $_aPDC[$_sContainer]['volumes'][$_sVolumeKey] = $this->doSth($sVolume, $_sVolumeSpec);
             }
         }
@@ -79,11 +75,12 @@ class DockerComposeYamlBuilder
 
     /**
      * @param $_aParsedDockerCompose
+     *
      * @return string file path
      */
     protected function dumpFile($_aParsedDockerCompose)
     {
-        $_sTempTestDirectory = tempnam(sys_get_temp_dir(), "RUNNER") . md5(microtime()).'_d';
+        $_sTempTestDirectory = tempnam(sys_get_temp_dir(), 'RUNNER') . md5(microtime()) . '_d';
         usleep(1);
         mkdir($_sTempTestDirectory);
 
@@ -98,6 +95,7 @@ class DockerComposeYamlBuilder
 
     /**
      * @param $sVolume
+     *
      * @return bool
      */
     protected function isDockerVolume($sVolume)
@@ -108,19 +106,16 @@ class DockerComposeYamlBuilder
     public function doSth($sVolume, $_sVolumeSpec)
     {
         // if the full volume is mounted, there is no magic needed
-        if (strpos($_sVolumeSpec, "./") !== 0)
-        {
+        if (strpos($_sVolumeSpec, './') !== 0) {
             return str_replace('.:', $sVolume . ':', $_sVolumeSpec);
         }
 
         // if we use systempath instead of docker volume
-        if (!$this->isDockerVolume($sVolume))
-        {
+        if (!$this->isDockerVolume($sVolume)) {
             return str_replace('./', $sVolume, $_sVolumeSpec);
         }
 
         // we need to get real docker volume path and use it
         return str_replace('./', $this->oVolumeInspector->getVolumeRealPath($sVolume), $_sVolumeSpec);
     }
-
 }

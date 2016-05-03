@@ -1,11 +1,11 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 12/12/15 23:41
  */
 
 namespace jakubsacha\Rumi\Models;
-
 
 use jakubsacha\Rumi\Process\RunningProcessesFactory;
 use Symfony\Component\Process\Process;
@@ -38,16 +38,15 @@ class RunningCommand
     private $oJobConfig;
 
     /**
-     * @param JobConfig $oJobConfig
-     * @param string $sYamlPath
+     * @param JobConfig               $oJobConfig
+     * @param string                  $sYamlPath
      * @param RunningProcessesFactory $oFactory
      */
     public function __construct(
         JobConfig $oJobConfig,
         $sYamlPath,
         RunningProcessesFactory $oFactory
-    )
-    {
+    ) {
         $this->oJobConfig = $oJobConfig;
         $this->sYamlPath = $sYamlPath;
         $this->oFactory = $oFactory;
@@ -78,21 +77,20 @@ class RunningCommand
     }
 
     /**
-     * Generates tmp name for running CI job
+     * Generates tmp name for running CI job.
      *
      * @return string
      */
     private function getTmpName()
     {
-        if (empty($this->sTempContainerId))
-        {
-            $this->sTempContainerId = 'cirunner-'.md5(uniqid().time().$this->getCommand());
+        if (empty($this->sTempContainerId)) {
+            $this->sTempContainerId = 'cirunner-' . md5(uniqid() . time() . $this->getCommand());
         }
+
         return $this->sTempContainerId;
     }
 
     /**
-     * @return void
      */
     public function start()
     {
@@ -106,9 +104,8 @@ class RunningCommand
         $this->oProcess->start();
     }
 
-
     /**
-     * Tears down running process
+     * Tears down running process.
      */
     public function tearDown()
     {

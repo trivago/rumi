@@ -1,11 +1,11 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 12/12/15 23:38
  */
 
 namespace jakubsacha\Rumi\Builders;
-
 
 use jakubsacha\Rumi\Models\JobConfig;
 
@@ -22,7 +22,7 @@ class JobConfigBuilder
 
     /**
      * @param MetricConfigBuilder $metrics_config_builder
-     * @param ComposeParser $compose_handler
+     * @param ComposeParser       $compose_handler
      */
     public function __construct(MetricConfigBuilder $metrics_config_builder,
                                 ComposeParser $compose_handler)
@@ -43,8 +43,7 @@ class JobConfigBuilder
                 !empty($aJobConfig['commands']) ? $aJobConfig['commands'] : null
             );
 
-            if (!empty($aJobConfig['metrics']))
-            {
+            if (!empty($aJobConfig['metrics'])) {
                 $oJob->setMetrics($this->metrics_config_builder->build($aJobConfig['metrics']));
             }
 
@@ -53,5 +52,4 @@ class JobConfigBuilder
 
         return $aJobs;
     }
-
 }

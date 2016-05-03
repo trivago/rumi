@@ -21,14 +21,16 @@ class MetricConfigBuilder
 
     /**
      * @param $compose_config
+     *
      * @return \jakubsacha\Rumi\Models\MetricConfig[]
+     *
      * @throws \Exception
      */
     public function build($compose_config)
     {
         $aMetrics = [];
 
-        foreach ($compose_config as $name => $config){
+        foreach ($compose_config as $name => $config) {
             $aMetrics[] = new MetricConfig(
                 $name,
                 $this->compose_handler->parseComposePart(!empty($config['docker']) ? $config['docker'] : null),
