@@ -1,11 +1,11 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 12/12/15 23:38
  */
 
 namespace jakubsacha\Rumi\Builders;
-
 
 use jakubsacha\Rumi\Models\JobConfig;
 
@@ -14,44 +14,42 @@ class JobConfigBuilder
     /**
      * @var MetricConfigBuilder
      */
-    private $metrics_config_builder;
+    private $metricsConfigBuilder;
     /**
      * @var ComposeParser
      */
-    private $compose_handler;
+    private $composeHandler;
 
     /**
      * @param MetricConfigBuilder $metrics_config_builder
-     * @param ComposeParser $compose_handler
+     * @param ComposeParser       $compose_handler
      */
     public function __construct(MetricConfigBuilder $metrics_config_builder,
                                 ComposeParser $compose_handler)
     {
-        $this->metrics_config_builder = $metrics_config_builder;
-        $this->compose_handler = $compose_handler;
+        $this->metricsConfigBuilder = $metrics_config_builder;
+        $this->composeHandler = $compose_handler;
     }
 
-    public function build($aStageConfig)
+    public function build($stageConfig)
     {
-        $aJobs = [];
-        foreach ($aStageConfig as $sJobName => $aJobConfig) {
-            $oJob = new JobConfig(
-                $sJobName,
-                $this->compose_handler->parseComposePart(!empty($aJobConfig['docker']) ? $aJobConfig['docker'] : null),
-                !empty($aJobConfig['ci_image']) ? $aJobConfig['ci_image'] : null,
-                !empty($aJobConfig['entrypoint']) ? $aJobConfig['entrypoint'] : null,
-                !empty($aJobConfig['commands']) ? $aJobConfig['commands'] : null
+        $jobs = [];
+        foreach ($stageConfig as $jobName => $jobConfig) {
+            $job = new JobConfig(
+                $jobName,
+                $this->composeHandler->parseComposePart(!empty($jobConfig['docker']) ? $jobConfig['docker'] : null),
+                !empty($jobConfig['ci_image']) ? $jobConfig['ci_image'] : null,
+                !empty($jobConfig['entrypoint']) ? $jobConfig['entrypoint'] : null,
+                !empty($jobConfig['commands']) ? $jobConfig['commands'] : null
             );
 
-            if (!empty($aJobConfig['metrics']))
-            {
-                $oJob->setMetrics($this->metrics_config_builder->build($aJobConfig['metrics']));
+            if (!empty($jobConfig['metrics'])) {
+                $job->setMetrics($this->metricsConfigBuilder->build($jobConfig['metrics']));
             }
 
-            $aJobs[] = $oJob;
+            $jobs[] = $job;
         }
 
-        return $aJobs;
+        return $jobs;
     }
-
 }

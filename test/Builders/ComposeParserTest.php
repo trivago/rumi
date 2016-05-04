@@ -1,6 +1,7 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 02/03/16 11:22
  */
 
@@ -16,11 +17,11 @@ class ComposeParserTest extends \PHPUnit_Framework_TestCase
     /**
      * @var ComposeParser
      */
-    private $oSUT;
+    private $SUT;
 
     protected function setUp()
     {
-        $this->oSUT = new ComposeParser();
+        $this->SUT = new ComposeParser();
         vfsStream::setup('directory');
     }
 
@@ -31,41 +32,36 @@ class ComposeParserTest extends \PHPUnit_Framework_TestCase
     public function testGivenInvalidDockerSpecified_WhenBuildExecuted_ThenExceptionIsThrown()
     {
         // given
-        $compose_config = 123;
+        $composeConfig = 123;
 
         // when
-        $this->oSUT->parseComposePart($compose_config);
-
+        $this->SUT->parseComposePart($composeConfig);
     }
-
 
     public function testGivenDockerSpecifiedAsFilePath_WhenBuildExecuted_ThenJobConfigIsLoadedFromFile()
     {
         // given
-        $_sComposeFilePath = vfsStream::url('directory') . "/docker-compose.yml";
-        file_put_contents($_sComposeFilePath, "www:".PHP_EOL."    image: php");
+        $composeFilePath = vfsStream::url('directory').'/docker-compose.yml';
+        file_put_contents($composeFilePath, 'www:'.PHP_EOL.'    image: php');
 
         // when
-        $aComposeConfig = $this->oSUT->parseComposePart($_sComposeFilePath);
+        $composeConfig = $this->SUT->parseComposePart($composeFilePath);
 
         // then
-        $this->assertEquals("php", $aComposeConfig['www']['image']);
+        $this->assertEquals('php', $composeConfig['www']['image']);
     }
-
-
 
     public function testGivenDockerSpecifiedAsArray_WhenBuildExecuted_ThenArrayConfigIsUsed()
     {
         // given
-        $aConfig['www']['image'] = 'php';
+        $config['www']['image'] = 'php';
 
         // when
-        $aComposeConfig = $this->oSUT->parseComposePart($aConfig);
+        $composeConfig = $this->SUT->parseComposePart($config);
 
         // then
-        $this->assertEquals("php", $aComposeConfig['www']['image']);
+        $this->assertEquals('php', $composeConfig['www']['image']);
     }
-
 
     /**
      * @expectedException \Exception
@@ -76,6 +72,6 @@ class ComposeParserTest extends \PHPUnit_Framework_TestCase
         // given
 
         // when
-        $this->oSUT->parseComposePart('docker-compose.yml');
+        $this->SUT->parseComposePart('docker-compose.yml');
     }
 }

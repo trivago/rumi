@@ -2,6 +2,6 @@
 
 namespace jakubsacha\Rumi\Exceptions;
 
-class CommandFailedException extends \Exception{
-
+class CommandFailedException extends \Exception
+{
 }

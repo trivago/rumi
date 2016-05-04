@@ -2,6 +2,6 @@
 
 namespace jakubsacha\Rumi\Exceptions;
 
-class SkipException extends \Exception{
-
+class SkipException extends \Exception
+{
 }

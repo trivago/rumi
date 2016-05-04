@@ -15,21 +15,22 @@ class CacheRestoreCommand extends Command
     /**
      * @var ContainerInterface
      */
-    private $oContainer;
+    private $container;
 
     /**
      * @var string
      */
-    private $sWorkingDir = null;
+    private $workingDir = null;
 
     /**
      * RunCommand constructor.
-     * @param ContainerInterface $oContainer
+     *
+     * @param ContainerInterface $container
      */
-    public function __construct(ContainerInterface $oContainer)
+    public function __construct(ContainerInterface $container)
     {
         parent::__construct();
-        $this->oContainer = $oContainer;
+        $this->container = $container;
     }
 
     protected function configure()
@@ -37,8 +38,8 @@ class CacheRestoreCommand extends Command
         $this
             ->setName('cache:restore')
             ->setDescription('Restore cache')
-            ->addArgument('cache_dir', InputArgument::REQUIRED, "cache directory")
-            ->addArgument('git_repository', InputArgument::REQUIRED, "repository");
+            ->addArgument('cache_dir', InputArgument::REQUIRED, 'cache directory')
+            ->addArgument('git_repository', InputArgument::REQUIRED, 'repository');
     }
 
     /**
@@ -46,7 +47,7 @@ class CacheRestoreCommand extends Command
      */
     public function setWorkingDir($dir)
     {
-        $this->sWorkingDir = $dir;
+        $this->workingDir = $dir;
     }
 
     /**
@@ -54,81 +55,77 @@ class CacheRestoreCommand extends Command
      */
     private function getWorkingDir()
     {
-        if (empty($this->sWorkingDir))
-        {
-            return null;
+        if (empty($this->workingDir)) {
+            return;
         }
-        return $this->sWorkingDir . '/';
+
+        return $this->workingDir . '/';
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        try
-        {
-            $_sCacheDir = $input->getArgument('cache_dir').'/'.md5($input->getArgument('git_repository')) . '/data/';
-            $_sLockDir = $input->getArgument('cache_dir').'/'.md5($input->getArgument('git_repository'));
+        try {
+            $cacheDir = $input->getArgument('cache_dir') . '/' . md5($input->getArgument('git_repository')) . '/data/';
+            $lockDir = $input->getArgument('cache_dir') . '/' . md5($input->getArgument('git_repository'));
 
-            $this->SkipIfCacheDoesNotExist($_sCacheDir);
-            $this->SkipIfCacheDirIsEmpty($_sCacheDir);
+            $this->SkipIfCacheDoesNotExist($cacheDir);
+            $this->SkipIfCacheDirIsEmpty($cacheDir);
 
-            $output->writeln("Restoring cache... ");
+            $output->writeln('Restoring cache... ');
 
-            $oProcess = $this
-                ->oContainer
+            $process = $this
+                ->container
                 ->get('jakubsacha.rumi.process.cache_process_factory')
-                ->getCacheRestoreProcess($_sCacheDir, $_sLockDir);
+                ->getCacheRestoreProcess($cacheDir, $lockDir);
 
-            $_sTime = Timer::execute(
-                function() use ($oProcess){
-                    $oProcess->run();
+            $time = Timer::execute(
+                function () use ($process) {
+                    $process->run();
                 }
             );
 
-            $output->writeln($_sTime);
+            $output->writeln($time);
 
-            if (!$oProcess->isSuccessful())
-            {
+            if (!$process->isSuccessful()) {
                 throw new \Exception(
-                    "<info>Failed to restore cache</info>" . PHP_EOL .
-                    $oProcess->getOutput() . $oProcess->getErrorOutput()
+                    '<info>Failed to restore cache</info>' . PHP_EOL .
+                    $process->getOutput() . $process->getErrorOutput()
                 );
             }
-            $output->writeln("<info>Cache restored</info>");
+            $output->writeln('<info>Cache restored</info>');
+        } catch (SkipException $e) {
+            $output->writeln('<info>' . $e->getMessage() . '</info>');
 
-        }
-        catch (SkipException $e)
-        {
-            $output->writeln("<info>" . $e->getMessage() . "</info>");
             return 0;
-        }
-        catch (\Exception $e)
-        {
-            $output->writeln("<error>" . $e->getMessage() . "</error>");
+        } catch (\Exception $e) {
+            $output->writeln('<error>' . $e->getMessage() . '</error>');
+
             return -1;
         }
+
         return 0;
     }
 
     /**
-     * @param string $_sCacheDir
+     * @param string $cacheDirectory
+     *
      * @throws SkipException
      */
-    protected function SkipIfCacheDoesNotExist($_sCacheDir)
+    protected function SkipIfCacheDoesNotExist($cacheDirectory)
     {
-        if (!file_exists($this->getWorkingDir() . $_sCacheDir))
-        {
+        if (!file_exists($this->getWorkingDir() . $cacheDirectory)) {
             throw new SkipException('<info>Cache directory does not exist. Nothing to restore.</info>');
         }
     }
 
     /**
-     * @param string $_sCacheDir
+     * @param string $cacheDirectory
+     *
      * @throws SkipException
      */
-    protected function SkipIfCacheDirIsEmpty($_sCacheDir)
+    protected function SkipIfCacheDirIsEmpty($cacheDirectory)
     {
-        if (count(scandir($this->getWorkingDir() . $_sCacheDir)) == 2)
-        {
+        if (count(scandir($this->getWorkingDir() . $cacheDirectory)) == 2) {
             throw new SkipException('<info>Cache directory is empty. Nothing to restore.</info>');
         }
     }

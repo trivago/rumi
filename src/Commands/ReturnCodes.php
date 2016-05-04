@@ -2,7 +2,8 @@
 
 namespace jakubsacha\Rumi\Commands;
 
-interface ReturnCodes {
+interface ReturnCodes
+{
     const SUCCESS = 0;
     const FAILED = 1;
 
