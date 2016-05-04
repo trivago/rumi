@@ -1,11 +1,12 @@
 {
-    "name": "jakubsacha/runner",
+    "name": "trivago/rumi",
     "require": {
         "symfony/console": "^3.0",
         "symfony/yaml": "^3.0",
         "symfony/process": "^3.0",
         "symfony/dependency-injection": "^3.0",
-        "symfony/config": "^3.0"
+        "symfony/config": "^3.0",
+        "symfony/event-dispatcher": "^3.0"
     },
     "license": "MIT",
     "authors": [
@@ -16,7 +17,8 @@
     ],
     "autoload": {
         "psr-4": {
-            "jakubsacha\\Rumi\\": "src/"
+            "jakubsacha\\Rumi\\": "src/",
+            "trivago\\": "plugins/trivago"
         }
     },
     "autoload-dev": {

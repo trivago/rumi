@@ -12,12 +12,18 @@ use jakubsacha\Rumi\Commands\CheckoutCommand;
 use jakubsacha\Rumi\Commands\CacheStoreCommand;
 use jakubsacha\Rumi\Commands\CacheRestoreCommand;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 $container = prepareContainer();
+$eventDispatcher = new EventDispatcher();
 $application = new Application();
 
-$oRunCommand = new RunCommand($container);
+loadPlugins($application, $container, $eventDispatcher);
+
+$oRunCommand = new RunCommand($container, $eventDispatcher);
 $application->add($oRunCommand);
 $application->add(new CheckoutCommand($container));
 $application->add(new CacheStoreCommand($container));
@@ -35,4 +41,13 @@ function prepareContainer()
     $loader->load('config/services.xml');
 
     return $container;
+}
+
+
+function loadPlugins(Application $application,
+                     ContainerInterface $container,
+                     EventDispatcherInterface $eventDispatcher)
+{
+    // init plugins here
+
 }
