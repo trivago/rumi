@@ -1,14 +1,14 @@
 <?php
 
-namespace jakubsacha\Rumi\Commands;
+namespace Trivago\Rumi\Commands;
 
-use jakubsacha\Rumi\Exceptions\SkipException;
-use jakubsacha\Rumi\Timer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Trivago\Rumi\Exceptions\SkipException;
+use Trivago\Rumi\Timer;
 
 class CacheRestoreCommand extends Command
 {
@@ -75,7 +75,7 @@ class CacheRestoreCommand extends Command
 
             $process = $this
                 ->container
-                ->get('jakubsacha.rumi.process.cache_process_factory')
+                ->get('rumi.process.cache_process_factory')
                 ->getCacheRestoreProcess($cacheDir, $lockDir);
 
             $time = Timer::execute(

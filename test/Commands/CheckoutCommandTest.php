@@ -5,9 +5,9 @@
  * @since 23/02/16 08:30
  */
 
-namespace jakubsacha\Rumi\Commands;
+namespace Trivago\Rumi\Commands;
 
-use jakubsacha\Rumi\Process\GitCheckoutProcessFactory;
+use Trivago\Rumi\Process\GitCheckoutProcessFactory;
 use org\bovigo\vfs\vfsStream;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Process\Process;
 
 /**
- * @covers jakubsacha\Rumi\Commands\CheckoutCommand
+ * @covers Trivago\Rumi\Commands\CheckoutCommand
  */
 class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 {
@@ -68,8 +68,7 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 
         $processFactory->getFullCloneProcess('abc')->willReturn($fullCloneProcess->reveal())->shouldBeCalled();
         $processFactory->getCheckoutCommitProcess('sha123')->willReturn($checkoutCommitProcess->reveal())->shouldBeCalled();
-
-        $this->container->set('jakubsacha.rumi.process.git_checkout_process_factory', $processFactory->reveal());
+        $this->container->set('rumi.process.git_checkout_process_factory', $processFactory->reveal());
 
         // when
         $this->SUT->run(
@@ -104,7 +103,7 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
         $processFactory->getFetchProcess()->willReturn($fetchProcess->reveal())->shouldBeCalled();
         $processFactory->getCheckoutCommitProcess('sha123')->willReturn($checkoutCommitProcess->reveal())->shouldBeCalled();
 
-        $this->container->set('jakubsacha.rumi.process.git_checkout_process_factory', $processFactory->reveal());
+        $this->container->set('rumi.process.git_checkout_process_factory', $processFactory->reveal());
 
         // when
         $this->SUT->run(
@@ -133,8 +132,7 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
         $process->getErrorOutput()->willReturn('error')->shouldBeCalled();
 
         $factory->getFullCloneProcess('abc')->willReturn($process->reveal())->shouldBeCalled();
-
-        $this->container->set('jakubsacha.rumi.process.git_checkout_process_factory', $factory->reveal());
+        $this->container->set('rumi.process.git_checkout_process_factory', $factory->reveal());
 
         // when
         $this->SUT->run(
@@ -168,7 +166,7 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
         $processFactory->getFetchProcess()->willReturn($fetchProcess->reveal())->shouldBeCalled();
         $processFactory->getCheckoutCommitProcess('sha123')->willReturn($checkoutCommitProcess->reveal())->shouldBeCalled();
 
-        $this->container->set('jakubsacha.rumi.process.git_checkout_process_factory', $processFactory->reveal());
+        $this->container->set('rumi.process.git_checkout_process_factory', $processFactory->reveal());
 
         // when
         $this->SUT->run(
@@ -208,7 +206,7 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
         $factory->getFetchProcess()->willReturn($fetchProcess->reveal())->shouldBeCalled();
         $factory->getCheckoutCommitProcess('sha123')->willReturn($checkoutCommitProcess->reveal())->shouldBeCalled();
 
-        $this->container->set('jakubsacha.rumi.process.git_checkout_process_factory', $factory->reveal());
+        $this->container->set('rumi.process.git_checkout_process_factory', $factory->reveal());
 
         // when
         $this->SUT->run(
@@ -243,7 +241,7 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
         $factory->getFetchProcess()->willReturn($fetchProcess->reveal())->shouldBeCalled();
         $factory->getCheckoutCommitProcess('sha123')->willReturn($checkoutCommitProcess->reveal())->shouldBeCalled();
 
-        $this->container->set('jakubsacha.rumi.process.git_checkout_process_factory', $factory->reveal());
+        $this->container->set('rumi.process.git_checkout_process_factory', $factory->reveal());
 
         // when
         $this->SUT->run(
@@ -283,7 +281,7 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
         $factory->getFetchProcess()->willReturn($fetchProcess->reveal())->shouldBeCalled();
         $factory->getCheckoutCommitProcess('sha123')->willReturn($checkoutCommitProcess->reveal())->shouldBeCalled();
 
-        $this->container->set('jakubsacha.rumi.process.git_checkout_process_factory', $factory->reveal());
+        $this->container->set('rumi.process.git_checkout_process_factory', $factory->reveal());
 
         // when
         $this->SUT->run(

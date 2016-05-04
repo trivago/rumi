@@ -5,7 +5,7 @@
  * @since 01/03/16 22:57
  */
 
-namespace jakubsacha\Rumi\Models;
+namespace Trivago\Rumi\Models;
 
 abstract class AbstractRunnableConfig
 {

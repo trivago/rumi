@@ -5,9 +5,9 @@
  * @since 20/02/16 22:01
  */
 
-namespace jakubsacha\Rumi\Commands;
+namespace Trivago\Rumi\Commands;
 
-use jakubsacha\Rumi\Process\RunningProcessesFactory;
+use Trivago\Rumi\Process\RunningProcessesFactory;
 use org\bovigo\vfs\vfsStream;
 use Prophecy\Argument;
 use Symfony\Component\Config\FileLocator;
@@ -18,7 +18,7 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Process\Process;
 
 /**
- * @covers jakubsacha\Rumi\Commands\RunCommand
+ * @covers Trivago\Rumi\Commands\RunCommand
  */
 class RunCommandTest extends \PHPUnit_Framework_TestCase
 {
@@ -83,8 +83,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         $tearDownProcess = $this->getTearDownProcess();
 
         $processFactory = $this->getProcessFactoryMock($startProcess, $tearDownProcess);
-
-        $this->container->set('jakubsacha.rumi.process.running_processes_factory', $processFactory->reveal());
+        $this->container->set('rumi.process.running_processes_factory', $processFactory->reveal());
 
         file_put_contents(vfsStream::url('directory').'/'.RunCommand::CONFIG_FILE, file_get_contents('fixtures/passing-.rumi.yml'));
 
@@ -106,10 +105,10 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         $startProcess->getErrorOutput()->shouldBeCalled();
         $tearDownProcess = $this->getTearDownProcess();
 
+
         /** @var RunningProcessesFactory $processFactory */
         $processFactory = $this->getProcessFactoryMock($startProcess, $tearDownProcess);
-
-        $this->container->set('jakubsacha.rumi.process.running_processes_factory', $processFactory->reveal());
+        $this->container->set('rumi.process.running_processes_factory', $processFactory->reveal());
 
         file_put_contents(vfsStream::url('directory').'/'.RunCommand::CONFIG_FILE, file_get_contents('fixtures/failing-.rumi.yml'));
 

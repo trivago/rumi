@@ -5,20 +5,20 @@
  * @since 23/02/16 10:42
  */
 
-namespace jakubsacha\Rumi\Commands;
+namespace Trivago\Rumi\Commands;
 
-use jakubsacha\Rumi\Process\CacheProcessFactory;
 use org\bovigo\vfs\vfsStream;
 use Prophecy\Argument;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
+use Trivago\Rumi\Process\CacheProcessFactory;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Process\Process;
 
 /**
- * @covers jakubsacha\Rumi\Commands\CacheStoreCommand
+ * @covers Trivago\Rumi\Commands\CacheStoreCommand
  */
 class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
 {
@@ -110,7 +110,7 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
 
         $this
             ->container
-            ->set('jakubsacha.rumi.process.cache_process_factory', $factory->reveal());
+            ->set('rumi.process.cache_process_factory', $factory->reveal());
 
         // when
         $this->SUT->run(
@@ -203,7 +203,7 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
             ->willReturn($cacheStoreProcess->reveal())
             ->shouldBeCalled();
 
-        $this->container->set('jakubsacha.rumi.process.cache_process_factory', $factory->reveal());
+        $this->container->set('rumi.process.cache_process_factory', $factory->reveal());
 
         // when
         $this->SUT->run(
@@ -251,7 +251,7 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
             ->willReturn($cacheStoreProcess->reveal())
             ->shouldBeCalled();
 
-        $this->container->set('jakubsacha.rumi.process.cache_process_factory', $factory->reveal());
+        $this->container->set('rumi.process.cache_process_factory', $factory->reveal());
 
         // when
         $this->SUT->run(
@@ -307,7 +307,7 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
             ->willReturn($cacheStoreProcess->reveal())
             ->shouldBeCalled();
 
-        $this->container->set('jakubsacha.rumi.process.cache_process_factory', $factory->reveal());
+        $this->container->set('rumi.process.cache_process_factory', $factory->reveal());
 
         // when
         $errorCode = $this->SUT->run(

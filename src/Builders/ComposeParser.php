@@ -1,6 +1,6 @@
 <?php
 
-namespace jakubsacha\Rumi\Builders;
+namespace Trivago\Rumi\Builders;
 
 use Symfony\Component\Yaml\Parser;
 

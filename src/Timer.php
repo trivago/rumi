@@ -5,7 +5,7 @@
  * @since 18/01/16 08:16
  */
 
-namespace jakubsacha\Rumi;
+namespace Trivago\Rumi;
 
 class Timer
 {

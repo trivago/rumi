@@ -5,11 +5,11 @@
  * @since 19/02/16 23:08
  */
 
-namespace jakubsacha\Rumi\Builders;
+namespace Trivago\Rumi\Builders;
 
-use jakubsacha\Rumi\Docker\VolumeInspector;
-use jakubsacha\Rumi\Models\JobConfig;
 use Symfony\Component\Yaml\Dumper;
+use Trivago\Rumi\Docker\VolumeInspector;
+use Trivago\Rumi\Models\JobConfig;
 
 class DockerComposeYamlBuilder
 {
