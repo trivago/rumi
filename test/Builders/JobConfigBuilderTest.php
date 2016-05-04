@@ -133,7 +133,7 @@ class JobConfigBuilderTest extends \PHPUnit_Framework_TestCase
     public function testGivenComposeFileContainsMetrics_WhenBuildExecuted_ThenMetricsAreBuild()
     {
         // given
-        $aConfig = [
+        $config = [
             'Job one' => [
                 'docker' => [
                     'image' => 'php:latest',
@@ -156,7 +156,7 @@ class JobConfigBuilderTest extends \PHPUnit_Framework_TestCase
             ->shouldBeCalled();
 
         // when
-        $jobConfigs = $this->SUT->build($aConfig);
+        $jobConfigs = $this->SUT->build($config);
 
         // then
         $this->assertContainsOnlyInstancesOf($metricConfig[0], $jobConfigs[0]->getMetrics());

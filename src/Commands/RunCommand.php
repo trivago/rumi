@@ -69,7 +69,7 @@ class RunCommand extends Command
             return;
         }
 
-        return $this->workingDir . '/';
+        return $this->workingDir.'/';
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -95,13 +95,13 @@ class RunCommand extends Command
                         }
                     );
 
-                    $output->writeln('<info>Stage completed: ' . $time . '</info>' . PHP_EOL);
+                    $output->writeln('<info>Stage completed: '.$time.'</info>'.PHP_EOL);
                 }
             });
 
-            $output->writeln('<info>Build successful: ' . $time . '</info>');
+            $output->writeln('<info>Build successful: '.$time.'</info>');
         } catch (\Exception $e) {
-            $output->writeln('<error>' . $e->getMessage() . '</error>');
+            $output->writeln('<error>'.$e->getMessage().'</error>');
 
             return $e->getCode() > 0 ? $e->getCode() : ReturnCodes::FAILED;
         }
@@ -116,12 +116,12 @@ class RunCommand extends Command
      */
     private function readCiConfigFile()
     {
-        if (!file_exists($this->getWorkingDir() . self::CONFIG_FILE)) {
-            throw new \Exception('Required file \'' . self::CONFIG_FILE . '\' does not exist', ReturnCodes::RUMI_YML_DOES_NOT_EXIST);
+        if (!file_exists($this->getWorkingDir().self::CONFIG_FILE)) {
+            throw new \Exception('Required file \''.self::CONFIG_FILE.'\' does not exist', ReturnCodes::RUMI_YML_DOES_NOT_EXIST);
         }
-        $aParser = new Parser();
+        $parser = new Parser();
 
-        return $aParser->parse(file_get_contents($this->getWorkingDir() . self::CONFIG_FILE));
+        return $parser->parse(file_get_contents($this->getWorkingDir().self::CONFIG_FILE));
     }
 
     private function executeStage($jobs, OutputInterface $output)
@@ -186,11 +186,11 @@ class RunCommand extends Command
                 usleep(500000);
             }
         } catch (CommandFailedException $e) {
-            $output->writeln("<error>Command '" . $e->getMessage() . "' failed</error>");
+            $output->writeln("<error>Command '".$e->getMessage()."' failed</error>");
             if (!empty($processes)) {
                 $output->writeln('Shutting down jobs in background...', OutputInterface::VERBOSITY_VERBOSE);
                 foreach ($processes as $runningCommand) {
-                    $output->writeln('- ' . $runningCommand->getCommand(), OutputInterface::VERBOSITY_VERBOSE);
+                    $output->writeln('- '.$runningCommand->getCommand(), OutputInterface::VERBOSITY_VERBOSE);
                     $runningCommand->tearDown();
                 }
             }

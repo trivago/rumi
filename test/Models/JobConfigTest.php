@@ -31,10 +31,10 @@ class JobConfigTest extends \PHPUnit_Framework_TestCase
     public function testMetricsSetterAndGetter()
     {
         //given
-        $aMetrics = [$this->prophesize(MetricConfig::class)->reveal()];
+        $metrics = [$this->prophesize(MetricConfig::class)->reveal()];
 
-        $this->SUT->setMetrics($aMetrics);
+        $this->SUT->setMetrics($metrics);
 
-        $this->assertEquals($aMetrics, $this->SUT->getMetrics());
+        $this->assertEquals($metrics, $this->SUT->getMetrics());
     }
 }

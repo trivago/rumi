@@ -59,14 +59,14 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         $returnCode = $this->command->run(new ArrayInput([]), $this->output);
 
         // then
-        $this->assertSame("Required file '" . RunCommand::CONFIG_FILE . "' does not exist", trim($this->output->fetch()));
+        $this->assertSame("Required file '".RunCommand::CONFIG_FILE."' does not exist", trim($this->output->fetch()));
         $this->assertEquals(ReturnCodes::RUMI_YML_DOES_NOT_EXIST, $returnCode);
     }
 
     public function testGivenCiYamlSyntaxIsWrong_WhenExecuted_ThenDisplaysErrorMessage()
     {
         // given
-        file_put_contents(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE, 'wrong::' . PHP_EOL . '::yaml_file');
+        file_put_contents(vfsStream::url('directory').'/'.RunCommand::CONFIG_FILE, 'wrong::'.PHP_EOL.'::yaml_file');
 
         // when
         $returnCode = $this->command->run(new ArrayInput(['volume' => '.']), $this->output);
@@ -86,7 +86,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->container->set('jakubsacha.rumi.process.running_processes_factory', $processFactory->reveal());
 
-        file_put_contents(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE, file_get_contents('fixtures/passing-.rumi.yml'));
+        file_put_contents(vfsStream::url('directory').'/'.RunCommand::CONFIG_FILE, file_get_contents('fixtures/passing-.rumi.yml'));
 
         // when
         $returnCode = $this->command->run(new ArrayInput(['volume' => '.']), $this->output);
@@ -111,7 +111,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->container->set('jakubsacha.rumi.process.running_processes_factory', $processFactory->reveal());
 
-        file_put_contents(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE, file_get_contents('fixtures/failing-.rumi.yml'));
+        file_put_contents(vfsStream::url('directory').'/'.RunCommand::CONFIG_FILE, file_get_contents('fixtures/failing-.rumi.yml'));
 
         // when
         $returnCode = $this->command->run(new ArrayInput(['volume' => '.']), $this->output);

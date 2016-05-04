@@ -67,13 +67,13 @@ class DockerComposeYamlBuilderTest extends \PHPUnit_Framework_TestCase
         $yamlConfigFile = $this->SUT->build($stageConfig, '.');
 
         // then
-        $aYaml = $this->getYamlConfigFromFile($yamlConfigFile);
+        $yaml = $this->getYamlConfigFromFile($yamlConfigFile);
         $this->assertEquals(
             DockerComposeYamlBuilder::DEFAULT_SHELL,
-            $aYaml['www']['entrypoint']
+            $yaml['www']['entrypoint']
         );
 
-        $this->assertEquals(['-c', 'echo 1'], $aYaml['www']['command']);
+        $this->assertEquals(['-c', 'echo 1'], $yaml['www']['command']);
     }
 
     public function testGivenContainerHasPortsDefined_WhenYamlFileBuild_ThenPortsInformationIsDiscarded()
@@ -85,10 +85,10 @@ class DockerComposeYamlBuilderTest extends \PHPUnit_Framework_TestCase
         $yamlConfigFile = $this->SUT->build($stageConfig, '.');
 
         // then
-        $aYaml = $this->getYamlConfigFromFile($yamlConfigFile);
+        $yaml = $this->getYamlConfigFromFile($yamlConfigFile);
         $this->assertArrayNotHasKey(
             'ports',
-            $aYaml['www']
+            $yaml['www']
         );
     }
 
@@ -101,10 +101,10 @@ class DockerComposeYamlBuilderTest extends \PHPUnit_Framework_TestCase
         $yamlConfigFile = $this->SUT->build($stageConfig, '__volume__');
 
         // then
-        $aYaml = $this->getYamlConfigFromFile($yamlConfigFile);
+        $yaml = $this->getYamlConfigFromFile($yamlConfigFile);
         $this->assertEquals(
             '__volume__:/var/www',
-            $aYaml['www']['volumes'][0]
+            $yaml['www']['volumes'][0]
         );
     }
 

@@ -63,7 +63,7 @@ class CacheStoreCommand extends Command
             return;
         }
 
-        return $this->workingDir . '/';
+        return $this->workingDir.'/';
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -71,17 +71,17 @@ class CacheStoreCommand extends Command
         try {
             $this->SkipIfConfigFileDoesNotExist();
 
-            $aCiConfig = $this->readCiConfigFile();
-            $cacheDir = $input->getArgument('cache_dir') . '/' . md5($input->getArgument('git_repository'));
+            $ciConfig = $this->readCiConfigFile();
+            $cacheDir = $input->getArgument('cache_dir').'/'.md5($input->getArgument('git_repository'));
 
-            $this->SkipIfCacheIsEmpty($aCiConfig);
+            $this->SkipIfCacheIsEmpty($ciConfig);
             $this->SkipIfCacheDirDoesNotExist($input);
             $this->SkipIfNotMasterAndCacheFilled($input->getArgument('git_branch'), $cacheDir);
 
             $this->createCacheDirectory($cacheDir);
 
-            foreach ($aCiConfig['cache'] as $dir) {
-                $output->write('Storing cache for: ' . $dir . '... ');
+            foreach ($ciConfig['cache'] as $dir) {
+                $output->write('Storing cache for: '.$dir.'... ');
 
                 $process = $this
                     ->container
@@ -95,17 +95,17 @@ class CacheStoreCommand extends Command
                 $output->writeln($time);
 
                 if (!$process->isSuccessful()) {
-                    throw new Exception($process->getOutput() . $process->getErrorOutput());
+                    throw new Exception($process->getOutput().$process->getErrorOutput());
                 }
             }
 
             $output->writeln('<info>Cache store done</info>');
         } catch (SkipException $e) {
-            $output->writeln('<info>' . $e->getMessage() . '</info>');
+            $output->writeln('<info>'.$e->getMessage().'</info>');
 
             return 0;
         } catch (\Exception $e) {
-            $output->writeln('<error>' . $e->getMessage() . '</error>');
+            $output->writeln('<error>'.$e->getMessage().'</error>');
 
             return -1;
         }
@@ -118,10 +118,9 @@ class CacheStoreCommand extends Command
      */
     protected function readCiConfigFile()
     {
-        $aParser = new Parser();
-        $aCiConfig = $aParser->parse(file_get_contents($this->getWorkingDir() . RunCommand::CONFIG_FILE));
+        $parser = new Parser();
 
-        return $aCiConfig;
+        return $parser->parse(file_get_contents($this->getWorkingDir().RunCommand::CONFIG_FILE));
     }
 
     /**
@@ -131,7 +130,7 @@ class CacheStoreCommand extends Command
      */
     protected function createCacheDirectory($cacheDir)
     {
-        if (file_exists($cacheDir . '/data/')) {
+        if (file_exists($cacheDir.'/data/')) {
             return;
         }
 
@@ -144,13 +143,13 @@ class CacheStoreCommand extends Command
     }
 
     /**
-     * @param $aCiConfig
+     * @param $ciConfig
      *
      * @throws SkipException
      */
-    protected function SkipIfCacheIsEmpty($aCiConfig)
+    protected function SkipIfCacheIsEmpty($ciConfig)
     {
-        if (empty($aCiConfig['cache'])) {
+        if (empty($ciConfig['cache'])) {
             throw new SkipException('Cache config is empty. Skipping.');
         }
     }
@@ -169,8 +168,8 @@ class CacheStoreCommand extends Command
 
     protected function SkipIfConfigFileDoesNotExist()
     {
-        if (!file_exists($this->getWorkingDir() . RunCommand::CONFIG_FILE)) {
-            throw new \Exception('Required file \'' . RunCommand::CONFIG_FILE . '\' does not exist');
+        if (!file_exists($this->getWorkingDir().RunCommand::CONFIG_FILE)) {
+            throw new \Exception('Required file \''.RunCommand::CONFIG_FILE.'\' does not exist');
         }
     }
 

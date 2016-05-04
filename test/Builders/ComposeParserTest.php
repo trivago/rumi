@@ -41,8 +41,8 @@ class ComposeParserTest extends \PHPUnit_Framework_TestCase
     public function testGivenDockerSpecifiedAsFilePath_WhenBuildExecuted_ThenJobConfigIsLoadedFromFile()
     {
         // given
-        $composeFilePath = vfsStream::url('directory') . '/docker-compose.yml';
-        file_put_contents($composeFilePath, 'www:' . PHP_EOL . '    image: php');
+        $composeFilePath = vfsStream::url('directory').'/docker-compose.yml';
+        file_put_contents($composeFilePath, 'www:'.PHP_EOL.'    image: php');
 
         // when
         $composeConfig = $this->SUT->parseComposePart($composeFilePath);

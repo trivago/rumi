@@ -91,7 +91,7 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
         // given
         /** @var GitCheckoutProcessFactory $processFactory */
         $processFactory = $this->prophesize(GitCheckoutProcessFactory::class);
-        touch(vfsStream::url('directory') . '/.git');
+        touch(vfsStream::url('directory').'/.git');
 
         $fetchProcess = $this->prophesize(Process::class);
         $fetchProcess->run()->shouldBeCalled();
@@ -155,7 +155,7 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
     {
         /** @var GitCheckoutProcessFactory $processFactory */
         $processFactory = $this->prophesize(GitCheckoutProcessFactory::class);
-        touch(vfsStream::url('directory') . '/.git');
+        touch(vfsStream::url('directory').'/.git');
 
         $fetchProcess = $this->prophesize(Process::class);
         $fetchProcess->run()->shouldBeCalled();
@@ -189,8 +189,8 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
     {
         /** @var GitCheckoutProcessFactory $factory */
         $factory = $this->prophesize(GitCheckoutProcessFactory::class);
-        touch(vfsStream::url('directory') . '/.git');
-        file_put_contents(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE, 'merge_branch: abc');
+        touch(vfsStream::url('directory').'/.git');
+        file_put_contents(vfsStream::url('directory').'/'.RunCommand::CONFIG_FILE, 'merge_branch: abc');
 
         $fetchProcess = $this->prophesize(Process::class);
         $fetchProcess->run()->shouldBeCalled();
@@ -229,8 +229,8 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
     {
         /** @var GitCheckoutProcessFactory $factory */
         $factory = $this->prophesize(GitCheckoutProcessFactory::class);
-        touch(vfsStream::url('directory') . '/.git');
-        file_put_contents(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE, '');
+        touch(vfsStream::url('directory').'/.git');
+        file_put_contents(vfsStream::url('directory').'/'.RunCommand::CONFIG_FILE, '');
 
         $fetchProcess = $this->prophesize(Process::class);
         $fetchProcess->run()->shouldBeCalled();
@@ -264,8 +264,8 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
     {
         /** @var GitCheckoutProcessFactory $factory */
         $factory = $this->prophesize(GitCheckoutProcessFactory::class);
-        touch(vfsStream::url('directory') . '/.git');
-        file_put_contents(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE, 'merge_branch: origin/master');
+        touch(vfsStream::url('directory').'/.git');
+        file_put_contents(vfsStream::url('directory').'/'.RunCommand::CONFIG_FILE, 'merge_branch: origin/master');
 
         $fetchProcess = $this->prophesize(Process::class);
         $fetchProcess->run()->shouldBeCalled();
