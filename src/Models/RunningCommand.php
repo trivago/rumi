@@ -15,41 +15,41 @@ class RunningCommand
     /**
      * @var Process
      */
-    private $oProcess;
+    private $process;
 
     /**
      * @var string
      */
-    private $sYamlPath;
+    private $yamlPath;
 
     /**
      * @var RunningProcessesFactory
      */
-    private $oFactory;
+    private $runningProcessesFactory;
 
     /**
      * @var string|null
      */
-    private $sTempContainerId;
+    private $tempContainerId;
 
     /**
      * @var JobConfig
      */
-    private $oJobConfig;
+    private $jobConfig;
 
     /**
-     * @param JobConfig               $oJobConfig
-     * @param string                  $sYamlPath
-     * @param RunningProcessesFactory $oFactory
+     * @param JobConfig               $jobConfig
+     * @param string                  $yamlPath
+     * @param RunningProcessesFactory $factory
      */
     public function __construct(
-        JobConfig $oJobConfig,
-        $sYamlPath,
-        RunningProcessesFactory $oFactory
+        JobConfig $jobConfig,
+        $yamlPath,
+        RunningProcessesFactory $factory
     ) {
-        $this->oJobConfig = $oJobConfig;
-        $this->sYamlPath = $sYamlPath;
-        $this->oFactory = $oFactory;
+        $this->jobConfig = $jobConfig;
+        $this->yamlPath = $yamlPath;
+        $this->runningProcessesFactory = $factory;
     }
 
     /**
@@ -57,7 +57,7 @@ class RunningCommand
      */
     public function getCommand()
     {
-        return $this->oJobConfig->getCommandsAsString();
+        return $this->jobConfig->getCommandsAsString();
     }
 
     /**
@@ -65,7 +65,7 @@ class RunningCommand
      */
     public function getProcess()
     {
-        return $this->oProcess;
+        return $this->process;
     }
 
     /**
@@ -73,7 +73,7 @@ class RunningCommand
      */
     public function getYamlPath()
     {
-        return $this->sYamlPath;
+        return $this->yamlPath;
     }
 
     /**
@@ -83,25 +83,25 @@ class RunningCommand
      */
     private function getTmpName()
     {
-        if (empty($this->sTempContainerId)) {
-            $this->sTempContainerId = 'cirunner-' . md5(uniqid() . time() . $this->getCommand());
+        if (empty($this->tempContainerId)) {
+            $this->tempContainerId = 'cirunner-' . md5(uniqid() . time() . $this->getCommand());
         }
 
-        return $this->sTempContainerId;
+        return $this->tempContainerId;
     }
 
     /**
      */
     public function start()
     {
-        $this->oProcess =
-            $this->oFactory->getJobStartProcess(
+        $this->process =
+            $this->runningProcessesFactory->getJobStartProcess(
                 $this->getYamlPath(),
                 $this->getTmpName(),
-                $this->oJobConfig->getCiContainer()
+                $this->jobConfig->getCiContainer()
             );
 
-        $this->oProcess->start();
+        $this->process->start();
     }
 
     /**
@@ -110,7 +110,7 @@ class RunningCommand
     public function tearDown()
     {
         $this
-            ->oFactory
+            ->runningProcessesFactory
             ->getTearDownProcess($this->getYamlPath(), $this->getTmpName())
             ->run();
     }
@@ -120,7 +120,7 @@ class RunningCommand
      */
     public function isRunning()
     {
-        return $this->oProcess->isRunning();
+        return $this->process->isRunning();
     }
 
     /**
@@ -128,7 +128,7 @@ class RunningCommand
      */
     public function getOutput()
     {
-        return $this->oProcess->getOutput() . $this->oProcess->getErrorOutput();
+        return $this->process->getOutput() . $this->process->getErrorOutput();
     }
 
     /**
@@ -136,6 +136,6 @@ class RunningCommand
      */
     public function getJobName()
     {
-        return $this->oJobConfig->getName();
+        return $this->jobConfig->getName();
     }
 }

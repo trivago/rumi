@@ -1,11 +1,11 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 02/03/16 12:07
  */
 
 namespace jakubsacha\Rumi\Models;
-
 
 use jakubsacha\Rumi\Process\RunningProcessesFactory;
 use Prophecy\Argument;
@@ -105,10 +105,10 @@ class RunningCommandTest extends \PHPUnit_Framework_TestCase
 
         // when
         $this->SUT->start();
-        $bRunning = $this->SUT->isRunning();
+        $isRunning = $this->SUT->isRunning();
 
         // then
-        $this->assertTrue($bRunning);
+        $this->assertTrue($isRunning);
     }
 
     public function testGivenProcessDone_WhenGetOutputCalled_ThenItReturnsIt()
@@ -133,5 +133,4 @@ class RunningCommandTest extends \PHPUnit_Framework_TestCase
         // then
         $this->assertEquals('outputerroroutput', $output);
     }
-
 }

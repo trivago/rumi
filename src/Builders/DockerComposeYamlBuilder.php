@@ -17,105 +17,111 @@ class DockerComposeYamlBuilder
     /**
      * @var VolumeInspector
      */
-    private $oVolumeInspector;
+    private $volumeInspector;
 
-    public function __construct(VolumeInspector $oVolumeInspector)
+    public function __construct(VolumeInspector $volumeInspector)
     {
-        $this->oVolumeInspector = $oVolumeInspector;
+        $this->volumeInspector = $volumeInspector;
     }
 
     /**
      * Builds docker-compose.yml file based on JobConfig entity.
      *
-     * @param JobConfig $oStageConfig
-     * @param string    $sVolume      docker volume or path to project files
+     * @param JobConfig $stageConfig
+     * @param string    $volume      docker volume or path to project files
      *
      * @return string
      */
-    public function build(JobConfig $oStageConfig, $sVolume)
+    public function build(JobConfig $stageConfig, $volume)
     {
-        $_aPDC = $oStageConfig->getDockerCompose();
+        $composeConfig = $stageConfig->getDockerCompose();
 
-        $_sCiContainerName = $oStageConfig->getCiContainer();
-        $_sCommand = $oStageConfig->getCommandsAsString();
+        $ciContainerName = $stageConfig->getCiContainer();
+        $command = $stageConfig->getCommandsAsString();
 
-        $_sEntryPoint = $oStageConfig->getEntryPoint();
+        $entryPoint = $stageConfig->getEntryPoint();
 
         // if the entry point is specified, use it
-        if (!empty($_sEntryPoint)) {
-            $_aPDC[$_sCiContainerName]['entrypoint'] = $_sEntryPoint;
+        if (!empty($entryPoint)) {
+            $composeConfig[$ciContainerName]['entrypoint'] = $entryPoint;
         }
         // otherwise we check do we have any commands specified, in case yes - we use default "sh" shell
-        elseif (!empty($_sCommand)) {
-            $_aPDC[$_sCiContainerName]['entrypoint'] = self::DEFAULT_SHELL;
+        elseif (!empty($command)) {
+            $composeConfig[$ciContainerName]['entrypoint'] = self::DEFAULT_SHELL;
         }
 
         // if we have any commands specified in yaml file, we put them into command part of compose file
-        if (!empty($_sCommand)) {
-            $_aPDC[$_sCiContainerName]['command'] =
+        if (!empty($command)) {
+            $composeConfig[$ciContainerName]['command'] =
                 // escape $ to support docker syntax
-                ['-c', str_replace('$', '$$', $_sCommand)];
+                ['-c', str_replace('$', '$$', $command)];
         }
 
         // remove all port mappings (we do not want to expose anything) and fix volumes settings
-        foreach ($_aPDC as $_sContainer => $_aSettings) {
-            unset($_aPDC[$_sContainer]['ports']);
+        foreach ($composeConfig as $container => $settings) {
+            unset($composeConfig[$container]['ports']);
 
-            if (!isset($_aPDC[$_sContainer]['volumes'])) {
+            if (!isset($composeConfig[$container]['volumes'])) {
                 continue;
             }
 
-            foreach ($_aPDC[$_sContainer]['volumes'] as $_sVolumeKey => $_sVolumeSpec) {
-                $_aPDC[$_sContainer]['volumes'][$_sVolumeKey] = $this->doSth($sVolume, $_sVolumeSpec);
+            foreach ($composeConfig[$container]['volumes'] as $volumeKey => $volumeSpec) {
+                $composeConfig[$container]['volumes'][$volumeKey] = $this->handlePathsReplacement($volume, $volumeSpec);
             }
         }
 
-        return $this->dumpFile($_aPDC);
+        return $this->dumpFile($composeConfig);
     }
 
     /**
-     * @param $_aParsedDockerCompose
+     * @param $parsedDockerCompose
      *
      * @return string file path
      */
-    protected function dumpFile($_aParsedDockerCompose)
+    protected function dumpFile($parsedDockerCompose)
     {
-        $_sTempTestDirectory = tempnam(sys_get_temp_dir(), 'RUNNER') . md5(microtime()) . '_d';
+        $tempTestDirectory = tempnam(sys_get_temp_dir(), 'RUNNER') . md5(microtime()) . '_d';
         usleep(1);
-        mkdir($_sTempTestDirectory);
+        mkdir($tempTestDirectory);
 
-        $oDumper = new Dumper();
+        $dumper = new Dumper();
         file_put_contents(
-            $_sTempTestDirectory . '/docker-compose.yml',
-            $oDumper->dump($_aParsedDockerCompose)
+            $tempTestDirectory . '/docker-compose.yml',
+            $dumper->dump($parsedDockerCompose)
         );
 
-        return $_sTempTestDirectory . '/docker-compose.yml';
+        return $tempTestDirectory . '/docker-compose.yml';
     }
 
     /**
-     * @param $sVolume
+     * @param $volume
      *
      * @return bool
      */
-    protected function isDockerVolume($sVolume)
+    protected function isDockerVolume($volume)
     {
-        return $sVolume[0] != '/';
+        return $volume[0] != '/';
     }
 
-    public function doSth($sVolume, $_sVolumeSpec)
+    /**
+     * @param $volumeName
+     * @param $volumeSpecification
+     *
+     * @return mixed
+     */
+    public function handlePathsReplacement($volumeName, $volumeSpecification)
     {
         // if the full volume is mounted, there is no magic needed
-        if (strpos($_sVolumeSpec, './') !== 0) {
-            return str_replace('.:', $sVolume . ':', $_sVolumeSpec);
+        if (strpos($volumeSpecification, './') !== 0) {
+            return str_replace('.:', $volumeName . ':', $volumeSpecification);
         }
 
         // if we use systempath instead of docker volume
-        if (!$this->isDockerVolume($sVolume)) {
-            return str_replace('./', $sVolume, $_sVolumeSpec);
+        if (!$this->isDockerVolume($volumeName)) {
+            return str_replace('./', $volumeName, $volumeSpecification);
         }
 
         // we need to get real docker volume path and use it
-        return str_replace('./', $this->oVolumeInspector->getVolumeRealPath($sVolume), $_sVolumeSpec);
+        return str_replace('./', $this->volumeInspector->getVolumeRealPath($volumeName), $volumeSpecification);
     }
 }

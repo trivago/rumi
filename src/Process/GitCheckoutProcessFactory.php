@@ -11,43 +11,43 @@ use Symfony\Component\Process\Process;
 
 class GitCheckoutProcessFactory
 {
-    protected $fetch_command = 'GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git fetch origin';
+    protected $fetchCommand = 'GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git fetch origin';
 
-    public function getFullCloneProcess($_sRepositoryUrl)
+    public function getFullCloneProcess($repositoryUrl)
     {
-        $_oProcess = new Process(
-            'git init && git remote add origin ' . $_sRepositoryUrl . ' && ' . $this->fetch_command
+        $process = new Process(
+            'git init && git remote add origin ' . $repositoryUrl . ' && ' . $this->fetchCommand
         );
-        $_oProcess->setTimeout(600)->setIdleTimeout(600);
+        $process->setTimeout(600)->setIdleTimeout(600);
 
-        return $_oProcess;
+        return $process;
     }
 
     public function getFetchProcess()
     {
-        $_oProcess = new Process($this->fetch_command);
-        $_oProcess->setTimeout(600)->setIdleTimeout(600);
+        $process = new Process($this->fetchCommand);
+        $process->setTimeout(600)->setIdleTimeout(600);
 
-        return $_oProcess;
+        return $process;
     }
 
-    public function getCheckoutCommitProcess($sCommitSha)
+    public function getCheckoutCommitProcess($commitSha)
     {
-        $_oProcess = new Process(
-            'git reset --hard && git checkout ' . $sCommitSha
+        $process = new Process(
+            'git reset --hard && git checkout ' . $commitSha
         );
-        $_oProcess->setTimeout(600)->setIdleTimeout(600);
+        $process->setTimeout(600)->setIdleTimeout(600);
 
-        return $_oProcess;
+        return $process;
     }
 
-    public function getMergeProcess($sBranch)
+    public function getMergeProcess($branch)
     {
-        $_oProcess = new Process(
-            'git merge --no-edit ' . $sBranch
+        $process = new Process(
+            'git merge --no-edit ' . $branch
         );
-        $_oProcess->setTimeout(60)->setIdleTimeout(60);
+        $process->setTimeout(60)->setIdleTimeout(60);
 
-        return $_oProcess;
+        return $process;
     }
 }

@@ -12,16 +12,16 @@ use Symfony\Component\Process\Process;
 class VolumeInspectProcessFactory
 {
     /**
-     * @param $sVolume
+     * @param $volumeName
      *
      * @return Process
      */
-    public function getInspectProcess($sVolume)
+    public function getInspectProcess($volumeName)
     {
-        $_oProcess = new Process(
-            'docker volume inspect ' . escapeshellarg($sVolume)
+        $process = new Process(
+            'docker volume inspect ' . escapeshellarg($volumeName)
         );
 
-        return $_oProcess;
+        return $process;
     }
 }

@@ -18,22 +18,22 @@ class CacheStoreCommand extends Command
     /**
      * @var ContainerInterface
      */
-    private $oContainer;
+    private $container;
 
     /**
      * @var string
      */
-    private $sWorkingDir = null;
+    private $workingDir = null;
 
     /**
      * RunCommand constructor.
      *
-     * @param ContainerInterface $oContainer
+     * @param ContainerInterface $container
      */
-    public function __construct(ContainerInterface $oContainer)
+    public function __construct(ContainerInterface $container)
     {
         parent::__construct();
-        $this->oContainer = $oContainer;
+        $this->container = $container;
     }
 
     protected function configure()
@@ -51,7 +51,7 @@ class CacheStoreCommand extends Command
      */
     public function setWorkingDir($dir)
     {
-        $this->sWorkingDir = $dir;
+        $this->workingDir = $dir;
     }
 
     /**
@@ -59,11 +59,11 @@ class CacheStoreCommand extends Command
      */
     private function getWorkingDir()
     {
-        if (empty($this->sWorkingDir)) {
+        if (empty($this->workingDir)) {
             return;
         }
 
-        return $this->sWorkingDir . '/';
+        return $this->workingDir . '/';
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -72,30 +72,30 @@ class CacheStoreCommand extends Command
             $this->SkipIfConfigFileDoesNotExist();
 
             $aCiConfig = $this->readCiConfigFile();
-            $sCacheDir = $input->getArgument('cache_dir') . '/' . md5($input->getArgument('git_repository'));
+            $cacheDir = $input->getArgument('cache_dir') . '/' . md5($input->getArgument('git_repository'));
 
             $this->SkipIfCacheIsEmpty($aCiConfig);
             $this->SkipIfCacheDirDoesNotExist($input);
-            $this->SkipIfNotMasterAndCacheFilled($input->getArgument('git_branch'), $sCacheDir);
+            $this->SkipIfNotMasterAndCacheFilled($input->getArgument('git_branch'), $cacheDir);
 
-            $this->createCacheDirectory($sCacheDir);
+            $this->createCacheDirectory($cacheDir);
 
-            foreach ($aCiConfig['cache'] as $sDir) {
-                $output->write('Storing cache for: ' . $sDir . '... ');
+            foreach ($aCiConfig['cache'] as $dir) {
+                $output->write('Storing cache for: ' . $dir . '... ');
 
-                $oProcess = $this
-                    ->oContainer
+                $process = $this
+                    ->container
                     ->get('jakubsacha.rumi.process.cache_process_factory')
-                    ->getCacheStoreProcess($sDir, $sCacheDir);
+                    ->getCacheStoreProcess($dir, $cacheDir);
 
-                $sTime = Timer::execute(function () use ($oProcess) {
-                    $oProcess->run();
+                $time = Timer::execute(function () use ($process) {
+                    $process->run();
                 });
 
-                $output->writeln($sTime);
+                $output->writeln($time);
 
-                if (!$oProcess->isSuccessful()) {
-                    throw new Exception($oProcess->getOutput() . $oProcess->getErrorOutput());
+                if (!$process->isSuccessful()) {
+                    throw new Exception($process->getOutput() . $process->getErrorOutput());
                 }
             }
 
@@ -125,22 +125,22 @@ class CacheStoreCommand extends Command
     }
 
     /**
-     * @param $sCacheDir
+     * @param $cacheDir
      *
      * @return Process
      */
-    protected function createCacheDirectory($sCacheDir)
+    protected function createCacheDirectory($cacheDir)
     {
-        if (file_exists($sCacheDir . '/data/')) {
+        if (file_exists($cacheDir . '/data/')) {
             return;
         }
 
-        $oProcess = $this
-            ->oContainer
+        $process = $this
+            ->container
             ->get('jakubsacha.rumi.process.cache_process_factory')
-            ->getCreateCacheDirectoryProcess($sCacheDir);
+            ->getCreateCacheDirectoryProcess($cacheDir);
 
-        $oProcess->run();
+        $process->run();
     }
 
     /**
@@ -176,17 +176,17 @@ class CacheStoreCommand extends Command
 
     /**
      * @param $argument
-     * @param $sCacheDir
+     * @param $cacheDir
      *
      * @throws SkipException
      */
-    protected function SkipIfNotMasterAndCacheFilled($argument, $sCacheDir)
+    protected function SkipIfNotMasterAndCacheFilled($argument, $cacheDir)
     {
         if ($argument == 'origin/master' || $argument == 'master') {
             return;
         }
 
-        if (!file_exists($sCacheDir)) {
+        if (!file_exists($cacheDir)) {
             return;
         }
 

@@ -12,37 +12,37 @@ use Symfony\Component\Process\Process;
 class RunningProcessesFactory
 {
     /**
-     * @param $sYamlPath
-     * @param $sTmpName
-     * @param $sCiImage
+     * @param $yamlPath
+     * @param $tmpName
+     * @param $ciImage
      *
      * @return Process
      */
-    public function getJobStartProcess($sYamlPath, $sTmpName, $sCiImage)
+    public function getJobStartProcess($yamlPath, $tmpName, $ciImage)
     {
-        $oProcess = new Process(
-            'docker-compose -f ' . $sYamlPath . ' run --name ' . $sTmpName . ' ' . $sCiImage
+        $process = new Process(
+            'docker-compose -f ' . $yamlPath . ' run --name ' . $tmpName . ' ' . $ciImage
         );
-        $oProcess->setTimeout(1200)->setIdleTimeout(1200);
+        $process->setTimeout(1200)->setIdleTimeout(1200);
 
-        return $oProcess;
+        return $process;
     }
 
     /**
-     * @param $sYamlPath
-     * @param $sTmpName
+     * @param $yamlPath
+     * @param $tmpName
      *
      * @return Process
      */
-    public function getTearDownProcess($sYamlPath, $sTmpName)
+    public function getTearDownProcess($yamlPath, $tmpName)
     {
-        $oProcess = new Process(
-            'docker rm -f ' . $sTmpName . ';
-            docker-compose -f ' . $sYamlPath . ' rm --force;
-            docker rm -f $(docker-compose -f ' . $sYamlPath . ' ps -q)'
+        $process = new Process(
+            'docker rm -f ' . $tmpName . ';
+            docker-compose -f ' . $yamlPath . ' rm --force;
+            docker rm -f $(docker-compose -f ' . $yamlPath . ' ps -q)'
         );
-        $oProcess->setTimeout(300)->setIdleTimeout(300);
+        $process->setTimeout(300)->setIdleTimeout(300);
 
-        return $oProcess;
+        return $process;
     }
 }

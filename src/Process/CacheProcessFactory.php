@@ -12,49 +12,49 @@ use Symfony\Component\Process\Process;
 class CacheProcessFactory
 {
     /**
-     * @param $sDirectory
-     * @param $sCacheDestinationDirectory
+     * @param $directory
+     * @param $cacheDestinationDirectory
      *
      * @return Process
      */
-    public function getCacheStoreProcess($sDirectory, $sCacheDestinationDirectory)
+    public function getCacheStoreProcess($directory, $cacheDestinationDirectory)
     {
-        $oProcess = new Process('
+        $process = new Process('
                 (
                     flock -x 200 || exit 1;
-                    rsync --delete -axH ' . $sDirectory . '/ ' . $sCacheDestinationDirectory . '/data/' . $sDirectory . '
-                ) 200>' . $sCacheDestinationDirectory . '/.rsync.lock');
-        $oProcess->setTimeout(600)->setIdleTimeout(600);
+                    rsync --delete -axH ' . $directory . '/ ' . $cacheDestinationDirectory . '/data/' . $directory . '
+                ) 200>' . $cacheDestinationDirectory . '/.rsync.lock');
+        $process->setTimeout(600)->setIdleTimeout(600);
 
-        return $oProcess;
+        return $process;
     }
 
     /**
-     * @param $sCacheDir
+     * @param $cacheDir
      *
      * @return Process
      */
-    public function getCreateCacheDirectoryProcess($sCacheDir)
+    public function getCreateCacheDirectoryProcess($cacheDir)
     {
-        return new Process('mkdir -p ' . $sCacheDir . '/data/');
+        return new Process('mkdir -p ' . $cacheDir . '/data/');
     }
 
     /**
-     * @param string $_sCacheDir
-     * @param string $_sLockDir
+     * @param string $cacheDir
+     * @param string $lockDir
      *
      * @return Process
      */
-    public function getCacheRestoreProcess($_sCacheDir, $_sLockDir)
+    public function getCacheRestoreProcess($cacheDir, $lockDir)
     {
-        $oProcess = new Process('
+        $process = new Process('
                 (
                     flock -x 200 || exit 1;
-                    rsync --delete -axH ' . $_sCacheDir . ' . ;
-                ) 200>' . $_sLockDir . '/.rsync.lock');
+                    rsync --delete -axH ' . $cacheDir . ' . ;
+                ) 200>' . $lockDir . '/.rsync.lock');
 
-        $oProcess->setTimeout(600)->setIdleTimeout(600);
+        $process->setTimeout(600)->setIdleTimeout(600);
 
-        return $oProcess;
+        return $process;
     }
 }

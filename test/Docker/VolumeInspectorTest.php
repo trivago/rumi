@@ -13,29 +13,29 @@ class VolumeInspectorTest extends \PHPUnit_Framework_TestCase
     /**
      * @var VolumeInspector
      */
-    private $oSUT;
+    private $SUT;
 
     /**
      * @var VolumeInspectProcessFactory
      */
-    private $oProcessFactory;
+    private $processFactory;
 
     protected function setUp()
     {
-        $this->oProcessFactory = $this->prophesize(VolumeInspectProcessFactory::class);
+        $this->processFactory = $this->prophesize(VolumeInspectProcessFactory::class);
 
-        $this->oSUT = new VolumeInspector(
-            $this->oProcessFactory->reveal()
+        $this->SUT = new VolumeInspector(
+            $this->processFactory->reveal()
         );
     }
 
     public function testGivenVolumeName_WhenVolumeGetRealPathCalled_ThenPathIsReturned()
     {
         // given
-        $oProcess = $this->prophesize(Process::class);
-        $oProcess->run()->shouldBeCalled();
-        $oProcess->isSuccessful()->willReturn(true);
-        $oProcess->getOutput()->willReturn('[
+        $process = $this->prophesize(Process::class);
+        $process->run()->shouldBeCalled();
+        $process->isSuccessful()->willReturn(true);
+        $process->getOutput()->willReturn('[
     {
         "Name": "8ab9841d40db34620455467f5babb50e10a35da8e47bb74ca10c4675ac2f7d4e",
         "Driver": "local",
@@ -43,15 +43,14 @@ class VolumeInspectorTest extends \PHPUnit_Framework_TestCase
     }
 ]
 ');
-        $this->oProcessFactory->getInspectProcess('__volume__')->willReturn($oProcess);
+        $this->processFactory->getInspectProcess('__volume__')->willReturn($process);
 
         // when
-        $sPath = $this->oSUT->getVolumeRealPath('__volume__');
+        $path = $this->SUT->getVolumeRealPath('__volume__');
 
         // then
-        $this->assertEquals('__volume_real_path__/', $sPath);
+        $this->assertEquals('__volume_real_path__/', $path);
     }
-
 
     /**
      * @expectedException \RuntimeException
@@ -60,17 +59,18 @@ class VolumeInspectorTest extends \PHPUnit_Framework_TestCase
     public function testGivenVolumeName_WhenVolumeGetRealPathCalled_ThenCommandFails()
     {
         // given
-        $oProcess = $this->prophesize(Process::class);
-        $oProcess->run()->shouldBeCalled();
-        $oProcess->isSuccessful()->willReturn(false);
-        $oProcess->getErrorOutput()->willReturn('Error: No such volume: __volume__');
+        $process = $this->prophesize(Process::class);
+        $process->run()->shouldBeCalled();
+        $process->isSuccessful()->willReturn(false);
+        $process->getErrorOutput()->willReturn('Error: No such volume: __volume__');
 
-        $this->oProcessFactory->getInspectProcess('__volume__')->willReturn($oProcess);
+        $this->processFactory->getInspectProcess('__volume__')->willReturn($process);
 
         // when
-        $sPath = $this->oSUT->getVolumeRealPath('__volume__');
+        $path = $this->SUT->getVolumeRealPath('__volume__');
 
         // then
+        // expected exception
     }
 
     /**
@@ -80,10 +80,10 @@ class VolumeInspectorTest extends \PHPUnit_Framework_TestCase
     public function testGivenVolumeName_WhenDriverIsNotLocal_ThenCommandFails()
     {
         // given
-        $oProcess = $this->prophesize(Process::class);
-        $oProcess->run()->shouldBeCalled();
-        $oProcess->isSuccessful()->willReturn(true);
-        $oProcess->getOutput()->willReturn('[
+        $process = $this->prophesize(Process::class);
+        $process->run()->shouldBeCalled();
+        $process->isSuccessful()->willReturn(true);
+        $process->getOutput()->willReturn('[
     {
         "Name": "8ab9841d40db34620455467f5babb50e10a35da8e47bb74ca10c4675ac2f7d4e",
         "Driver": "gluster",
@@ -92,15 +92,14 @@ class VolumeInspectorTest extends \PHPUnit_Framework_TestCase
 ]
 ');
 
-        $this->oProcessFactory->getInspectProcess('__volume__')->willReturn($oProcess);
+        $this->processFactory->getInspectProcess('__volume__')->willReturn($process);
 
         // when
-        $sPath = $this->oSUT->getVolumeRealPath('__volume__');
+        $path = $this->SUT->getVolumeRealPath('__volume__');
 
         // then
+        // expected exception
     }
-
-
 
     /**
      * @expectedException \RuntimeException
@@ -109,16 +108,17 @@ class VolumeInspectorTest extends \PHPUnit_Framework_TestCase
     public function testGivenVolumeName_WhenInspectReturnsShit_ThenCommandFails()
     {
         // given
-        $oProcess = $this->prophesize(Process::class);
-        $oProcess->run()->shouldBeCalled();
-        $oProcess->isSuccessful()->willReturn(true);
-        $oProcess->getOutput()->willReturn('some crap');
+        $process = $this->prophesize(Process::class);
+        $process->run()->shouldBeCalled();
+        $process->isSuccessful()->willReturn(true);
+        $process->getOutput()->willReturn('some crap');
 
-        $this->oProcessFactory->getInspectProcess('__volume__')->willReturn($oProcess);
+        $this->processFactory->getInspectProcess('__volume__')->willReturn($process);
 
         // when
-        $sPath = $this->oSUT->getVolumeRealPath('__volume__');
+        $path = $this->SUT->getVolumeRealPath('__volume__');
 
         // then
+        // expected exception
     }
 }

@@ -1,11 +1,11 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 20/02/16 22:01
  */
 
 namespace jakubsacha\Rumi\Commands;
-
 
 use jakubsacha\Rumi\Process\RunningProcessesFactory;
 use org\bovigo\vfs\vfsStream;
@@ -30,7 +30,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
     /**
      * @var RunCommand
      */
-    private $oCommand;
+    private $command;
 
     /**
      * @var ContainerBuilder
@@ -47,8 +47,8 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         $loader = new XmlFileLoader($this->container, new FileLocator(__DIR__));
         $loader->load('../../config/services.xml');
 
-        $this->oCommand = new RunCommand($this->container);
-        $this->oCommand->setWorkingDir(vfsStream::url('directory'));
+        $this->command = new RunCommand($this->container);
+        $this->command->setWorkingDir(vfsStream::url('directory'));
     }
 
     public function testGivenNoCiYamlFile_WhenExecuted_ThenDisplaysErrorMessage()
@@ -56,7 +56,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         // given
 
         // when
-        $returnCode = $this->oCommand->run(new ArrayInput([]), $this->output);
+        $returnCode = $this->command->run(new ArrayInput([]), $this->output);
 
         // then
         $this->assertSame("Required file '" . RunCommand::CONFIG_FILE . "' does not exist", trim($this->output->fetch()));
@@ -69,7 +69,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         file_put_contents(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE, 'wrong::' . PHP_EOL . '::yaml_file');
 
         // when
-        $returnCode = $this->oCommand->run(new ArrayInput(['volume' => '.']), $this->output);
+        $returnCode = $this->command->run(new ArrayInput(['volume' => '.']), $this->output);
 
         // then
         $this->assertSame('Unable to parse at line 2 (near "::yaml_file").', trim($this->output->fetch()));
@@ -79,49 +79,48 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenValidCiYamlAndBuildIsOk_WhenExecuted_ThenDisplaysConfirmationMessage()
     {
         // given
-        $oStartProcess = $this->getStartProcess(true);
-        $oTearDownProcess = $this->getTearDownProcess();
+        $startProcess = $this->getStartProcess(true);
+        $tearDownProcess = $this->getTearDownProcess();
 
-        $oProcessFactory = $this->getProcessFactoryMock($oStartProcess, $oTearDownProcess);
+        $processFactory = $this->getProcessFactoryMock($startProcess, $tearDownProcess);
 
-        $this->container->set('jakubsacha.rumi.process.running_processes_factory', $oProcessFactory->reveal());
+        $this->container->set('jakubsacha.rumi.process.running_processes_factory', $processFactory->reveal());
 
-        file_put_contents(vfsStream::url('directory') . "/" . RunCommand::CONFIG_FILE, file_get_contents('fixtures/passing-.rumi.yml'));
+        file_put_contents(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE, file_get_contents('fixtures/passing-.rumi.yml'));
 
         // when
-        $returnCode = $this->oCommand->run(new ArrayInput(['volume' => '.']), $this->output);
+        $returnCode = $this->command->run(new ArrayInput(['volume' => '.']), $this->output);
 
         // then
-        $sCommandOutput = $this->output->fetch();
+        $commandOutput = $this->output->fetch();
 
-        $this->assertStringStartsWith('Stage: "Stage one"', trim($sCommandOutput));
-        $this->assertContains('Build successful', $sCommandOutput);
+        $this->assertStringStartsWith('Stage: "Stage one"', trim($commandOutput));
+        $this->assertContains('Build successful', $commandOutput);
         $this->assertEquals(0, $returnCode);
     }
 
     public function testGivenValidCiYamlAndBuildFails_WhenExecuted_ThenDisplaysConfirmationMessage()
     {
         // given
-        $oStartProcess = $this->getStartProcess(false);
-        $oStartProcess->getErrorOutput()->shouldBeCalled();
-        $oTearDownProcess = $this->getTearDownProcess();
+        $startProcess = $this->getStartProcess(false);
+        $startProcess->getErrorOutput()->shouldBeCalled();
+        $tearDownProcess = $this->getTearDownProcess();
 
-        /** @var RunningProcessesFactory $oProcessFactory */
-        $oProcessFactory = $this->getProcessFactoryMock($oStartProcess, $oTearDownProcess);
+        /** @var RunningProcessesFactory $processFactory */
+        $processFactory = $this->getProcessFactoryMock($startProcess, $tearDownProcess);
 
-        $this->container->set('jakubsacha.rumi.process.running_processes_factory', $oProcessFactory->reveal());
+        $this->container->set('jakubsacha.rumi.process.running_processes_factory', $processFactory->reveal());
 
-
-        file_put_contents(vfsStream::url('directory') . "/" . RunCommand::CONFIG_FILE, file_get_contents('fixtures/failing-.rumi.yml'));
+        file_put_contents(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE, file_get_contents('fixtures/failing-.rumi.yml'));
 
         // when
-        $returnCode = $this->oCommand->run(new ArrayInput(['volume' => '.']), $this->output);
+        $returnCode = $this->command->run(new ArrayInput(['volume' => '.']), $this->output);
 
         // then
-        $sCommandOutput = $this->output->fetch();
+        $commandOutput = $this->output->fetch();
 
-        $this->assertStringStartsWith('Stage: "Stage one"', trim($sCommandOutput));
-        $this->assertContains('failed', $sCommandOutput);
+        $this->assertStringStartsWith('Stage: "Stage one"', trim($commandOutput));
+        $this->assertContains('failed', $commandOutput);
         $this->assertEquals(ReturnCodes::FAILED, $returnCode);
     }
 
@@ -132,14 +131,14 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
      */
     protected function getStartProcess($isSuccessful)
     {
-        $oStartProcess = $this->prophesize(Process::class);
-        $oStartProcess->start()->shouldBeCalled();
-        $oStartProcess->isRunning()->shouldBeCalled();
-        $oStartProcess->isSuccessful()->willReturn($isSuccessful)->shouldBeCalled();
-        $oStartProcess->getOutput()->shouldBeCalled();
-        $oStartProcess->getErrorOutput()->shouldBeCalled();
+        $startProcess = $this->prophesize(Process::class);
+        $startProcess->start()->shouldBeCalled();
+        $startProcess->isRunning()->shouldBeCalled();
+        $startProcess->isSuccessful()->willReturn($isSuccessful)->shouldBeCalled();
+        $startProcess->getOutput()->shouldBeCalled();
+        $startProcess->getErrorOutput()->shouldBeCalled();
 
-        return $oStartProcess;
+        return $startProcess;
     }
 
     /**
@@ -147,28 +146,29 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
      */
     protected function getTearDownProcess()
     {
-        $oTearDownProcess = $this->prophesize(Process::class);
-        $oTearDownProcess->run()->shouldBeCalled();
+        $tearDownProcess = $this->prophesize(Process::class);
+        $tearDownProcess->run()->shouldBeCalled();
 
-        return $oTearDownProcess;
+        return $tearDownProcess;
     }
 
     /**
-     * @param $oStartProcess
-     * @param $oTearDownProcess
+     * @param $startProcess
+     * @param $tearDownProcess
+     *
      * @return RunningProcessesFactory
      */
-    protected function getProcessFactoryMock($oStartProcess, $oTearDownProcess)
+    protected function getProcessFactoryMock($startProcess, $tearDownProcess)
     {
-        /** @var RunningProcessesFactory $oProcessFactory */
-        $oProcessFactory = $this->prophesize(RunningProcessesFactory::class);
+        /** @var RunningProcessesFactory $processFactory */
+        $processFactory = $this->prophesize(RunningProcessesFactory::class);
 
-        $oProcessFactory->getJobStartProcess(Argument::any(), Argument::any(), Argument::any())
-            ->willReturn($oStartProcess->reveal());
+        $processFactory->getJobStartProcess(Argument::any(), Argument::any(), Argument::any())
+            ->willReturn($startProcess->reveal());
 
-        $oProcessFactory->getTearDownProcess(Argument::any(), Argument::any())
-            ->willReturn($oTearDownProcess->reveal());
+        $processFactory->getTearDownProcess(Argument::any(), Argument::any())
+            ->willReturn($tearDownProcess->reveal());
 
-        return $oProcessFactory;
+        return $processFactory;
     }
 }
