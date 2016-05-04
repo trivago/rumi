@@ -14,7 +14,7 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 /**
  * @coversNothing
  */
-class CacheStoreRestoreIntegrationTest extends \PHPUnit_Framework_TestCase
+class CacheStoreRestoreTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var ContainerBuilder
@@ -33,46 +33,45 @@ class CacheStoreRestoreIntegrationTest extends \PHPUnit_Framework_TestCase
         $this->container = new ContainerBuilder();
         $loader = new XmlFileLoader($this->container, new FileLocator(__DIR__));
         $loader->load('../../config/services.xml');
-
     }
 
     public function testStoreRestoreWorks()
     {
-        if (strpos(@$_SERVER['COMMAND_MODE'], 'unix') === 0){
-            $this->markTestSkipped("flock not supported in unix");
+        if (strpos(@$_SERVER['COMMAND_MODE'], 'unix') === 0) {
+            $this->markTestSkipped('flock not supported in unix');
         }
         // given
-        $sTempWorkdir = sys_get_temp_dir() . '/runner-integration-' . time();
-        mkdir($sTempWorkdir);
-        mkdir($sTempWorkdir.'/workdir');
-        mkdir($sTempWorkdir.'/workdir2');
-        mkdir($sTempWorkdir.'/cache');
+        $tempWorkDir = sys_get_temp_dir().'/runner-integration-'.time();
+        mkdir($tempWorkDir);
+        mkdir($tempWorkDir.'/workdir');
+        mkdir($tempWorkDir.'/workdir2');
+        mkdir($tempWorkDir.'/cache');
 
-        file_put_contents($sTempWorkdir.'/workdir/' . RunCommand::CONFIG_FILE, 'cache:'.PHP_EOL.'    - .git');
-        mkdir($sTempWorkdir.'/workdir/.git');
-        touch($sTempWorkdir.'/workdir/.git/test');
+        file_put_contents($tempWorkDir.'/workdir/'.RunCommand::CONFIG_FILE, 'cache:'.PHP_EOL.'    - .git');
+        mkdir($tempWorkDir.'/workdir/.git');
+        touch($tempWorkDir.'/workdir/.git/test');
 
         // when
 
-        chdir($sTempWorkdir.'/workdir');
-        $oCacheStoreCommand = new CacheStoreCommand($this->container);
-        $oCacheStoreCommand->run(
+        chdir($tempWorkDir.'/workdir');
+        $cacheStoreCommand = new CacheStoreCommand($this->container);
+        $cacheStoreCommand->run(
             new ArrayInput(
                 [
-                    'cache_dir' => $sTempWorkdir . '/cache',
+                    'cache_dir' => $tempWorkDir.'/cache',
                     'git_repository' => 'a',
-                    'git_branch' => 'origin/master'
+                    'git_branch' => 'origin/master',
                 ]
             ),
             $this->output
         );
-        chdir($sTempWorkdir . '/workdir2');
-        $oCacheRestoreCommand = new CacheRestoreCommand($this->container);
-        $oCacheRestoreCommand->run(
+        chdir($tempWorkDir.'/workdir2');
+        $cacheRestoreCommand = new CacheRestoreCommand($this->container);
+        $cacheRestoreCommand->run(
             new ArrayInput(
                 [
-                    'cache_dir' => $sTempWorkdir . '/cache',
-                    'git_repository' => 'a'
+                    'cache_dir' => $tempWorkDir.'/cache',
+                    'git_repository' => 'a',
                 ]
             ),
             $this->output
@@ -81,8 +80,8 @@ class CacheStoreRestoreIntegrationTest extends \PHPUnit_Framework_TestCase
 
         // then
         $this->assertFileEquals(
-            $sTempWorkdir . '/workdir/.git/test',
-            $sTempWorkdir . '/workdir2/.git/test',
+            $tempWorkDir.'/workdir/.git/test',
+            $tempWorkDir.'/workdir2/.git/test',
             $this->output->fetch()
         );
     }

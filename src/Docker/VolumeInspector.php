@@ -1,11 +1,11 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 27/02/16 14:15
  */
 
 namespace jakubsacha\Rumi\Docker;
-
 
 use jakubsacha\Rumi\Process\VolumeInspectProcessFactory;
 
@@ -14,41 +14,39 @@ class VolumeInspector
     /**
      * @var VolumeInspectProcessFactory
      */
-    private $oVolumeInspectFactory;
+    private $volumeInspectorProcessFactory;
 
     /**
-     * @param VolumeInspectProcessFactory $oVolumeInspectFactory
+     * @param VolumeInspectProcessFactory $volumeInspectorProcessFactory
      */
-    public function __construct(VolumeInspectProcessFactory $oVolumeInspectFactory)
+    public function __construct(VolumeInspectProcessFactory $volumeInspectorProcessFactory)
     {
-        $this->oVolumeInspectFactory = $oVolumeInspectFactory;
+        $this->volumeInspectorProcessFactory = $volumeInspectorProcessFactory;
     }
 
     /**
-     * @param $sVolumeName
+     * @param $volumeName
+     *
      * @return string
      */
-    public function getVolumeRealPath($sVolumeName)
+    public function getVolumeRealPath($volumeName)
     {
-        $oProcess = $this->oVolumeInspectFactory->getInspectProcess($sVolumeName);
-        $oProcess->run();
+        $process = $this->volumeInspectorProcessFactory->getInspectProcess($volumeName);
+        $process->run();
 
-        if (!$oProcess->isSuccessful()) {
-            throw new \RuntimeException('Can not read volume informations: '.$oProcess->getErrorOutput());
+        if (!$process->isSuccessful()) {
+            throw new \RuntimeException('Can not read volume informations: '.$process->getErrorOutput());
         }
-        $aJsonOutput = json_decode($oProcess->getOutput());
+        $jsonOutput = json_decode($process->getOutput());
 
-        if (!is_array($aJsonOutput))
-        {
+        if (!is_array($jsonOutput)) {
             throw new \RuntimeException('Docker response is not valid');
         }
 
-        if ($aJsonOutput[0]->Driver != 'local')
-        {
+        if ($jsonOutput[0]->Driver != 'local') {
             throw new \RuntimeException('Can use only local volumes');
         }
 
-
-        return $aJsonOutput[0]->Mountpoint.'/';
+        return $jsonOutput[0]->Mountpoint.'/';
     }
 }

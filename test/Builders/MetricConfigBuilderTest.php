@@ -1,11 +1,11 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 01/03/16 22:35
  */
 
 namespace jakubsacha\Rumi\Builders;
-
 
 use jakubsacha\Rumi\Models\MetricConfig;
 
@@ -17,19 +17,19 @@ class MetricConfigBuilderTest extends \PHPUnit_Framework_TestCase
     /**
      * @var MetricConfigBuilder
      */
-    private $oSUT;
+    private $SUT;
 
     /**
      * @var ComposeParser
      */
-    private $compose_parser;
+    private $composeParser;
 
     protected function setUp()
     {
-        $this->compose_parser = $this->prophesize(ComposeParser::class);
+        $this->composeParser = $this->prophesize(ComposeParser::class);
 
-        $this->oSUT = new MetricConfigBuilder(
-            $this->compose_parser->reveal()
+        $this->SUT = new MetricConfigBuilder(
+            $this->composeParser->reveal()
         );
     }
 
@@ -38,11 +38,10 @@ class MetricConfigBuilderTest extends \PHPUnit_Framework_TestCase
         //given
 
         //when
-        $oSth = $this->oSUT->build(['jobName' => ['docker'=>['image'=>'php']]]);
+        $metricConfig = $this->SUT->build(['jobName' => ['docker' => ['image' => 'php']]]);
 
         // then
-        $this->assertContainsOnlyInstancesOf(MetricConfig::class, $oSth);
-        $this->assertEquals('jobName', $oSth[0]->getName());
+        $this->assertContainsOnlyInstancesOf(MetricConfig::class, $metricConfig);
+        $this->assertEquals('jobName', $metricConfig[0]->getName());
     }
-
 }

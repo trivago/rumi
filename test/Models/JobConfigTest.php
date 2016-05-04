@@ -1,6 +1,7 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 02/03/16 12:14
  */
 
@@ -14,13 +15,13 @@ class JobConfigTest extends \PHPUnit_Framework_TestCase
     /**
      * @var JobConfig
      */
-    private $oSUT;
+    private $SUT;
 
     public function setUp()
     {
-        $this->oSUT = new JobConfig(
+        $this->SUT = new JobConfig(
             'name',
-            ["www" => [], "second" => []],
+            ['www' => [], 'second' => []],
             'second',
             'third',
             ['fourth', 'sixth']
@@ -30,10 +31,10 @@ class JobConfigTest extends \PHPUnit_Framework_TestCase
     public function testMetricsSetterAndGetter()
     {
         //given
-        $aMetrics = [$this->prophesize(MetricConfig::class)->reveal()];
+        $metrics = [$this->prophesize(MetricConfig::class)->reveal()];
 
-        $this->oSUT->setMetrics($aMetrics);
+        $this->SUT->setMetrics($metrics);
 
-        $this->assertEquals($aMetrics, $this->oSUT->getMetrics());
+        $this->assertEquals($metrics, $this->SUT->getMetrics());
     }
 }

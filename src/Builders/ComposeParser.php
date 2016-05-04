@@ -7,39 +7,39 @@ use Symfony\Component\Yaml\Parser;
 class ComposeParser
 {
     /**
-     * @param $sDockerFilePath
+     * @param $dockerFilePath
+     *
      * @return array|mixed|string
+     *
      * @throws \Exception
      */
-    public function parseComposePart($sDockerFilePath)
+    public function parseComposePart($dockerFilePath)
     {
-        if (is_string($sDockerFilePath))
-        {
-            return $this->loadDockerCompose($sDockerFilePath);
+        if (is_string($dockerFilePath)) {
+            return $this->loadDockerCompose($dockerFilePath);
         }
 
-        if (is_array($sDockerFilePath))
-        {
-            return $sDockerFilePath;
+        if (is_array($dockerFilePath)) {
+            return $dockerFilePath;
         }
 
-        throw new \Exception(sprintf('Invalid docker configuration %s', $sDockerFilePath));
+        throw new \Exception(sprintf('Invalid docker configuration %s', $dockerFilePath));
     }
 
     /**
-     * @param $sDockerFilePath
+     * @param $dockerFilePath
+     *
      * @return mixed
+     *
      * @throws \Exception
      */
-    private function loadDockerCompose($sDockerFilePath)
+    private function loadDockerCompose($dockerFilePath)
     {
-        if (!file_exists($sDockerFilePath))
-        {
-            throw new \Exception(sprintf("File %s does not exist", $sDockerFilePath));
+        if (!file_exists($dockerFilePath)) {
+            throw new \Exception(sprintf('File %s does not exist', $dockerFilePath));
         }
-        $oParser = new Parser();
-        $aParsed = $oParser->parse(file_get_contents($sDockerFilePath));
+        $parser = new Parser();
 
-        return $aParsed;
+        return $parser->parse(file_get_contents($dockerFilePath));
     }
 }

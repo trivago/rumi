@@ -6,6 +6,7 @@ use jakubsacha\Rumi\Builders\DockerComposeYamlBuilder;
 use jakubsacha\Rumi\Exceptions\CommandFailedException;
 use jakubsacha\Rumi\Models\RunningCommand;
 use jakubsacha\Rumi\Models\JobConfig;
+use jakubsacha\Rumi\Process\RunningProcessesFactory;
 use jakubsacha\Rumi\Timer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -18,39 +19,37 @@ class RunCommand extends Command
 {
     const CONFIG_FILE = '.rumi.yml';
 
-    private $volume;
     /**
-     * @var DockerComposeYamlBuilder
+     * @var string|null
      */
-    private $oDockerComposeYmlBuilder;
+    private $volume;
 
     /**
      * @var string
      */
-    private $sWorkingDir;
+    private $workingDir;
+
     /**
      * @var ContainerInterface
      */
-    private $oContainer;
+    private $container;
 
     /**
-     * RunCommand constructor.
-     * @param ContainerInterface $oContainer
+     * @param ContainerInterface $container
      */
-    public function __construct(ContainerInterface $oContainer)
+    public function __construct(ContainerInterface $container)
     {
         parent::__construct();
-        $this->oContainer = $oContainer;
+        $this->container = $container;
     }
-
 
     protected function configure()
     {
         $this
             ->setName('run')
             ->setDescription('Run tests')
-            ->addArgument('volume', InputArgument::OPTIONAL, "Docker volume containing data");
-        $this->sWorkingDir = getcwd();
+            ->addArgument('volume', InputArgument::OPTIONAL, 'Docker volume containing data');
+        $this->workingDir = getcwd();
     }
 
     /**
@@ -58,7 +57,7 @@ class RunCommand extends Command
      */
     public function setWorkingDir($dir)
     {
-        $this->sWorkingDir = $dir;
+        $this->workingDir = $dir;
     }
 
     /**
@@ -66,144 +65,137 @@ class RunCommand extends Command
      */
     private function getWorkingDir()
     {
-        if (empty($this->sWorkingDir))
-        {
-            return null;
+        if (empty($this->workingDir)) {
+            return;
         }
-        return $this->sWorkingDir . '/';
+
+        return $this->workingDir.'/';
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        try
-        {
-            if (trim($input->getArgument('volume')) != "" ){
+        try {
+            if (trim($input->getArgument('volume')) != '') {
                 $this->volume = $input->getArgument('volume');
-            }
-            else
-            {
+            } else {
                 $this->volume = $this->getWorkingDir();
             }
-            $iTime = Timer::execute(function() use ($output){
-                $aCI = $this->readCiConfigFile();
-                $oJobConfigBuilder = $this->oContainer->get('jakubsacha.rumi.job_config_builder');
+            $time = Timer::execute(function () use ($output) {
+                $ciConfig = $this->readCiConfigFile();
+                $jobConfigBuilder = $this->container->get('jakubsacha.rumi.job_config_builder');
 
-                foreach ($aCI['stages'] as $sStageName => $aStageConfig)
-                {
-                    $aJobs = $oJobConfigBuilder->build($aStageConfig);
+                foreach ($ciConfig['stages'] as $stageName => $stageConfig) {
+                    $jobs = $jobConfigBuilder->build($stageConfig);
 
-                    $output->writeln(sprintf('<info>Stage: "%s"</info>', $sStageName));
+                    $output->writeln(sprintf('<info>Stage: "%s"</info>', $stageName));
 
-                    $iTime = Timer::execute(
-                        function() use ($aJobs, $output) {
-                            $this->executeStage($aJobs, $output);
+                    $time = Timer::execute(
+                        function () use ($jobs, $output) {
+                            $this->executeStage($jobs, $output);
                         }
                     );
 
-                    $output->writeln("<info>Stage completed: ".$iTime."</info>" . PHP_EOL);
+                    $output->writeln('<info>Stage completed: '.$time.'</info>'.PHP_EOL);
                 }
             });
 
-            $output->writeln("<info>Build successful: ".$iTime."</info>");
-        } catch (\Exception $e)
-        {
-            $output->writeln("<error>" . $e->getMessage() . "</error>");
-            return $e->getCode() > 0 ? $e->getCode(): ReturnCodes::FAILED;
+            $output->writeln('<info>Build successful: '.$time.'</info>');
+        } catch (\Exception $e) {
+            $output->writeln('<error>'.$e->getMessage().'</error>');
+
+            return $e->getCode() > 0 ? $e->getCode() : ReturnCodes::FAILED;
         }
+
         return 0;
     }
 
     /**
      * @return array
+     *
      * @throws \Exception
      */
     private function readCiConfigFile()
     {
-        if (!file_exists($this->getWorkingDir().self::CONFIG_FILE))
-        {
-            throw new \Exception('Required file \'' . RunCommand::CONFIG_FILE . '\' does not exist', ReturnCodes::RUMI_YML_DOES_NOT_EXIST);
+        if (!file_exists($this->getWorkingDir().self::CONFIG_FILE)) {
+            throw new \Exception('Required file \''.self::CONFIG_FILE.'\' does not exist', ReturnCodes::RUMI_YML_DOES_NOT_EXIST);
         }
-        $aParser = new Parser();
+        $parser = new Parser();
 
-        return $aParser->parse(file_get_contents($this->getWorkingDir().self::CONFIG_FILE));
+        return $parser->parse(file_get_contents($this->getWorkingDir().self::CONFIG_FILE));
     }
 
-    private function executeStage($aJobs, OutputInterface $output)
+    private function executeStage($jobs, OutputInterface $output)
     {
-        $this->handleProcesses($output, $this->startStageProcesses($aJobs));
+        $this->handleProcesses($output, $this->startStageProcesses($jobs));
     }
 
     /**
-     * @param JobConfig[] $aJobs
+     * @param JobConfig[] $jobs
+     *
      * @return array
      */
-    private function startStageProcesses($aJobs)
+    private function startStageProcesses($jobs)
     {
-        $_oDockerComposeYamlBuilder = $this->oContainer->get('jakubsacha.rumi.docker_compose_yaml_builder');
+        $processes = [];
 
-        $this->oDockerComposeYmlBuilder = $this->oContainer->get('jakubsacha.rumi.docker_compose_yaml_builder');
-        $aProcesses = [];
-        foreach ($aJobs as $oJobConfig)
-        {
-            $oRunningCommand = new RunningCommand(
-                $oJobConfig,
-                $_oDockerComposeYamlBuilder->build($oJobConfig, $this->volume),
-                $this->oContainer->get('jakubsacha.rumi.process.running_processes_factory')
+        /** @var DockerComposeYamlBuilder $dockerComposeYamlBuilder */
+        $dockerComposeYamlBuilder = $this->container->get('jakubsacha.rumi.docker_compose_yaml_builder');
+
+        /** @var RunningProcessesFactory $runningProcessFactory */
+        $runningProcessFactory = $this->container->get('jakubsacha.rumi.process.running_processes_factory');
+
+        foreach ($jobs as $jobConfig) {
+            $runningCommand = new RunningCommand(
+                $jobConfig,
+                $dockerComposeYamlBuilder->build($jobConfig, $this->volume),
+                $runningProcessFactory
             );
 
-            $oRunningCommand->start();
+            $runningCommand->start();
 
-            $aProcesses[] = $oRunningCommand;
+            $processes[] = $runningCommand;
         }
 
-        return $aProcesses;
+        return $processes;
     }
 
     /**
-     * @param OutputInterface $output
-     * @param RunningCommand[] $aProcesses
+     * @param OutputInterface  $output
+     * @param RunningCommand[] $processes
+     *
      * @throws \Exception
      */
-    private function handleProcesses(OutputInterface $output, $aProcesses)
+    private function handleProcesses(OutputInterface $output, $processes)
     {
-        try
-        {
-            while (count($aProcesses))
-            {
-                foreach ($aProcesses as $id => $oRunningCommand)
-                {
-                    if ($oRunningCommand->isRunning())
-                    {
+        try {
+            while (count($processes)) {
+                foreach ($processes as $id => $runningCommand) {
+                    if ($runningCommand->isRunning()) {
                         continue;
                     }
-                    $output->writeln(sprintf('<info>Executing job: %s</info>', $oRunningCommand->getJobName()));
-                    $output->write($oRunningCommand->getOutput());
-                    if (!$oRunningCommand->getProcess()->isSuccessful())
-                    {
-                        $output->write($oRunningCommand->getProcess()->getErrorOutput());
-                        throw new CommandFailedException($oRunningCommand->getCommand());
+                    $output->writeln(sprintf('<info>Executing job: %s</info>', $runningCommand->getJobName()));
+                    $output->write($runningCommand->getOutput());
+                    if (!$runningCommand->getProcess()->isSuccessful()) {
+                        $output->write($runningCommand->getProcess()->getErrorOutput());
+                        throw new CommandFailedException($runningCommand->getCommand());
                     }
 
-                    $oRunningCommand->tearDown();
-                    unset($aProcesses[$id]);
+                    $runningCommand->tearDown();
+                    unset($processes[$id]);
                 }
                 usleep(500000);
             }
-        }
-        catch (CommandFailedException $e)
-        {
+        } catch (CommandFailedException $e) {
             $output->writeln("<error>Command '".$e->getMessage()."' failed</error>");
-            if (!empty($aProcesses))
-            {
-                $output->writeln("Shutting down jobs in background...", OutputInterface::VERBOSITY_VERBOSE);
-                foreach ($aProcesses as $oRunningCommand)
-                {
-                    $output->writeln("- " . $oRunningCommand->getCommand(), OutputInterface::VERBOSITY_VERBOSE);
-                    $oRunningCommand->tearDown();
+            if (!empty($processes)) {
+                $output->writeln('Shutting down jobs in background...', OutputInterface::VERBOSITY_VERBOSE);
+                foreach ($processes as $runningCommand) {
+                    $output->writeln('- '.$runningCommand->getCommand(), OutputInterface::VERBOSITY_VERBOSE);
+                    $runningCommand->tearDown();
                 }
             }
 
-            throw new \Exception("Stage failed", ReturnCodes::FAILED);
+            throw new \Exception('Stage failed', ReturnCodes::FAILED);
         }
     }
 }

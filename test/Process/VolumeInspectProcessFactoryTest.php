@@ -10,12 +10,11 @@ class VolumeInspectProcessFactoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @var VolumeInspectProcessFactory
      */
-    private $oSUT;
+    private $SUT;
 
     protected function setUp()
     {
-        $this->oSUT = new VolumeInspectProcessFactory();
-
+        $this->SUT = new VolumeInspectProcessFactory();
     }
 
     public function testGetInspectProcess()
@@ -23,9 +22,9 @@ class VolumeInspectProcessFactoryTest extends \PHPUnit_Framework_TestCase
         //given
 
         // when
-        $oProcess = $this->oSUT->getInspectProcess('volume_name');
+        $process = $this->SUT->getInspectProcess('volume_name');
 
         // then
-        $this->assertEquals('docker volume inspect \'volume_name\'', $oProcess->getCommandLine());
+        $this->assertEquals('docker volume inspect \'volume_name\'', $process->getCommandLine());
     }
 }

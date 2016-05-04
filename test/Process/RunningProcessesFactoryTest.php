@@ -1,4 +1,5 @@
 <?php
+
 namespace jakubsacha\Rumi\Process;
 
 /**
@@ -9,29 +10,28 @@ class RunningProcessesFactoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @var RunningProcessesFactory
      */
-    private $oSUT;
+    private $SUT;
 
     public function setUp()
     {
-        $this->oSUT = new RunningProcessesFactory();
+        $this->SUT = new RunningProcessesFactory();
     }
 
     public function testGetJobStartProcess()
     {
-        $oProcess = $this->oSUT->getJobStartProcess(
+        $process = $this->SUT->getJobStartProcess(
             'a', 'b', 'c'
         );
-        $this->assertEquals('docker-compose -f a run --name b c', $oProcess->getCommandLine());
+        $this->assertEquals('docker-compose -f a run --name b c', $process->getCommandLine());
     }
 
     public function testGetTearDownProcess()
     {
-        $oProcess = $this->oSUT->getTearDownProcess(
+        $process = $this->SUT->getTearDownProcess(
             'a', 'b'
         );
         $this->assertEquals('docker rm -f b;
             docker-compose -f a rm --force;
-            docker rm -f $(docker-compose -f a ps -q)', $oProcess->getCommandLine());
+            docker rm -f $(docker-compose -f a ps -q)', $process->getCommandLine());
     }
-
 }
