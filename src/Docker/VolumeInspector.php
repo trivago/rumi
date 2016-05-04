@@ -35,7 +35,7 @@ class VolumeInspector
         $process->run();
 
         if (!$process->isSuccessful()) {
-            throw new \RuntimeException('Can not read volume informations: '.$process->getErrorOutput());
+            throw new \RuntimeException('Can not read volume informations: ' . $process->getErrorOutput());
         }
         $jsonOutput = json_decode($process->getOutput());
 
@@ -47,6 +47,6 @@ class VolumeInspector
             throw new \RuntimeException('Can use only local volumes');
         }
 
-        return $jsonOutput[0]->Mountpoint.'/';
+        return $jsonOutput[0]->Mountpoint . '/';
     }
 }

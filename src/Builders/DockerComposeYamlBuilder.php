@@ -80,17 +80,17 @@ class DockerComposeYamlBuilder
      */
     protected function dumpFile($parsedDockerCompose)
     {
-        $tempTestDirectory = tempnam(sys_get_temp_dir(), 'RUNNER').md5(microtime()).'_d';
+        $tempTestDirectory = tempnam(sys_get_temp_dir(), 'RUNNER') . md5(microtime()) . '_d';
         usleep(1);
         mkdir($tempTestDirectory);
 
         $dumper = new Dumper();
         file_put_contents(
-            $tempTestDirectory.'/docker-compose.yml',
+            $tempTestDirectory . '/docker-compose.yml',
             $dumper->dump($parsedDockerCompose)
         );
 
-        return $tempTestDirectory.'/docker-compose.yml';
+        return $tempTestDirectory . '/docker-compose.yml';
     }
 
     /**
@@ -113,7 +113,7 @@ class DockerComposeYamlBuilder
     {
         // if the full volume is mounted, there is no magic needed
         if (strpos($volumeSpecification, './') !== 0) {
-            return str_replace('.:', $volumeName.':', $volumeSpecification);
+            return str_replace('.:', $volumeName . ':', $volumeSpecification);
         }
 
         // if we use systempath instead of docker volume
