@@ -1,19 +1,18 @@
 <?php
 
-namespace jakubsacha\Rumi\Commands;
+namespace Trivago\Rumi\Commands;
 
-use jakubsacha\Rumi\Builders\DockerComposeYamlBuilder;
-use jakubsacha\Rumi\Exceptions\CommandFailedException;
-use jakubsacha\Rumi\Models\RunningCommand;
-use jakubsacha\Rumi\Models\JobConfig;
-use jakubsacha\Rumi\Process\RunningProcessesFactory;
-use jakubsacha\Rumi\Timer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Yaml\Parser;
+use Trivago\Rumi\Builders\DockerComposeYamlBuilder;
+use Trivago\Rumi\Exceptions\CommandFailedException;
+use Trivago\Rumi\Models\JobConfig;
+use Trivago\Rumi\Models\RunningCommand;
+use Trivago\Rumi\Timer;
 
 class RunCommand extends Command
 {
@@ -80,9 +79,10 @@ class RunCommand extends Command
             } else {
                 $this->volume = $this->getWorkingDir();
             }
+
             $time = Timer::execute(function () use ($output) {
                 $ciConfig = $this->readCiConfigFile();
-                $jobConfigBuilder = $this->container->get('jakubsacha.rumi.job_config_builder');
+                $jobConfigBuilder = $this->container->get('rumi.job_config_builder');
 
                 foreach ($ciConfig['stages'] as $stageName => $stageConfig) {
                     $jobs = $jobConfigBuilder->build($stageConfig);
@@ -139,10 +139,10 @@ class RunCommand extends Command
         $processes = [];
 
         /** @var DockerComposeYamlBuilder $dockerComposeYamlBuilder */
-        $dockerComposeYamlBuilder = $this->container->get('jakubsacha.rumi.docker_compose_yaml_builder');
+        $dockerComposeYamlBuilder = $this->container->get('rumi.docker_compose_yaml_builder');
 
         /** @var RunningProcessesFactory $runningProcessFactory */
-        $runningProcessFactory = $this->container->get('jakubsacha.rumi.process.running_processes_factory');
+        $runningProcessFactory = $this->container->get('rumi.process.running_processes_factory');
 
         foreach ($jobs as $jobConfig) {
             $runningCommand = new RunningCommand(

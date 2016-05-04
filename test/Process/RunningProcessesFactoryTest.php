@@ -1,9 +1,9 @@
 <?php
 
-namespace jakubsacha\Rumi\Process;
+namespace Trivago\Rumi\Process;
 
 /**
- * @covers jakubsacha\Rumi\Process\RunningProcessesFactory
+ * @covers Trivago\Rumi\Process\RunningProcessesFactory
  */
 class RunningProcessesFactoryTest extends \PHPUnit_Framework_TestCase
 {

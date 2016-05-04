@@ -1,5 +1,5 @@
 {
-    "name": "jakubsacha/runner",
+    "name": "trivago/rumi",
     "require": {
         "symfony/console": "^3.0",
         "symfony/yaml": "^3.0",
@@ -11,17 +11,17 @@
     "authors": [
         {
             "name": "Jakub Sacha",
-            "email": "jakub.sacha@gmail.com"
+            "email": "jakub.sacha@trivago.com"
         }
     ],
     "autoload": {
         "psr-4": {
-            "jakubsacha\\Rumi\\": "src/"
+            "Trivago\\Rumi\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "jakubsacha\\Rumi\\": "test/"
+            "Trivago\\Rumi\\": "test/"
         }
     },
     "require-dev": {

@@ -5,12 +5,12 @@
  * @since 02/03/16 11:22
  */
 
-namespace jakubsacha\Rumi\Builders;
+namespace Trivago\Rumi\Builders;
 
 use org\bovigo\vfs\vfsStream;
 
 /**
- * @covers jakubsacha\Rumi\Builders\ComposeParser
+ * @covers Trivago\Rumi\Builders\ComposeParser
  */
 class ComposeParserTest extends \PHPUnit_Framework_TestCase
 {

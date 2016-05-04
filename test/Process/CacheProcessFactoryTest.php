@@ -1,9 +1,9 @@
 <?php
 
-use jakubsacha\Rumi\Process\CacheProcessFactory;
+use Trivago\Rumi\Process\CacheProcessFactory;
 
 /**
- * @covers jakubsacha\Rumi\Process\CacheProcessFactory
+ * @covers Trivago\Rumi\Process\CacheProcessFactory
  */
 class CacheProcessFactoryTest extends PHPUnit_Framework_TestCase
 {

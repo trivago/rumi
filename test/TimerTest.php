@@ -16,7 +16,7 @@ class TimerTest extends PHPUnit_Framework_TestCase
             $this->called = true;
         };
 
-        $result = \jakubsacha\Rumi\Timer::execute($cb);
+        $result = \Trivago\Rumi\Timer::execute($cb);
 
         $this->assertTrue($this->called);
         $this->assertStringStartsWith('0.3', $result);

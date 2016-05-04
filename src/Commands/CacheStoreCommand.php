@@ -1,9 +1,7 @@
 <?php
 
-namespace jakubsacha\Rumi\Commands;
+namespace Trivago\Rumi\Commands;
 
-use jakubsacha\Rumi\Exceptions\SkipException;
-use jakubsacha\Rumi\Timer;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -12,6 +10,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Parser;
+use Trivago\Rumi\Exceptions\SkipException;
+use Trivago\Rumi\Timer;
 
 class CacheStoreCommand extends Command
 {
@@ -85,7 +85,7 @@ class CacheStoreCommand extends Command
 
                 $process = $this
                     ->container
-                    ->get('jakubsacha.rumi.process.cache_process_factory')
+                    ->get('rumi.process.cache_process_factory')
                     ->getCacheStoreProcess($dir, $cacheDir);
 
                 $time = Timer::execute(function () use ($process) {
@@ -136,7 +136,7 @@ class CacheStoreCommand extends Command
 
         $process = $this
             ->container
-            ->get('jakubsacha.rumi.process.cache_process_factory')
+            ->get('rumi.process.cache_process_factory')
             ->getCreateCacheDirectoryProcess($cacheDir);
 
         $process->run();

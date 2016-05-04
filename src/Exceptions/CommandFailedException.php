@@ -1,6 +1,6 @@
 <?php
 
-namespace jakubsacha\Rumi\Exceptions;
+namespace Trivago\Rumi\Exceptions;
 
 class CommandFailedException extends \Exception
 {

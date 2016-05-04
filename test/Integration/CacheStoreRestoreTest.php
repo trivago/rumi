@@ -1,10 +1,10 @@
 <?php
 
-namespace jakubsacha\Rumi\Integration;
+namespace Trivago\Rumi\Integration;
 
-use jakubsacha\Rumi\Commands\CacheRestoreCommand;
-use jakubsacha\Rumi\Commands\CacheStoreCommand;
-use jakubsacha\Rumi\Commands\RunCommand;
+use Trivago\Rumi\Commands\CacheRestoreCommand;
+use Trivago\Rumi\Commands\CacheStoreCommand;
+use Trivago\Rumi\Commands\RunCommand;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
