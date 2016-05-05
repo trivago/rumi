@@ -6,6 +6,7 @@
 
 namespace jakubsacha\Rumi\Events;
 use jakubsacha\Rumi\Models\RunConfig;
+use Symfony\Component\Console\Input\ArrayInput;
 
 
 /**

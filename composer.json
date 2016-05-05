@@ -6,7 +6,10 @@
         "symfony/process": "^3.0",
         "symfony/dependency-injection": "^3.0",
         "symfony/config": "^3.0",
-        "symfony/event-dispatcher": "^3.0"
+        "symfony/event-dispatcher": "^3.0",
+        "guzzlehttp/guzzle": "^6.2",
+        "symfony/serializer": "^3.0",
+        "symfony/property-access": "^3.0"
     },
     "license": "MIT",
     "authors": [
@@ -18,7 +21,7 @@
     "autoload": {
         "psr-4": {
             "jakubsacha\\Rumi\\": "src/",
-            "trivago\\": "plugins/trivago"
+            "trivago\\": "src/plugins/trivago"
         }
     },
     "autoload-dev": {

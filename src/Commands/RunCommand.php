@@ -28,6 +28,8 @@ use Symfony\Component\Yaml\Parser;
 class RunCommand extends Command
 {
     const CONFIG_FILE = '.rumi.yml';
+    const GIT_COMMIT = 'git_commit';
+    const VOLUME = 'volume';
 
     /**
      * @var string|null
@@ -65,7 +67,8 @@ class RunCommand extends Command
         $this
             ->setName('run')
             ->setDescription('Run tests')
-            ->addArgument('volume', InputArgument::OPTIONAL, 'Docker volume containing data');
+            ->addArgument(self::VOLUME, InputArgument::OPTIONAL, 'Docker volume containing data')
+            ->addArgument(self::GIT_COMMIT, InputArgument::OPTIONAL, 'Commit id');
         $this->workingDir = getcwd();
     }
 
@@ -93,11 +96,11 @@ class RunCommand extends Command
     {
         try {
             if (trim($input->getArgument('volume')) != '') {
-                $this->volume = $input->getArgument('volume');
+                $this->volume = $input->getArgument(self::VOLUME);
             } else {
                 $this->volume = $this->getWorkingDir();
             }
-            $timeTaken = Timer::execute(function() use ($output){
+            $timeTaken = Timer::execute(function() use ($input, $output){
                 $runConfig = $this->readCiConfigFile();
 
                 /** @var JobConfigBuilder $jobConfigBuilder */
@@ -119,13 +122,13 @@ class RunCommand extends Command
 
                         $output->writeln(sprintf('<info>Stage: "%s"</info>', $stageName));
 
-                        $iTime = Timer::execute(
+                        $time = Timer::execute(
                             function () use ($jobs, $output) {
                                 $this->executeStage($jobs, $output);
                             }
                         );
 
-                        $output->writeln("<info>Stage completed: " . $iTime . "</info>" . PHP_EOL);
+                        $output->writeln("<info>Stage completed: " . $time . "</info>" . PHP_EOL);
 
                         $this->eventDispatcher->dispatch(
                             Events::STAGE_FINISHED,
