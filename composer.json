@@ -21,7 +21,6 @@
     "autoload": {
         "psr-4": {
             "jakubsacha\\Rumi\\": "src/",
-            "trivago\\": "src/plugins/trivago"
         }
     },
     "autoload-dev": {
