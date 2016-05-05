@@ -89,7 +89,7 @@ class RunCommand extends Command
             return;
         }
 
-        return $this->workingDir.'/';
+        return $this->workingDir . '/';
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -168,8 +168,8 @@ class RunCommand extends Command
      */
     private function readCiConfigFile()
     {
-        if (!file_exists($this->getWorkingDir().self::CONFIG_FILE)) {
-            throw new \Exception('Required file \''.self::CONFIG_FILE.'\' does not exist', ReturnCodes::RUMI_YML_DOES_NOT_EXIST);
+        if (!file_exists($this->getWorkingDir() . self::CONFIG_FILE)) {
+            throw new \Exception('Required file \'' . self::CONFIG_FILE . '\' does not exist', ReturnCodes::RUMI_YML_DOES_NOT_EXIST);
         }
         $parser = new Parser();
 
