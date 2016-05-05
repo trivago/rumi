@@ -1,11 +1,11 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 05/05/16 21:13
  */
 
-namespace jakubsacha\Rumi\Plugins\CouchDb\Models;
-
+namespace jakubsacha\Rumi\Plugins\CouchDB\Models;
 
 class Stage
 {
@@ -50,17 +50,17 @@ class Stage
 
     /**
      * @param $name
+     *
      * @return null|Job
      */
     public function getJob($name)
     {
-        foreach($this->jobs as $job)
-        {
-            if ($job->getName() == $name){
+        foreach ($this->jobs as $job) {
+            if ($job->getName() == $name) {
                 return $job;
             }
         }
-        return null;
-    }
 
+        return;
+    }
 }

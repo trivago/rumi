@@ -1,11 +1,11 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 28/04/16 21:19
  */
 
 namespace jakubsacha\Rumi\Events;
-
 
 use Symfony\Component\EventDispatcher\Event;
 
@@ -13,7 +13,7 @@ abstract class AbstractFinishedEvent extends Event
 {
     const STATUS_SUCCESS = 'SUCCESS';
     const STATUS_FAILED = 'FAILED';
-    
+
     /**
      * @var
      */
@@ -21,6 +21,7 @@ abstract class AbstractFinishedEvent extends Event
 
     /**
      * RunFinishedEvent constructor.
+     *
      * @param $status
      */
     public function __construct($status)
@@ -35,5 +36,4 @@ abstract class AbstractFinishedEvent extends Event
     {
         return $this->status;
     }
-
 }

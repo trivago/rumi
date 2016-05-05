@@ -37,8 +37,8 @@ class CacheStoreRestoreTest extends \PHPUnit_Framework_TestCase
 
     public function testStoreRestoreWorks()
     {
-        if (exec('uname') == 'Darwin'){
-            $this->markTestSkipped("flock not supported in unix");
+        if (exec('uname') == 'Darwin') {
+            $this->markTestSkipped('flock not supported in unix');
         }
         // given
         $tempWorkDir = sys_get_temp_dir().'/runner-integration-'.time();

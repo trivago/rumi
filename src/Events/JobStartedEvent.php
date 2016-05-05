@@ -1,6 +1,7 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 28/04/16 20:14
  */
 
@@ -17,11 +18,11 @@ class JobStartedEvent extends Event
 
     /**
      * JobStartedEvent constructor.
+     *
      * @param $name
      */
     public function __construct($name)
     {
-
         $this->name = $name;
     }
 

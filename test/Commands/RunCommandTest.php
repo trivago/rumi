@@ -7,7 +7,6 @@
 
 namespace jakubsacha\Rumi\Commands;
 
-
 use jakubsacha\Rumi\Events;
 use jakubsacha\Rumi\Events\JobFinishedEvent;
 use jakubsacha\Rumi\Events\JobStartedEvent;
@@ -153,11 +152,11 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->container->set('jakubsacha.rumi.process.running_processes_factory', $oProcessFactory->reveal());
 
-        file_put_contents(vfsStream::url('directory') . "/" . RunCommand::CONFIG_FILE, file_get_contents('fixtures/passing2-.rumi.yml'));
+        file_put_contents(vfsStream::url('directory').'/'.RunCommand::CONFIG_FILE, file_get_contents('fixtures/passing2-.rumi.yml'));
 
         // when
         $this->command->run(
-            new ArrayInput(['volume'=>'.']), $this->output
+            new ArrayInput(['volume' => '.']), $this->output
         );
 
         // then
@@ -178,21 +177,21 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this
             ->eventDispatcher
-            ->dispatch(Events::JOB_FINISHED, Argument::that(function(JobFinishedEvent $e){
+            ->dispatch(Events::JOB_FINISHED, Argument::that(function (JobFinishedEvent $e) {
                 return $e->getStatus() == JobFinishedEvent::STATUS_SUCCESS;
             }))
             ->shouldBeCalledTimes(4);
 
         $this
             ->eventDispatcher
-            ->dispatch(Events::STAGE_FINISHED, Argument::that(function(StageFinishedEvent $e){
+            ->dispatch(Events::STAGE_FINISHED, Argument::that(function (StageFinishedEvent $e) {
                 return $e->getStatus() == StageFinishedEvent::STATUS_SUCCESS;
             }))
             ->shouldBeCalledTimes(2);
 
         $this
             ->eventDispatcher
-            ->dispatch(Events::RUN_FINISHED, Argument::that(function(RunFinishedEvent $e){
+            ->dispatch(Events::RUN_FINISHED, Argument::that(function (RunFinishedEvent $e) {
                 return $e->getStatus() == RunFinishedEvent::STATUS_SUCCESS;
             }))
             ->shouldBeCalledTimes(1);
@@ -211,11 +210,11 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->container->set('jakubsacha.rumi.process.running_processes_factory', $oProcessFactory->reveal());
 
-        file_put_contents(vfsStream::url('directory') . "/" . RunCommand::CONFIG_FILE, file_get_contents('fixtures/passing-.rumi.yml'));
+        file_put_contents(vfsStream::url('directory').'/'.RunCommand::CONFIG_FILE, file_get_contents('fixtures/passing-.rumi.yml'));
 
         // when
         $this->command->run(
-            new ArrayInput(['volume'=>'.']), $this->output
+            new ArrayInput(['volume' => '.']), $this->output
         );
 
         // then
@@ -236,27 +235,25 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this
             ->eventDispatcher
-            ->dispatch(Events::JOB_FINISHED, Argument::that(function(JobFinishedEvent $e){
+            ->dispatch(Events::JOB_FINISHED, Argument::that(function (JobFinishedEvent $e) {
                 return $e->getStatus() == JobFinishedEvent::STATUS_FAILED;
             }))
             ->shouldBeCalledTimes(1);
 
         $this
             ->eventDispatcher
-            ->dispatch(Events::STAGE_FINISHED, Argument::that(function(StageFinishedEvent $e){
+            ->dispatch(Events::STAGE_FINISHED, Argument::that(function (StageFinishedEvent $e) {
                 return $e->getStatus() == StageFinishedEvent::STATUS_FAILED;
             }))
             ->shouldBeCalledTimes(1);
 
         $this
             ->eventDispatcher
-            ->dispatch(Events::RUN_FINISHED, Argument::that(function(RunFinishedEvent $e){
+            ->dispatch(Events::RUN_FINISHED, Argument::that(function (RunFinishedEvent $e) {
                 return $e->getStatus() == RunFinishedEvent::STATUS_FAILED;
             }))
             ->shouldBeCalledTimes(1);
     }
-
-
 
     /**
      * @param $isSuccessful

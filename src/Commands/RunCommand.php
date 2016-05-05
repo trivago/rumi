@@ -52,7 +52,7 @@ class RunCommand extends Command
     private $eventDispatcher;
 
     /**
-     * @param ContainerInterface $container
+     * @param ContainerInterface       $container
      * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(ContainerInterface $container, EventDispatcherInterface $eventDispatcher)
@@ -89,7 +89,7 @@ class RunCommand extends Command
             return;
         }
 
-        return $this->workingDir . '/';
+        return $this->workingDir.'/';
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -100,7 +100,7 @@ class RunCommand extends Command
             } else {
                 $this->volume = $this->getWorkingDir();
             }
-            $timeTaken = Timer::execute(function() use ($input, $output){
+            $timeTaken = Timer::execute(function () use ($input, $output) {
                 $runConfig = $this->readCiConfigFile();
 
                 /** @var JobConfigBuilder $jobConfigBuilder */
@@ -110,8 +110,7 @@ class RunCommand extends Command
                     Events::RUN_STARTED, new RunStartedEvent($runConfig)
                 );
 
-                foreach ($runConfig->getStages() as $stageName => $stageConfig)
-                {
+                foreach ($runConfig->getStages() as $stageName => $stageConfig) {
                     try {
                         $jobs = $jobConfigBuilder->build($stageConfig);
 
@@ -128,15 +127,13 @@ class RunCommand extends Command
                             }
                         );
 
-                        $output->writeln("<info>Stage completed: " . $time . "</info>" . PHP_EOL);
+                        $output->writeln('<info>Stage completed: '.$time.'</info>'.PHP_EOL);
 
                         $this->eventDispatcher->dispatch(
                             Events::STAGE_FINISHED,
                             new StageFinishedEvent(StageFinishedEvent::STATUS_SUCCESS, $stageName)
                         );
-                    }
-                    catch (\Exception $e)
-                    {
+                    } catch (\Exception $e) {
                         $this->eventDispatcher->dispatch(
                             Events::STAGE_FINISHED,
                             new StageFinishedEvent(StageFinishedEvent::STATUS_FAILED, $stageName)
@@ -148,14 +145,14 @@ class RunCommand extends Command
 
                 $this->eventDispatcher->dispatch(Events::RUN_FINISHED, new RunFinishedEvent(RunFinishedEvent::STATUS_SUCCESS));
             });
-            
-            $output->writeln("<info>Build successful: ".$timeTaken."</info>");
-        } catch (\Exception $e)
-        {
-            $output->writeln("<error>" . $e->getMessage() . "</error>");
+
+            $output->writeln('<info>Build successful: '.$timeTaken.'</info>');
+        } catch (\Exception $e) {
+            $output->writeln('<error>'.$e->getMessage().'</error>');
 
             $this->eventDispatcher->dispatch(Events::RUN_FINISHED, new RunFinishedEvent(RunFinishedEvent::STATUS_FAILED));
-            return $e->getCode() > 0 ? $e->getCode(): ReturnCodes::FAILED;
+
+            return $e->getCode() > 0 ? $e->getCode() : ReturnCodes::FAILED;
         }
 
         return 0;
@@ -168,12 +165,12 @@ class RunCommand extends Command
      */
     private function readCiConfigFile()
     {
-        if (!file_exists($this->getWorkingDir() . self::CONFIG_FILE)) {
-            throw new \Exception('Required file \'' . self::CONFIG_FILE . '\' does not exist', ReturnCodes::RUMI_YML_DOES_NOT_EXIST);
+        if (!file_exists($this->getWorkingDir().self::CONFIG_FILE)) {
+            throw new \Exception('Required file \''.self::CONFIG_FILE.'\' does not exist', ReturnCodes::RUMI_YML_DOES_NOT_EXIST);
         }
         $parser = new Parser();
 
-        $ciConfig = $parser->parse(file_get_contents($this->getWorkingDir() . self::CONFIG_FILE));
+        $ciConfig = $parser->parse(file_get_contents($this->getWorkingDir().self::CONFIG_FILE));
 
         return new RunConfig($ciConfig['stages']);
     }
@@ -223,14 +220,10 @@ class RunCommand extends Command
      */
     private function handleProcesses(OutputInterface $output, $processes)
     {
-        try
-        {
-            while (count($processes))
-            {
-                foreach ($processes as $id => $runningCommand)
-                {
-                    if ($runningCommand->isRunning())
-                    {
+        try {
+            while (count($processes)) {
+                foreach ($processes as $id => $runningCommand) {
+                    if ($runningCommand->isRunning()) {
                         continue;
                     }
                     unset($processes[$id]);
@@ -250,8 +243,7 @@ class RunCommand extends Command
 
                     $runningCommand->tearDown();
 
-                    if (!$isSuccessful)
-                    {
+                    if (!$isSuccessful) {
                         $output->write($runningCommand->getProcess()->getErrorOutput());
                         throw new CommandFailedException($runningCommand->getCommand());
                     }
@@ -260,12 +252,10 @@ class RunCommand extends Command
             }
         } catch (CommandFailedException $e) {
             $output->writeln("<error>Command '".$e->getMessage()."' failed</error>");
-            if (!empty($processes))
-            {
-                $output->writeln("Shutting down jobs in background...", OutputInterface::VERBOSITY_VERBOSE);
-                foreach ($processes as $runningCommand)
-                {
-                    $output->writeln("- " . $runningCommand->getCommand(), OutputInterface::VERBOSITY_VERBOSE);
+            if (!empty($processes)) {
+                $output->writeln('Shutting down jobs in background...', OutputInterface::VERBOSITY_VERBOSE);
+                foreach ($processes as $runningCommand) {
+                    $output->writeln('- '.$runningCommand->getCommand(), OutputInterface::VERBOSITY_VERBOSE);
 
                     $this->eventDispatcher->dispatch(
                         Events::JOB_FINISHED,

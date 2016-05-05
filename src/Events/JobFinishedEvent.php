@@ -1,11 +1,11 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 28/04/16 20:15
  */
 
 namespace jakubsacha\Rumi\Events;
-
 
 use Symfony\Component\EventDispatcher\Event;
 
@@ -31,6 +31,7 @@ class JobFinishedEvent extends Event
 
     /**
      * JobFinishedEvent constructor.
+     *
      * @param $status
      * @param $name
      * @param $output
@@ -65,5 +66,4 @@ class JobFinishedEvent extends Event
     {
         return $this->output;
     }
-
 }

@@ -1,13 +1,13 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 29/04/16 15:03
  */
 
 namespace jakubsacha\Rumi\Events;
-use jakubsacha\Rumi\Models\RunConfig;
-use Symfony\Component\Console\Input\ArrayInput;
 
+use jakubsacha\Rumi\Models\RunConfig;
 
 /**
  * @covers \jakubsacha\Rumi\Events\RunStartedEvent

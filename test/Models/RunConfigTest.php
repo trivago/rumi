@@ -1,6 +1,7 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 29/04/16 13:54
  */
 
@@ -11,7 +12,6 @@ namespace jakubsacha\Rumi\Models;
  */
 class RunConfigTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testGivenNewInstanceIsCreated_WhenGetterAccessed_ThenItReturnsValidData()
     {
         //given

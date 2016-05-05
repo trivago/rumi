@@ -1,15 +1,14 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 29/04/16 15:08
  */
 
 namespace jakubsacha\Rumi\Events;
 
-
 class StageStartedEventTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testGivenNameAndJobs_WhenNewInstanceCreated_ThenGettersAreFine()
     {
         // given

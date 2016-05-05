@@ -1,11 +1,11 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 29/04/16 15:27
  */
 
-namespace jakubsacha\Rumi\Plugins\CouchDb;
-
+namespace jakubsacha\Rumi\Plugins\CouchDB;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
@@ -46,24 +46,20 @@ class CouchDbPlugin implements PluginInterface
         Application $application,
         ContainerInterface $container,
         EventDispatcherInterface $eventDispatcher
-    )
-    {
-        if (!getenv("RUMI_COUCHDB"))
-        {
+    ) {
+        if (!getenv('RUMI_COUCHDB')) {
             return;
         }
 
         $this->output = $output;
 
         $eventDispatcher->addListener(Events::RUN_STARTED, function (Events\RunStartedEvent $e) use ($eventDispatcher, $input) {
-            if (empty($input->getArgument(RunCommand::GIT_COMMIT)))
-            {
+            if (empty($input->getArgument(RunCommand::GIT_COMMIT))) {
                 return;
             }
             $this->run = new Run($input->getArgument(RunCommand::GIT_COMMIT));
 
-            foreach ($e->getRunConfig()->getStages() as $stageName => $jobs)
-            {
+            foreach ($e->getRunConfig()->getStages() as $stageName => $jobs) {
                 $stage = new Stage($stageName);
                 foreach ($jobs as $jobName => $options) {
                     $stage->addJob(new Job($jobName, 'SHEDULED'));
@@ -87,8 +83,7 @@ class CouchDbPlugin implements PluginInterface
             });
 
             $eventDispatcher->addListener(Events::STAGE_FINISHED, function (Events\StageFinishedEvent $e) {
-                if ($e->getStatus() != Events\StageFinishedEvent::STATUS_SUCCESS)
-                {
+                if ($e->getStatus() != Events\StageFinishedEvent::STATUS_SUCCESS) {
                     $this->cancelAllSheduledJobs();
                 }
             });
@@ -98,7 +93,6 @@ class CouchDbPlugin implements PluginInterface
             });
 
         });
-
     }
 
     private function findStage($jobName)
@@ -112,7 +106,8 @@ class CouchDbPlugin implements PluginInterface
                 }
             }
         }
-        return null;
+
+        return;
     }
 
     private function cancelAllSheduledJobs()
@@ -121,8 +116,7 @@ class CouchDbPlugin implements PluginInterface
             /** @var Stage $stage */
             foreach ($stage->getJobs() as $job) {
                 /** @var Job $job */
-                if($job->getStatus() == 'SHEDULED')
-                {
+                if ($job->getStatus() == 'SHEDULED') {
                     $job->setStatus(Events\JobFinishedEvent::STATUS_ABORTED);
                 }
             }
@@ -131,22 +125,21 @@ class CouchDbPlugin implements PluginInterface
 
     private function flush()
     {
-        try{
+        try {
             $serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
             $serializedRun = $serializer->serialize($this->run, JsonEncoder::FORMAT);
 
             $hash = md5($serializedRun);
-            if ($this->lastHash == $hash)
-            {
+            if ($this->lastHash == $hash) {
                 // nothing to update
                 return;
             }
             $this->lastHash = $hash;
 
             $request = new Request(
-                "PUT",
-                'http://'.getenv("RUMI_COUCHDB").'/runs/'.$this->run->getCommit(),
-                ['If-Match'=>$this->rev],
+                'PUT',
+                'http://'.getenv('RUMI_COUCHDB').'/runs/'.$this->run->getCommit(),
+                ['If-Match' => $this->rev],
                 $serializedRun
             );
             $client = new Client();
@@ -154,12 +147,8 @@ class CouchDbPlugin implements PluginInterface
             $json = json_decode($response);
 
             $this->rev = $json->rev;
-
+        } catch (\Exception $e) {
+            $this->output->writeln('<error>CouchDB plugin error:</error> '.$e->getMessage());
         }
-        catch (\Exception $e)
-        {
-            $this->output->writeln("<error>CouchDB plugin error:</error> " . $e->getMessage());
-        }
-
     }
 }

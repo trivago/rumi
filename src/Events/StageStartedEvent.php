@@ -1,11 +1,11 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 28/04/16 20:01
  */
 
 namespace jakubsacha\Rumi\Events;
-
 
 use Symfony\Component\EventDispatcher\Event;
 
@@ -44,5 +44,4 @@ class StageStartedEvent extends Event
     {
         return $this->jobs;
     }
-
 }

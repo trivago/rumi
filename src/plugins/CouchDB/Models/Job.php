@@ -1,11 +1,11 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 05/05/16 21:14
  */
 
-namespace jakubsacha\Rumi\Plugins\CouchDb\Models;
-
+namespace jakubsacha\Rumi\Plugins\CouchDB\Models;
 
 class Job
 {
@@ -48,11 +48,13 @@ class Job
 
     /**
      * @param string $status
+     *
      * @return $this
      */
     public function setStatus($status)
     {
         $this->status = $status;
+
         return $this;
     }
 

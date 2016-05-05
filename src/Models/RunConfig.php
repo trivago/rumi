@@ -1,11 +1,11 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 29/04/16 13:47
  */
 
 namespace jakubsacha\Rumi\Models;
-
 
 class RunConfig
 {
@@ -13,6 +13,7 @@ class RunConfig
 
     /**
      * RunConfig constructor.
+     *
      * @param $stages array
      */
     public function __construct($stages)
