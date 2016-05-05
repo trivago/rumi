@@ -1,35 +1,52 @@
 {
-    "name": "jakubsacha/runner",
-    "require": {
-        "symfony/console": "^3.0",
-        "symfony/yaml": "^3.0",
-        "symfony/process": "^3.0",
-        "symfony/dependency-injection": "^3.0",
-        "symfony/config": "^3.0"
-    },
-    "license": "MIT",
+    "name": "trivago/rumi",
+    "type": "project",
+    "description": "",
+    "keywords": [
+        "continuous integration",
+        "ci",
+        "docker",
+        "rumi",
+        "trivago"
+    ],
+    "homepage": "https://github.com/trivago/rumi",
+    "license": "Apache-2.0",
     "authors": [
         {
             "name": "Jakub Sacha",
-            "email": "jakub.sacha@gmail.com"
+            "email": "jakub.sacha@trivago.com",
+            "homepage": "http://jakubsacha.pl/",
+            "role": "Developer"
         }
     ],
+    "require": {
+        "php": "^5.6 || ^7.0",
+        "symfony/config": "^3.0",
+        "symfony/console": "^3.0",
+        "symfony/dependency-injection": "^3.0",
+        "symfony/process": "^3.0",
+        "symfony/yaml": "^3.0"
+    },
+    "require-dev": {
+        "mikey179/vfsStream": "^1.6",
+        "phpunit/phpunit": "^5.3",
+        "symfony/var-dumper": "^3.0"
+    },
     "autoload": {
         "psr-4": {
-            "jakubsacha\\Rumi\\": "src/"
+            "Trivago\\Rumi\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "jakubsacha\\Rumi\\": "test/"
+            "Trivago\\Rumi\\": "test/"
         }
     },
-    "require-dev": {
-        "phpunit/phpunit": "^5.2",
-        "symfony/var-dumper": "^3.0",
-        "mikey179/vfsStream": "^1.6"
+    "scripts": {
+        "test": "phpunit",
+        "test-quick": "phpunit --no-coverage"
     },
     "config": {
-        "bin-dir": "bin"
+        "sort-packages": true
     }
 }
