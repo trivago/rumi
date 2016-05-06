@@ -33,7 +33,7 @@ class UploaderTest extends \PHPUnit_Framework_TestCase
         $this->client = $this->prophesize(ClientInterface::class);
         $this->response = $this->prophesize(Response::class);
 
-        $this->SUT = new Uploader("http://localhost/", $this->client->reveal());
+        $this->SUT = new Uploader('http://localhost/', $this->client->reveal());
     }
 
     public function testGivenRun_WhenUploadIsTriggered_ThenItsPerformed()
@@ -47,7 +47,7 @@ class UploaderTest extends \PHPUnit_Framework_TestCase
             ->willReturn($this->response->reveal())
             ->shouldBeCalledTimes(1);
 
-        $this->response->getBody()->willReturn(json_encode(['rev'=>'123']));
+        $this->response->getBody()->willReturn(json_encode(['rev' => '123']));
 
         // when
         $this->SUT->flush($run);
@@ -66,7 +66,7 @@ class UploaderTest extends \PHPUnit_Framework_TestCase
             ->willReturn($this->response->reveal())
             ->shouldBeCalledTimes(1);
 
-        $this->response->getBody()->willReturn(json_encode(['rev'=>'123']));
+        $this->response->getBody()->willReturn(json_encode(['rev' => '123']));
 
         // when
         $this->SUT->flush($run);

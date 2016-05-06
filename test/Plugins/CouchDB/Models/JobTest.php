@@ -1,11 +1,11 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 06/05/16 09:15
  */
 
 namespace jakubsacha\Rumi\Plugins\CouchDB\Models;
-
 
 /**
  * @covers jakubsacha\Rumi\Plugins\CouchDB\Models\Job

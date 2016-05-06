@@ -1,6 +1,7 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 06/05/16 09:29
  */
 
@@ -11,7 +12,6 @@ namespace jakubsacha\Rumi\Events;
  */
 class JobStartedEventTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testGivenName_WhenNewInstanceCreated_ThenGetterWorks()
     {
         //given

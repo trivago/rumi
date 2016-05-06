@@ -1,6 +1,7 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 06/05/16 09:59
  */
 
@@ -19,7 +20,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 class CouchDbPluginTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testGivenNoEnvVariablePassed_WhenCreated_ThenNothingHappens()
     {
         // given
@@ -42,8 +42,8 @@ class CouchDbPluginTest extends \PHPUnit_Framework_TestCase
     {
         // given
         $eventDispatcher = $this->prophesize(EventDispatcherInterface::class);
-        putenv(CouchDbPlugin::ENV_VARIABLE."=abc");
-        
+        putenv(CouchDbPlugin::ENV_VARIABLE.'=abc');
+
         // when
         new CouchDbPlugin(
             $this->prophesize(InputInterface::class)->reveal(),

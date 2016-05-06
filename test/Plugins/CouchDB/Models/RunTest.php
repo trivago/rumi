@@ -1,11 +1,11 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 06/05/16 09:19
  */
 
 namespace jakubsacha\Rumi\Plugins\CouchDB\Models;
-
 
 /**
  * @covers jakubsacha\Rumi\Plugins\CouchDB\Models\Run
@@ -35,8 +35,5 @@ class RunTest extends \PHPUnit_Framework_TestCase
 
         // then
         $this->assertContains($stage, $run->getStages());
-
-
     }
-
 }

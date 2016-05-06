@@ -1,6 +1,7 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 06/05/16 09:33
  */
 
@@ -58,10 +59,9 @@ class Uploader
         }
         $this->lastHash = $hash;
 
-
         $request = new Request(
             'PUT',
-            'http://' . $this->couchDBAddr . '/runs/' . $run->getCommit(),
+            'http://'.$this->couchDBAddr.'/runs/'.$run->getCommit(),
             ['If-Match' => $this->rev],
             $serializedRun
         );

@@ -8,7 +8,6 @@
 namespace jakubsacha\Rumi\Plugins\CouchDB;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\Request;
 use jakubsacha\Rumi\Commands\RunCommand;
 use jakubsacha\Rumi\Events;
 use jakubsacha\Rumi\Plugins\CouchDb\Models\Job;
@@ -20,9 +19,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
 
 class CouchDbPlugin implements PluginInterface
 {
@@ -42,7 +38,6 @@ class CouchDbPlugin implements PluginInterface
      * @var Uploader
      */
     private $uploader;
-
 
     public function __construct(
         InputInterface $input,
@@ -102,6 +97,7 @@ class CouchDbPlugin implements PluginInterface
 
     /**
      * @param $jobName
+     *
      * @return Stage|null
      */
     private function findStage($jobName)
@@ -116,7 +112,7 @@ class CouchDbPlugin implements PluginInterface
             }
         }
 
-        return null;
+        return;
     }
 
     private function cancelAllSheduledJobs()

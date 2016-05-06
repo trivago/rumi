@@ -1,18 +1,17 @@
 <?php
 /**
  * @author jsacha
+ *
  * @since 06/05/16 09:25
  */
 
 namespace jakubsacha\Rumi\Plugins\CouchDB\Models;
-
 
 /**
  * @covers jakubsacha\Rumi\Plugins\CouchDB\Models\Stage
  */
 class StageTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testGivenName_WhenNewStageCreated_ThenGetterWorks()
     {
         // given
@@ -30,7 +29,6 @@ class StageTest extends \PHPUnit_Framework_TestCase
         // given
         $job = new Job('Test name', 'status');
 
-
         // when
         $stage = new Stage('abc');
         $stage->addJob($job);
@@ -45,7 +43,6 @@ class StageTest extends \PHPUnit_Framework_TestCase
         $name = 'Test name';
 
         $job = new Job($name, 'status');
-
 
         // when
         $stage = new Stage('abc');
@@ -65,5 +62,4 @@ class StageTest extends \PHPUnit_Framework_TestCase
         // then
         $this->assertNull($stage->getJob('abc'));
     }
-
 }
