@@ -62,12 +62,14 @@ class Uploader
         $request = new Request(
             'PUT',
             'http://'.$this->couchDBAddr.'/runs/'.$run->getCommit(),
-            ['If-Match' => $this->rev],
+            !empty($this->rev) ? ['If-Match' => $this->rev] : [],
             $serializedRun
         );
 
         $response = $this->client->send($request)->getBody();
         $json = json_decode($response);
+        dump($request);
+        dump($response);
 
         $this->rev = $json->rev;
     }
