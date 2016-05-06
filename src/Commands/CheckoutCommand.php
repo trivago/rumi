@@ -71,7 +71,7 @@ class CheckoutCommand extends Command
             /** @var GitCheckoutProcessFactory $processFactory */
             $processFactory = $this
                 ->container
-                ->get('jakubsacha.rumi.process.git_checkout_process_factory');
+                ->get('trivago.rumi.process.git_checkout_process_factory');
 
             if (!file_exists($this->getWorkingDir() . '.git')) {
                 $output->writeln('Cloning...');

@@ -75,7 +75,7 @@ class CacheRestoreCommand extends Command
 
             $process = $this
                 ->container
-                ->get('jakubsacha.rumi.process.cache_process_factory')
+                ->get('trivago.rumi.process.cache_process_factory')
                 ->getCacheRestoreProcess($cacheDir, $lockDir);
 
             $time = Timer::execute(

@@ -104,7 +104,7 @@ class RunCommand extends Command
                 $runConfig = $this->readCiConfigFile();
 
                 /** @var JobConfigBuilder $jobConfigBuilder */
-                $jobConfigBuilder = $this->container->get('jakubsacha.rumi.job_config_builder');
+                $jobConfigBuilder = $this->container->get('trivago.rumi.job_config_builder');
 
                 $this->eventDispatcher->dispatch(
                     Events::RUN_STARTED, new RunStartedEvent($runConfig)
@@ -190,10 +190,10 @@ class RunCommand extends Command
         $processes = [];
 
         /** @var DockerComposeYamlBuilder $dockerComposeYamlBuilder */
-        $dockerComposeYamlBuilder = $this->container->get('jakubsacha.rumi.docker_compose_yaml_builder');
+        $dockerComposeYamlBuilder = $this->container->get('trivago.rumi.docker_compose_yaml_builder');
 
         /** @var RunningProcessesFactory $runningProcessFactory */
-        $runningProcessFactory = $this->container->get('jakubsacha.rumi.process.running_processes_factory');
+        $runningProcessFactory = $this->container->get('trivago.rumi.process.running_processes_factory');
 
         foreach ($jobs as $jobConfig) {
             $runningCommand = new RunningCommand(

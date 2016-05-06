@@ -4,30 +4,30 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service class="jakubsacha\Rumi\Builders\ComposeParser" id="jakubsacha.rumi.builders.compose_handler"/>
+        <service class="jakubsacha\Rumi\Builders\ComposeParser" id="trivago.rumi.builders.compose_handler"/>
 
-        <service class="jakubsacha\Rumi\Builders\DockerComposeYamlBuilder" id="jakubsacha.rumi.docker_compose_yaml_builder">
-            <argument type="service" id="jakubsacha.rumi.docker.volume_inspector" />
+        <service class="jakubsacha\Rumi\Builders\DockerComposeYamlBuilder" id="trivago.rumi.docker_compose_yaml_builder">
+            <argument type="service" id="trivago.rumi.docker.volume_inspector" />
         </service>
 
-        <service class="jakubsacha\Rumi\Builders\JobConfigBuilder" id="jakubsacha.rumi.job_config_builder">
-            <argument type="service" id="jakubsacha.rumi.builders.metric_config_builder" />
-            <argument type="service" id="jakubsacha.rumi.builders.compose_handler" />
+        <service class="jakubsacha\Rumi\Builders\JobConfigBuilder" id="trivago.rumi.job_config_builder">
+            <argument type="service" id="trivago.rumi.builders.metric_config_builder" />
+            <argument type="service" id="trivago.rumi.builders.compose_handler" />
         </service>
-        <service class="jakubsacha\Rumi\Builders\MetricConfigBuilder" id="jakubsacha.rumi.builders.metric_config_builder">
-            <argument type="service" id="jakubsacha.rumi.builders.compose_handler" />
-        </service>
-
-
-        <service class="jakubsacha\Rumi\Docker\VolumeInspector" id="jakubsacha.rumi.docker.volume_inspector">
-            <argument type="service" id="jakubsacha.rumi.process.volume_inspect_process_factory" />
+        <service class="jakubsacha\Rumi\Builders\MetricConfigBuilder" id="trivago.rumi.builders.metric_config_builder">
+            <argument type="service" id="trivago.rumi.builders.compose_handler" />
         </service>
 
 
-        <service class="jakubsacha\Rumi\Process\RunningProcessesFactory" id="jakubsacha.rumi.process.running_processes_factory"/>
-        <service class="jakubsacha\Rumi\Process\GitCheckoutProcessFactory" id="jakubsacha.rumi.process.git_checkout_process_factory"/>
-        <service class="jakubsacha\Rumi\Process\CacheProcessFactory" id="jakubsacha.rumi.process.cache_process_factory"/>
-        <service class="jakubsacha\Rumi\Process\VolumeInspectProcessFactory" id="jakubsacha.rumi.process.volume_inspect_process_factory"/>
+        <service class="jakubsacha\Rumi\Docker\VolumeInspector" id="trivago.rumi.docker.volume_inspector">
+            <argument type="service" id="trivago.rumi.process.volume_inspect_process_factory" />
+        </service>
+
+
+        <service class="jakubsacha\Rumi\Process\RunningProcessesFactory" id="trivago.rumi.process.running_processes_factory"/>
+        <service class="jakubsacha\Rumi\Process\GitCheckoutProcessFactory" id="trivago.rumi.process.git_checkout_process_factory"/>
+        <service class="jakubsacha\Rumi\Process\CacheProcessFactory" id="trivago.rumi.process.cache_process_factory"/>
+        <service class="jakubsacha\Rumi\Process\VolumeInspectProcessFactory" id="trivago.rumi.process.volume_inspect_process_factory"/>
 
     </services>
 </container>

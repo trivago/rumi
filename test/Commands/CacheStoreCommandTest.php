@@ -110,7 +110,7 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
 
         $this
             ->container
-            ->set('jakubsacha.rumi.process.cache_process_factory', $factory->reveal());
+            ->set('trivago.rumi.process.cache_process_factory', $factory->reveal());
 
         // when
         $this->SUT->run(
@@ -203,7 +203,7 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
             ->willReturn($cacheStoreProcess->reveal())
             ->shouldBeCalled();
 
-        $this->container->set('jakubsacha.rumi.process.cache_process_factory', $factory->reveal());
+        $this->container->set('trivago.rumi.process.cache_process_factory', $factory->reveal());
 
         // when
         $this->SUT->run(
@@ -251,7 +251,7 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
             ->willReturn($cacheStoreProcess->reveal())
             ->shouldBeCalled();
 
-        $this->container->set('jakubsacha.rumi.process.cache_process_factory', $factory->reveal());
+        $this->container->set('trivago.rumi.process.cache_process_factory', $factory->reveal());
 
         // when
         $this->SUT->run(
@@ -307,7 +307,7 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
             ->willReturn($cacheStoreProcess->reveal())
             ->shouldBeCalled();
 
-        $this->container->set('jakubsacha.rumi.process.cache_process_factory', $factory->reveal());
+        $this->container->set('trivago.rumi.process.cache_process_factory', $factory->reveal());
 
         // when
         $errorCode = $this->SUT->run(

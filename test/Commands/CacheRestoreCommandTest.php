@@ -115,7 +115,7 @@ class CacheRestoreCommandTest extends \PHPUnit_Framework_TestCase
         )->willReturn($restoreProcess->reveal())
         ->shouldBeCalled();
 
-        $this->container->set('jakubsacha.rumi.process.cache_process_factory', $factory->reveal());
+        $this->container->set('trivago.rumi.process.cache_process_factory', $factory->reveal());
 
         // when
         $returnCode = $this->SUT->run(
@@ -155,7 +155,7 @@ class CacheRestoreCommandTest extends \PHPUnit_Framework_TestCase
         )->willReturn($restoreProcess->reveal())
         ->shouldBeCalled();
 
-        $this->container->set('jakubsacha.rumi.process.cache_process_factory', $factory->reveal());
+        $this->container->set('trivago.rumi.process.cache_process_factory', $factory->reveal());
 
         // when
         $code = $this->SUT->run(
