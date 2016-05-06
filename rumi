@@ -5,7 +5,7 @@ set_time_limit(0);
 
 require __DIR__ . '/vendor/autoload.php';
 
-use jakubsacha\Rumi\Plugins\CouchDb\CouchDbPlugin;
+use jakubsacha\Rumi\Plugins\CouchDB\CouchDbPlugin;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Application;
 use jakubsacha\Rumi\Commands\RunCommand;
