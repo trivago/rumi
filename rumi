@@ -3,27 +3,41 @@
 // application.php
 set_time_limit(0);
 
-require __DIR__.'/vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php';
 
+use jakubsacha\Rumi\Plugins\CouchDb\CouchDbPlugin;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Application;
 use jakubsacha\Rumi\Commands\RunCommand;
 use jakubsacha\Rumi\Commands\CheckoutCommand;
 use jakubsacha\Rumi\Commands\CacheStoreCommand;
 use jakubsacha\Rumi\Commands\CacheRestoreCommand;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 $container = prepareContainer();
+$eventDispatcher = new EventDispatcher();
 $application = new Application();
 
-$oRunCommand = new RunCommand($container);
+$input = new ArgvInput();
+$output = new ConsoleOutput();
+
+loadPlugins($input, $output, $application, $container, $eventDispatcher);
+
+$oRunCommand = new RunCommand($container, $eventDispatcher);
 $application->add($oRunCommand);
 $application->add(new CheckoutCommand($container));
 $application->add(new CacheStoreCommand($container));
 $application->add(new CacheRestoreCommand($container));
 $application->setDefaultCommand($oRunCommand->getName());
-$application->run();
+$application->run($input, $output);
 
 /**
  * @return ContainerBuilder
@@ -35,4 +49,15 @@ function prepareContainer()
     $loader->load('config/services.xml');
 
     return $container;
+}
+
+
+function loadPlugins(
+    InputInterface $input,
+    OutputInterface $output,
+    Application $application,
+    ContainerInterface $container,
+    EventDispatcherInterface $eventDispatcher)
+{
+    new CouchDbPlugin($input, $output, $application, $container, $eventDispatcher);
 }

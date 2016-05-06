@@ -1,0 +1,19 @@
+stages:
+  Stage one:
+    Job one:
+      docker:
+        www:
+          image: busybox
+    Job two:
+      docker:
+        www:
+          image: busybox
+  Stage two:
+      Job one:
+        docker:
+          www:
+            image: busybox
+      Job two:
+        docker:
+          www:
+            image: busybox
