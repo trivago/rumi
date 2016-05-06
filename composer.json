@@ -20,7 +20,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "jakubsacha\\Rumi\\": "src/",
+            "jakubsacha\\Rumi\\": "src/"
         }
     },
     "autoload-dev": {
