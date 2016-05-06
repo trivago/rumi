@@ -64,7 +64,7 @@ class Uploader
 
         $request = new Request(
             'PUT',
-            'http://'.$this->couchDBAddr.'/runs/'.$run->getCommit(),
+            'http://' . $this->couchDBAddr . '/runs/' . $run->getCommit(),
             !empty($this->rev) ? ['If-Match' => $this->rev] : [],
             $serializedRun
         );
@@ -80,7 +80,7 @@ class Uploader
         try {
             $request = new Request(
                 'HEAD',
-                'http://'.$this->couchDBAddr.'/runs/'.$commitId
+                'http://' . $this->couchDBAddr . '/runs/' . $commitId
             );
 
             return trim(current($this->client->send($request)->getHeader('Etag')), '"');

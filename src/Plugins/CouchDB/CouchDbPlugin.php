@@ -133,7 +133,7 @@ class CouchDbPlugin implements PluginInterface
         try {
             $this->uploader->flush($this->run);
         } catch (\Exception $e) {
-            $this->output->writeln('<error>CouchDB plugin error:</error> '.$e->getMessage());
+            $this->output->writeln('<error>CouchDB plugin error:</error> ' . $e->getMessage());
         }
     }
 }

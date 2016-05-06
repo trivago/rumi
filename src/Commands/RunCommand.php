@@ -2,19 +2,19 @@
 
 namespace jakubsacha\Rumi\Commands;
 
+use jakubsacha\Rumi\Builders\DockerComposeYamlBuilder;
 use jakubsacha\Rumi\Builders\JobConfigBuilder;
+use jakubsacha\Rumi\Events;
 use jakubsacha\Rumi\Events\JobFinishedEvent;
 use jakubsacha\Rumi\Events\JobStartedEvent;
 use jakubsacha\Rumi\Events\RunFinishedEvent;
 use jakubsacha\Rumi\Events\RunStartedEvent;
 use jakubsacha\Rumi\Events\StageFinishedEvent;
 use jakubsacha\Rumi\Events\StageStartedEvent;
-use jakubsacha\Rumi\Builders\DockerComposeYamlBuilder;
-use jakubsacha\Rumi\Events;
 use jakubsacha\Rumi\Exceptions\CommandFailedException;
+use jakubsacha\Rumi\Models\JobConfig;
 use jakubsacha\Rumi\Models\RunConfig;
 use jakubsacha\Rumi\Models\RunningCommand;
-use jakubsacha\Rumi\Models\JobConfig;
 use jakubsacha\Rumi\Process\RunningProcessesFactory;
 use jakubsacha\Rumi\Timer;
 use Symfony\Component\Console\Command\Command;
@@ -89,7 +89,7 @@ class RunCommand extends Command
             return;
         }
 
-        return $this->workingDir.'/';
+        return $this->workingDir . '/';
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -127,7 +127,7 @@ class RunCommand extends Command
                             }
                         );
 
-                        $output->writeln('<info>Stage completed: '.$time.'</info>'.PHP_EOL);
+                        $output->writeln('<info>Stage completed: ' . $time . '</info>' . PHP_EOL);
 
                         $this->eventDispatcher->dispatch(
                             Events::STAGE_FINISHED,
@@ -146,9 +146,9 @@ class RunCommand extends Command
                 $this->eventDispatcher->dispatch(Events::RUN_FINISHED, new RunFinishedEvent(RunFinishedEvent::STATUS_SUCCESS));
             });
 
-            $output->writeln('<info>Build successful: '.$timeTaken.'</info>');
+            $output->writeln('<info>Build successful: ' . $timeTaken . '</info>');
         } catch (\Exception $e) {
-            $output->writeln('<error>'.$e->getMessage().'</error>');
+            $output->writeln('<error>' . $e->getMessage() . '</error>');
 
             $this->eventDispatcher->dispatch(Events::RUN_FINISHED, new RunFinishedEvent(RunFinishedEvent::STATUS_FAILED));
 
@@ -165,12 +165,12 @@ class RunCommand extends Command
      */
     private function readCiConfigFile()
     {
-        if (!file_exists($this->getWorkingDir().self::CONFIG_FILE)) {
-            throw new \Exception('Required file \''.self::CONFIG_FILE.'\' does not exist', ReturnCodes::RUMI_YML_DOES_NOT_EXIST);
+        if (!file_exists($this->getWorkingDir() . self::CONFIG_FILE)) {
+            throw new \Exception('Required file \'' . self::CONFIG_FILE . '\' does not exist', ReturnCodes::RUMI_YML_DOES_NOT_EXIST);
         }
         $parser = new Parser();
 
-        $ciConfig = $parser->parse(file_get_contents($this->getWorkingDir().self::CONFIG_FILE));
+        $ciConfig = $parser->parse(file_get_contents($this->getWorkingDir() . self::CONFIG_FILE));
 
         return new RunConfig($ciConfig['stages']);
     }
@@ -251,11 +251,11 @@ class RunCommand extends Command
                 usleep(500000);
             }
         } catch (CommandFailedException $e) {
-            $output->writeln("<error>Command '".$e->getMessage()."' failed</error>");
+            $output->writeln("<error>Command '" . $e->getMessage() . "' failed</error>");
             if (!empty($processes)) {
                 $output->writeln('Shutting down jobs in background...', OutputInterface::VERBOSITY_VERBOSE);
                 foreach ($processes as $runningCommand) {
-                    $output->writeln('- '.$runningCommand->getCommand(), OutputInterface::VERBOSITY_VERBOSE);
+                    $output->writeln('- ' . $runningCommand->getCommand(), OutputInterface::VERBOSITY_VERBOSE);
 
                     $this->eventDispatcher->dispatch(
                         Events::JOB_FINISHED,

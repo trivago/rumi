@@ -14,6 +14,6 @@ class Timer
         $time = microtime(true);
         $cb();
 
-        return number_format(microtime(true) - $time, 3, '.', '').'s';
+        return number_format(microtime(true) - $time, 3, '.', '') . 's';
     }
 }
