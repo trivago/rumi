@@ -5,13 +5,8 @@ set_time_limit(0);
 
 require __DIR__ . '/vendor/autoload.php';
 
-use Trivago\Rumi\Plugins\CouchDB\CouchDbPlugin;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Application;
-use Trivago\Rumi\Commands\RunCommand;
-use Trivago\Rumi\Commands\CheckoutCommand;
-use Trivago\Rumi\Commands\CacheStoreCommand;
-use Trivago\Rumi\Commands\CacheRestoreCommand;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -21,6 +16,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Trivago\Rumi\Commands\CacheRestoreCommand;
+use Trivago\Rumi\Commands\CacheStoreCommand;
+use Trivago\Rumi\Commands\CheckoutCommand;
+use Trivago\Rumi\Commands\RunCommand;
+use Trivago\Rumi\Plugins\CouchDB\CouchDbPlugin;
 
 $container = prepareContainer();
 $eventDispatcher = new EventDispatcher();
@@ -50,7 +50,6 @@ function prepareContainer()
 
     return $container;
 }
-
 
 function loadPlugins(
     InputInterface $input,
