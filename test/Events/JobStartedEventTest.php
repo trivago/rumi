@@ -5,10 +5,10 @@
  * @since 06/05/16 09:29
  */
 
-namespace jakubsacha\Rumi\Events;
+namespace Trivago\Rumi\Events;
 
 /**
- * @covers jakubsacha\Rumi\Events\JobStartedEvent
+ * @covers Trivago\Rumi\Events\JobStartedEvent
  */
 class JobStartedEventTest extends \PHPUnit_Framework_TestCase
 {

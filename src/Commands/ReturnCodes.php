@@ -1,6 +1,6 @@
 <?php
 
-namespace jakubsacha\Rumi\Commands;
+namespace Trivago\Rumi\Commands;
 
 interface ReturnCodes
 {

@@ -5,9 +5,9 @@
  * @since 23/02/16 08:30
  */
 
-namespace jakubsacha\Rumi\Commands;
+namespace Trivago\Rumi\Commands;
 
-use jakubsacha\Rumi\Process\GitCheckoutProcessFactory;
+use Trivago\Rumi\Process\GitCheckoutProcessFactory;
 use org\bovigo\vfs\vfsStream;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Process\Process;
 
 /**
- * @covers jakubsacha\Rumi\Commands\CheckoutCommand
+ * @covers Trivago\Rumi\Commands\CheckoutCommand
  */
 class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 {

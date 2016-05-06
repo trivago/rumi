@@ -5,11 +5,11 @@
  * @since 06/05/16 09:33
  */
 
-namespace jakubsacha\Rumi\Plugins\CouchDB;
+namespace Trivago\Rumi\Plugins\CouchDB;
 
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Request;
-use jakubsacha\Rumi\Plugins\CouchDB\Models\Run;
+use Trivago\Rumi\Plugins\CouchDB\Models\Run;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;

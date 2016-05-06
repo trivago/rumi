@@ -5,11 +5,11 @@
  * @since 29/04/16 15:06
  */
 
-namespace jakubsacha\Rumi\Events;
+namespace Trivago\Rumi\Events;
 
 /**
- * @covers \jakubsacha\Rumi\Events\StageFinishedEvent
- * @covers \jakubsacha\Rumi\Events\AbstractFinishedEvent
+ * @covers \Trivago\Rumi\Events\StageFinishedEvent
+ * @covers \Trivago\Rumi\Events\AbstractFinishedEvent
  */
 class StageFinishedEventTest extends \PHPUnit_Framework_TestCase
 {

@@ -5,7 +5,7 @@
  * @since 29/04/16 13:47
  */
 
-namespace jakubsacha\Rumi\Models;
+namespace Trivago\Rumi\Models;
 
 class RunConfig
 {

@@ -5,14 +5,14 @@
  * @since 02/03/16 12:07
  */
 
-namespace jakubsacha\Rumi\Models;
+namespace Trivago\Rumi\Models;
 
-use jakubsacha\Rumi\Process\RunningProcessesFactory;
+use Trivago\Rumi\Process\RunningProcessesFactory;
 use Prophecy\Argument;
 use Symfony\Component\Process\Process;
 
 /**
- * @covers jakubsacha\Rumi\Models\RunningCommand
+ * @covers Trivago\Rumi\Models\RunningCommand
  */
 class RunningCommandTest extends \PHPUnit_Framework_TestCase
 {

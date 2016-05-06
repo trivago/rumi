@@ -5,9 +5,9 @@
  * @since 24/02/16 08:26
  */
 
-namespace jakubsacha\Rumi\Commands;
+namespace Trivago\Rumi\Commands;
 
-use jakubsacha\Rumi\Process\CacheProcessFactory;
+use Trivago\Rumi\Process\CacheProcessFactory;
 use org\bovigo\vfs\vfsStream;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Process\Process;
 
 /**
- * @covers jakubsacha\Rumi\Commands\CacheRestoreCommand
+ * @covers Trivago\Rumi\Commands\CacheRestoreCommand
  */
 class CacheRestoreCommandTest extends \PHPUnit_Framework_TestCase
 {

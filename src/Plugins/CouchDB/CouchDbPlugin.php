@@ -5,15 +5,15 @@
  * @since 29/04/16 15:27
  */
 
-namespace jakubsacha\Rumi\Plugins\CouchDB;
+namespace Trivago\Rumi\Plugins\CouchDB;
 
 use GuzzleHttp\Client;
-use jakubsacha\Rumi\Commands\RunCommand;
-use jakubsacha\Rumi\Events;
-use jakubsacha\Rumi\Plugins\CouchDB\Models\Job;
-use jakubsacha\Rumi\Plugins\CouchDB\Models\Run;
-use jakubsacha\Rumi\Plugins\CouchDB\Models\Stage;
-use jakubsacha\Rumi\Plugins\PluginInterface;
+use Trivago\Rumi\Commands\RunCommand;
+use Trivago\Rumi\Events;
+use Trivago\Rumi\Plugins\CouchDB\Models\Job;
+use Trivago\Rumi\Plugins\CouchDB\Models\Run;
+use Trivago\Rumi\Plugins\CouchDB\Models\Stage;
+use Trivago\Rumi\Plugins\PluginInterface;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

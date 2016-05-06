@@ -5,7 +5,7 @@
  * @since 28/04/16 20:13
  */
 
-namespace jakubsacha\Rumi\Events;
+namespace Trivago\Rumi\Events;
 
 class StageFinishedEvent extends AbstractFinishedEvent
 {

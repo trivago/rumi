@@ -1,9 +1,9 @@
 <?php
 
-namespace jakubsacha\Rumi\Commands;
+namespace Trivago\Rumi\Commands;
 
-use jakubsacha\Rumi\Exceptions\SkipException;
-use jakubsacha\Rumi\Timer;
+use Trivago\Rumi\Exceptions\SkipException;
+use Trivago\Rumi\Timer;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

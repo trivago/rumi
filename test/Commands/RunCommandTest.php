@@ -5,16 +5,16 @@
  * @since 20/02/16 22:01
  */
 
-namespace jakubsacha\Rumi\Commands;
+namespace Trivago\Rumi\Commands;
 
-use jakubsacha\Rumi\Events;
-use jakubsacha\Rumi\Events\JobFinishedEvent;
-use jakubsacha\Rumi\Events\JobStartedEvent;
-use jakubsacha\Rumi\Events\RunFinishedEvent;
-use jakubsacha\Rumi\Events\RunStartedEvent;
-use jakubsacha\Rumi\Events\StageFinishedEvent;
-use jakubsacha\Rumi\Events\StageStartedEvent;
-use jakubsacha\Rumi\Process\RunningProcessesFactory;
+use Trivago\Rumi\Events;
+use Trivago\Rumi\Events\JobFinishedEvent;
+use Trivago\Rumi\Events\JobStartedEvent;
+use Trivago\Rumi\Events\RunFinishedEvent;
+use Trivago\Rumi\Events\RunStartedEvent;
+use Trivago\Rumi\Events\StageFinishedEvent;
+use Trivago\Rumi\Events\StageStartedEvent;
+use Trivago\Rumi\Process\RunningProcessesFactory;
 use org\bovigo\vfs\vfsStream;
 use Prophecy\Argument;
 use Symfony\Component\Config\FileLocator;
@@ -26,7 +26,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Process\Process;
 
 /**
- * @covers jakubsacha\Rumi\Commands\RunCommand
+ * @covers Trivago\Rumi\Commands\RunCommand
  */
 class RunCommandTest extends \PHPUnit_Framework_TestCase
 {

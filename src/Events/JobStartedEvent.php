@@ -5,7 +5,7 @@
  * @since 28/04/16 20:14
  */
 
-namespace jakubsacha\Rumi\Events;
+namespace Trivago\Rumi\Events;
 
 use Symfony\Component\EventDispatcher\Event;
 

@@ -5,7 +5,7 @@
  * @since 28/04/16 19:56
  */
 
-namespace jakubsacha\Rumi;
+namespace Trivago\Rumi;
 
 interface Events
 {

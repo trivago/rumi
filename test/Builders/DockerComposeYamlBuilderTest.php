@@ -1,12 +1,12 @@
 <?php
 
-namespace jakubsacha\Rumi\Builders;
+namespace Trivago\Rumi\Builders;
 
-use jakubsacha\Rumi\Docker\VolumeInspector;
+use Trivago\Rumi\Docker\VolumeInspector;
 use Prophecy\Prophecy\ObjectProphecy;
 
 /**
- * @covers jakubsacha\Rumi\Builders\DockerComposeYamlBuilder
+ * @covers Trivago\Rumi\Builders\DockerComposeYamlBuilder
  */
 class DockerComposeYamlBuilderTest extends \PHPUnit_Framework_TestCase
 {
@@ -145,11 +145,11 @@ class DockerComposeYamlBuilderTest extends \PHPUnit_Framework_TestCase
      * @param string $entryPoint
      * @param array  $commands
      *
-     * @return \jakubsacha\Rumi\Models\JobConfig
+     * @return \Trivago\Rumi\Models\JobConfig
      */
     protected function prepareJobConfig($entryPoint = null, $commands = [], $yamlConfig = [])
     {
-        return new \jakubsacha\Rumi\Models\JobConfig(
+        return new \Trivago\Rumi\Models\JobConfig(
             'job name',
             $yamlConfig,
             'www',

@@ -20,12 +20,12 @@
     ],
     "autoload": {
         "psr-4": {
-            "jakubsacha\\Rumi\\": "src/"
+            "Trivago\\Rumi\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "jakubsacha\\Rumi\\": "test/"
+            "Trivago\\Rumi\\": "test/"
         }
     },
     "require-dev": {

@@ -5,7 +5,7 @@
  * @since 05/05/16 21:51
  */
 
-namespace jakubsacha\Rumi\Plugins\CouchDB\Models;
+namespace Trivago\Rumi\Plugins\CouchDB\Models;
 
 class Run
 {

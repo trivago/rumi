@@ -1,15 +1,15 @@
 <?php
 
-namespace jakubsacha\Rumi\Plugins\CouchDB;
+namespace Trivago\Rumi\Plugins\CouchDB;
 
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use jakubsacha\Rumi\Plugins\CouchDB\Models\Run;
+use Trivago\Rumi\Plugins\CouchDB\Models\Run;
 use Prophecy\Argument;
 
 /**
- * @covers jakubsacha\Rumi\Plugins\CouchDB\Uploader
+ * @covers Trivago\Rumi\Plugins\CouchDB\Uploader
  */
 class UploaderTest extends \PHPUnit_Framework_TestCase
 {

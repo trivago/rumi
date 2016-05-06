@@ -5,13 +5,13 @@ set_time_limit(0);
 
 require __DIR__ . '/vendor/autoload.php';
 
-use jakubsacha\Rumi\Plugins\CouchDB\CouchDbPlugin;
+use Trivago\Rumi\Plugins\CouchDB\CouchDbPlugin;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Application;
-use jakubsacha\Rumi\Commands\RunCommand;
-use jakubsacha\Rumi\Commands\CheckoutCommand;
-use jakubsacha\Rumi\Commands\CacheStoreCommand;
-use jakubsacha\Rumi\Commands\CacheRestoreCommand;
+use Trivago\Rumi\Commands\RunCommand;
+use Trivago\Rumi\Commands\CheckoutCommand;
+use Trivago\Rumi\Commands\CacheStoreCommand;
+use Trivago\Rumi\Commands\CacheRestoreCommand;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;

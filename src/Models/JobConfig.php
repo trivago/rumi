@@ -5,7 +5,7 @@
  * @since 11/12/15 22:39
  */
 
-namespace jakubsacha\Rumi\Models;
+namespace Trivago\Rumi\Models;
 
 class JobConfig extends AbstractRunnableConfig
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace jakubsacha\Rumi\Process;
+namespace Trivago\Rumi\Process;
 
 /**
- * @covers jakubsacha\Rumi\Process\GitCheckoutProcessFactory
+ * @covers Trivago\Rumi\Process\GitCheckoutProcessFactory
  */
 class GitCheckoutProcessFactoryTest extends \PHPUnit_Framework_TestCase
 {

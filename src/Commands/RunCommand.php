@@ -1,22 +1,22 @@
 <?php
 
-namespace jakubsacha\Rumi\Commands;
+namespace Trivago\Rumi\Commands;
 
-use jakubsacha\Rumi\Builders\DockerComposeYamlBuilder;
-use jakubsacha\Rumi\Builders\JobConfigBuilder;
-use jakubsacha\Rumi\Events;
-use jakubsacha\Rumi\Events\JobFinishedEvent;
-use jakubsacha\Rumi\Events\JobStartedEvent;
-use jakubsacha\Rumi\Events\RunFinishedEvent;
-use jakubsacha\Rumi\Events\RunStartedEvent;
-use jakubsacha\Rumi\Events\StageFinishedEvent;
-use jakubsacha\Rumi\Events\StageStartedEvent;
-use jakubsacha\Rumi\Exceptions\CommandFailedException;
-use jakubsacha\Rumi\Models\JobConfig;
-use jakubsacha\Rumi\Models\RunConfig;
-use jakubsacha\Rumi\Models\RunningCommand;
-use jakubsacha\Rumi\Process\RunningProcessesFactory;
-use jakubsacha\Rumi\Timer;
+use Trivago\Rumi\Builders\DockerComposeYamlBuilder;
+use Trivago\Rumi\Builders\JobConfigBuilder;
+use Trivago\Rumi\Events;
+use Trivago\Rumi\Events\JobFinishedEvent;
+use Trivago\Rumi\Events\JobStartedEvent;
+use Trivago\Rumi\Events\RunFinishedEvent;
+use Trivago\Rumi\Events\RunStartedEvent;
+use Trivago\Rumi\Events\StageFinishedEvent;
+use Trivago\Rumi\Events\StageStartedEvent;
+use Trivago\Rumi\Exceptions\CommandFailedException;
+use Trivago\Rumi\Models\JobConfig;
+use Trivago\Rumi\Models\RunConfig;
+use Trivago\Rumi\Models\RunningCommand;
+use Trivago\Rumi\Process\RunningProcessesFactory;
+use Trivago\Rumi\Timer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

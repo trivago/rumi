@@ -1,9 +1,9 @@
 <?php
 
-namespace jakubsacha\Rumi\Commands;
+namespace Trivago\Rumi\Commands;
 
-use jakubsacha\Rumi\Process\GitCheckoutProcessFactory;
-use jakubsacha\Rumi\Timer;
+use Trivago\Rumi\Process\GitCheckoutProcessFactory;
+use Trivago\Rumi\Timer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

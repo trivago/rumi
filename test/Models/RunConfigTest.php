@@ -5,10 +5,10 @@
  * @since 29/04/16 13:54
  */
 
-namespace jakubsacha\Rumi\Models;
+namespace Trivago\Rumi\Models;
 
 /**
- * @covers \jakubsacha\Rumi\Models\RunConfig
+ * @covers \Trivago\Rumi\Models\RunConfig
  */
 class RunConfigTest extends \PHPUnit_Framework_TestCase
 {

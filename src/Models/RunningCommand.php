@@ -5,9 +5,9 @@
  * @since 12/12/15 23:41
  */
 
-namespace jakubsacha\Rumi\Models;
+namespace Trivago\Rumi\Models;
 
-use jakubsacha\Rumi\Process\RunningProcessesFactory;
+use Trivago\Rumi\Process\RunningProcessesFactory;
 use Symfony\Component\Process\Process;
 
 class RunningCommand

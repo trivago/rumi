@@ -5,9 +5,9 @@
  * @since 28/04/16 19:58
  */
 
-namespace jakubsacha\Rumi\Events;
+namespace Trivago\Rumi\Events;
 
-use jakubsacha\Rumi\Models\RunConfig;
+use Trivago\Rumi\Models\RunConfig;
 use Symfony\Component\EventDispatcher\Event;
 
 class RunStartedEvent extends Event

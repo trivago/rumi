@@ -5,13 +5,13 @@
  * @since 20/02/16 19:57
  */
 
-namespace jakubsacha\Rumi\Models;
+namespace Trivago\Rumi\Models;
 
 class RunnableConfig extends AbstractRunnableConfig
 {
 }
 /**
- * @covers jakubsacha\Rumi\Models\AbstractRunnableConfig
+ * @covers Trivago\Rumi\Models\AbstractRunnableConfig
  */
 class AbstractRunnableConfigTest extends \PHPUnit_Framework_TestCase
 {

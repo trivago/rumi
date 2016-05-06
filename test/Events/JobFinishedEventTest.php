@@ -5,7 +5,7 @@
  * @since 28/04/16 20:39
  */
 
-namespace jakubsacha\Rumi\Events;
+namespace Trivago\Rumi\Events;
 
 class JobFinishedEventTest extends \PHPUnit_Framework_TestCase
 {

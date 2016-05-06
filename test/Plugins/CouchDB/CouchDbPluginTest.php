@@ -5,9 +5,9 @@
  * @since 06/05/16 09:59
  */
 
-namespace jakubsacha\Rumi\Plugins\CouchDB;
+namespace Trivago\Rumi\Plugins\CouchDB;
 
-use jakubsacha\Rumi\Events;
+use Trivago\Rumi\Events;
 use Prophecy\Argument;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
- * @covers jakubsacha\Rumi\Plugins\CouchDB\CouchDbPlugin
+ * @covers Trivago\Rumi\Plugins\CouchDB\CouchDbPlugin
  */
 class CouchDbPluginTest extends \PHPUnit_Framework_TestCase
 {

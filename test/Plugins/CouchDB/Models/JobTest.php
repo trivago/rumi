@@ -5,10 +5,10 @@
  * @since 06/05/16 09:15
  */
 
-namespace jakubsacha\Rumi\Plugins\CouchDB\Models;
+namespace Trivago\Rumi\Plugins\CouchDB\Models;
 
 /**
- * @covers jakubsacha\Rumi\Plugins\CouchDB\Models\Job
+ * @covers Trivago\Rumi\Plugins\CouchDB\Models\Job
  */
 class JobTest extends \PHPUnit_Framework_TestCase
 {

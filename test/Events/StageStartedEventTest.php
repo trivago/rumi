@@ -5,7 +5,7 @@
  * @since 29/04/16 15:08
  */
 
-namespace jakubsacha\Rumi\Events;
+namespace Trivago\Rumi\Events;
 
 class StageStartedEventTest extends \PHPUnit_Framework_TestCase
 {

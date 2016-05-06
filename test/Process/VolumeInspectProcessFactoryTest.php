@@ -1,9 +1,9 @@
 <?php
 
-namespace jakubsacha\Rumi\Process;
+namespace Trivago\Rumi\Process;
 
 /**
- * @covers jakubsacha\Rumi\Process\VolumeInspectProcessFactory
+ * @covers Trivago\Rumi\Process\VolumeInspectProcessFactory
  */
 class VolumeInspectProcessFactoryTest extends \PHPUnit_Framework_TestCase
 {

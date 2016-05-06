@@ -5,12 +5,12 @@
  * @since 29/04/16 15:03
  */
 
-namespace jakubsacha\Rumi\Events;
+namespace Trivago\Rumi\Events;
 
-use jakubsacha\Rumi\Models\RunConfig;
+use Trivago\Rumi\Models\RunConfig;
 
 /**
- * @covers \jakubsacha\Rumi\Events\RunStartedEvent
+ * @covers \Trivago\Rumi\Events\RunStartedEvent
  */
 class RunStartedEventTest extends \PHPUnit_Framework_TestCase
 {

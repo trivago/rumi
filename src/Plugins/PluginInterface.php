@@ -5,7 +5,7 @@
  * @since 29/04/16 15:25
  */
 
-namespace jakubsacha\Rumi\Plugins;
+namespace Trivago\Rumi\Plugins;
 
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;

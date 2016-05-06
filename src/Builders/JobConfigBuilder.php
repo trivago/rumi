@@ -5,9 +5,9 @@
  * @since 12/12/15 23:38
  */
 
-namespace jakubsacha\Rumi\Builders;
+namespace Trivago\Rumi\Builders;
 
-use jakubsacha\Rumi\Models\JobConfig;
+use Trivago\Rumi\Models\JobConfig;
 
 class JobConfigBuilder
 {

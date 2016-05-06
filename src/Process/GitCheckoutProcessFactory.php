@@ -5,7 +5,7 @@
  * @since 23/02/16 08:15
  */
 
-namespace jakubsacha\Rumi\Process;
+namespace Trivago\Rumi\Process;
 
 use Symfony\Component\Process\Process;
 
