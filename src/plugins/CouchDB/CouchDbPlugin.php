@@ -26,6 +26,8 @@ use Symfony\Component\Serializer\Serializer;
 
 class CouchDbPlugin implements PluginInterface
 {
+    const ENV_VARIABLE = 'RUMI_COUCHDB';
+
     /**
      * @var Run
      */
@@ -36,9 +38,11 @@ class CouchDbPlugin implements PluginInterface
      */
     private $output;
 
-    private $rev = '';
+    /**
+     * @var Uploader
+     */
+    private $uploader;
 
-    private $lastHash = null;
 
     public function __construct(
         InputInterface $input,
@@ -47,11 +51,12 @@ class CouchDbPlugin implements PluginInterface
         ContainerInterface $container,
         EventDispatcherInterface $eventDispatcher
     ) {
-        if (!getenv('RUMI_COUCHDB')) {
+        if (!getenv(self::ENV_VARIABLE)) {
             return;
         }
 
         $this->output = $output;
+        $this->uploader = new Uploader(getenv(self::ENV_VARIABLE), new Client());
 
         $eventDispatcher->addListener(Events::RUN_STARTED, function (Events\RunStartedEvent $e) use ($eventDispatcher, $input) {
             if (empty($input->getArgument(RunCommand::GIT_COMMIT))) {
@@ -95,6 +100,10 @@ class CouchDbPlugin implements PluginInterface
         });
     }
 
+    /**
+     * @param $jobName
+     * @return Stage|null
+     */
     private function findStage($jobName)
     {
         foreach ($this->run->getStages() as $stage) {
@@ -107,7 +116,7 @@ class CouchDbPlugin implements PluginInterface
             }
         }
 
-        return;
+        return null;
     }
 
     private function cancelAllSheduledJobs()
@@ -126,27 +135,7 @@ class CouchDbPlugin implements PluginInterface
     private function flush()
     {
         try {
-            $serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
-            $serializedRun = $serializer->serialize($this->run, JsonEncoder::FORMAT);
-
-            $hash = md5($serializedRun);
-            if ($this->lastHash == $hash) {
-                // nothing to update
-                return;
-            }
-            $this->lastHash = $hash;
-
-            $request = new Request(
-                'PUT',
-                'http://'.getenv('RUMI_COUCHDB').'/runs/'.$this->run->getCommit(),
-                ['If-Match' => $this->rev],
-                $serializedRun
-            );
-            $client = new Client();
-            $response = $client->send($request)->getBody();
-            $json = json_decode($response);
-
-            $this->rev = $json->rev;
+            $this->uploader->flush($this->run);
         } catch (\Exception $e) {
             $this->output->writeln('<error>CouchDB plugin error:</error> '.$e->getMessage());
         }
