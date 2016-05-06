@@ -2,8 +2,6 @@
 
 namespace Trivago\Rumi\Commands;
 
-use Trivago\Rumi\Process\GitCheckoutProcessFactory;
-use Trivago\Rumi\Timer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,6 +9,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Parser;
+use Trivago\Rumi\Process\GitCheckoutProcessFactory;
+use Trivago\Rumi\Timer;
 
 class CheckoutCommand extends Command
 {

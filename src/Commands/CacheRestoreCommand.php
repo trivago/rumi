@@ -2,13 +2,13 @@
 
 namespace Trivago\Rumi\Commands;
 
-use Trivago\Rumi\Exceptions\SkipException;
-use Trivago\Rumi\Timer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Trivago\Rumi\Exceptions\SkipException;
+use Trivago\Rumi\Timer;
 
 class CacheRestoreCommand extends Command
 {

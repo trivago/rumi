@@ -7,9 +7,9 @@
 
 namespace Trivago\Rumi\Builders;
 
+use Symfony\Component\Yaml\Dumper;
 use Trivago\Rumi\Docker\VolumeInspector;
 use Trivago\Rumi\Models\JobConfig;
-use Symfony\Component\Yaml\Dumper;
 
 class DockerComposeYamlBuilder
 {

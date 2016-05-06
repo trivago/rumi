@@ -2,6 +2,13 @@
 
 namespace Trivago\Rumi\Commands;
 
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Yaml\Parser;
 use Trivago\Rumi\Builders\DockerComposeYamlBuilder;
 use Trivago\Rumi\Builders\JobConfigBuilder;
 use Trivago\Rumi\Events;
@@ -17,13 +24,6 @@ use Trivago\Rumi\Models\RunConfig;
 use Trivago\Rumi\Models\RunningCommand;
 use Trivago\Rumi\Process\RunningProcessesFactory;
 use Trivago\Rumi\Timer;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Yaml\Parser;
 
 class RunCommand extends Command
 {

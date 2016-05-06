@@ -7,8 +7,8 @@
 
 namespace Trivago\Rumi\Models;
 
-use Trivago\Rumi\Process\RunningProcessesFactory;
 use Symfony\Component\Process\Process;
+use Trivago\Rumi\Process\RunningProcessesFactory;
 
 class RunningCommand
 {

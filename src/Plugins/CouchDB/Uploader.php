@@ -9,11 +9,11 @@ namespace Trivago\Rumi\Plugins\CouchDB;
 
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Request;
-use Trivago\Rumi\Plugins\CouchDB\Models\Run;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
+use Trivago\Rumi\Plugins\CouchDB\Models\Run;
 
 class Uploader
 {

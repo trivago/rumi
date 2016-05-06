@@ -7,8 +7,8 @@
 
 namespace Trivago\Rumi\Events;
 
-use Trivago\Rumi\Models\RunConfig;
 use Symfony\Component\EventDispatcher\Event;
+use Trivago\Rumi\Models\RunConfig;
 
 class RunStartedEvent extends Event
 {

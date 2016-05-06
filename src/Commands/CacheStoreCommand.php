@@ -2,8 +2,6 @@
 
 namespace Trivago\Rumi\Commands;
 
-use Trivago\Rumi\Exceptions\SkipException;
-use Trivago\Rumi\Timer;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -12,6 +10,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Parser;
+use Trivago\Rumi\Exceptions\SkipException;
+use Trivago\Rumi\Timer;
 
 class CacheStoreCommand extends Command
 {

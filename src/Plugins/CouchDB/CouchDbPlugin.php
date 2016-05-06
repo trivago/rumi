@@ -8,17 +8,17 @@
 namespace Trivago\Rumi\Plugins\CouchDB;
 
 use GuzzleHttp\Client;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Trivago\Rumi\Commands\RunCommand;
 use Trivago\Rumi\Events;
 use Trivago\Rumi\Plugins\CouchDB\Models\Job;
 use Trivago\Rumi\Plugins\CouchDB\Models\Run;
 use Trivago\Rumi\Plugins\CouchDB\Models\Stage;
 use Trivago\Rumi\Plugins\PluginInterface;
-use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class CouchDbPlugin implements PluginInterface
 {
