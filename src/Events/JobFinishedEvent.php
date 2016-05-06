@@ -11,9 +11,9 @@ use Symfony\Component\EventDispatcher\Event;
 
 class JobFinishedEvent extends Event
 {
-    const STATUS_SUCCESS = 'success';
-    const STATUS_FAILED = 'failed';
-    const STATUS_ABORTED = 'aborted';
+    const STATUS_SUCCESS = 'SUCCESS';
+    const STATUS_FAILED = 'FAILED';
+    const STATUS_ABORTED = 'ABORTED';
 
     /**
      * @var string
