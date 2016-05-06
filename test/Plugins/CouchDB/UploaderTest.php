@@ -28,12 +28,40 @@ class UploaderTest extends \PHPUnit_Framework_TestCase
      */
     private $response;
 
+    /**
+     * @var Response
+     */
+    private $revResponse;
+
     public function setUp()
     {
         $this->client = $this->prophesize(ClientInterface::class);
         $this->response = $this->prophesize(Response::class);
+        $this->revResponse = $this->prophesize(Response::class);
 
         $this->SUT = new Uploader('http://localhost/', $this->client->reveal());
+    }
+
+    public function testGivenFirstRun_WhenUploadIsTriggered_ThenRevIsRequested()
+    {
+        $run = new Run('commit_id');
+
+        $this
+            ->client
+            ->send(Argument::type(Request::class))
+            ->willReturn($this->revResponse->reveal())
+            ->shouldBeCalled();
+        $this->revResponse->getHeader('Etag')->willReturn(null);
+
+        $this
+            ->client
+            ->send(Argument::type(Request::class))
+            ->willReturn($this->response->reveal())
+            ->shouldBeCalled();
+        $this->response->getBody()->willReturn(json_encode(['rev' => '123']));
+
+        // when
+        $this->SUT->flush($run);
     }
 
     public function testGivenRun_WhenUploadIsTriggered_ThenItsPerformed()
@@ -44,9 +72,15 @@ class UploaderTest extends \PHPUnit_Framework_TestCase
         $this
             ->client
             ->send(Argument::type(Request::class))
-            ->willReturn($this->response->reveal())
-            ->shouldBeCalledTimes(1);
+            ->willReturn($this->revResponse->reveal())
+            ->shouldBeCalled();
+        $this->revResponse->getHeader('Etag')->willReturn(null);
 
+        $this
+            ->client
+            ->send(Argument::type(Request::class))
+            ->willReturn($this->response->reveal())
+            ->shouldBeCalled();
         $this->response->getBody()->willReturn(json_encode(['rev' => '123']));
 
         // when
@@ -63,8 +97,15 @@ class UploaderTest extends \PHPUnit_Framework_TestCase
         $this
             ->client
             ->send(Argument::type(Request::class))
+            ->willReturn($this->revResponse->reveal())
+            ->shouldBeCalled();
+        $this->revResponse->getHeader('Etag')->willReturn(null);
+
+        $this
+            ->client
+            ->send(Argument::type(Request::class))
             ->willReturn($this->response->reveal())
-            ->shouldBeCalledTimes(1);
+            ->shouldBeCalled();
 
         $this->response->getBody()->willReturn(json_encode(['rev' => '123']));
 

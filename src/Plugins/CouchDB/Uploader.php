@@ -49,6 +49,9 @@ class Uploader
 
     public function flush(Run $run)
     {
+        if (empty($this->rev)) {
+            $this->rev = $this->requestRev($run->getCommit());
+        }
         $serializedRun = $this->serializer->serialize($run, JsonEncoder::FORMAT);
 
         // this part is here to avoid pushing the same output twice to CouchDB (saves bandwidth)
@@ -68,9 +71,21 @@ class Uploader
 
         $response = $this->client->send($request)->getBody();
         $json = json_decode($response);
-        dump($request);
-        dump($response);
 
         $this->rev = $json->rev;
+    }
+
+    private function requestRev($commitId)
+    {
+        try {
+            $request = new Request(
+                'HEAD',
+                'http://'.$this->couchDBAddr.'/runs/'.$commitId
+            );
+
+            return trim(current($this->client->send($request)->getHeader('Etag')), '"');
+        } catch (\Exception $e) {
+            return;
+        }
     }
 }
