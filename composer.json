@@ -11,7 +11,7 @@
         "symfony/serializer": "^3.0",
         "symfony/property-access": "^3.0"
     },
-    "license": "MIT",
+    "license": "Apache-2.0",
     "authors": [
         {
             "name": "Jakub Sacha",
@@ -31,7 +31,8 @@
     "require-dev": {
         "phpunit/phpunit": "^5.2",
         "symfony/var-dumper": "^3.0",
-        "mikey179/vfsStream": "^1.6"
+        "mikey179/vfsStream": "^1.6",
+        "fabpot/php-cs-fixer": "^1.11"
     },
     "config": {
         "bin-dir": "bin"

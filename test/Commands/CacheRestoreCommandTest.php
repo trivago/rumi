@@ -1,13 +1,23 @@
 <?php
-/**
- * @author jsacha
+
+/*
+ * Copyright 2016 trivago GmbH
  *
- * @since 24/02/16 08:26
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 namespace Trivago\Rumi\Commands;
 
-use Trivago\Rumi\Process\CacheProcessFactory;
 use org\bovigo\vfs\vfsStream;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -15,6 +25,7 @@ use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Process\Process;
+use Trivago\Rumi\Process\CacheProcessFactory;
 
 /**
  * @covers Trivago\Rumi\Commands\CacheRestoreCommand
@@ -74,9 +85,9 @@ class CacheRestoreCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenTestDirectoryIsEmpty_WhenCacheRestoreIsExecuted_ItSkipsRestore()
     {
         // given
-        mkdir(vfsStream::url('directory').'/a');
-        mkdir(vfsStream::url('directory').'/a/'.md5('b'));
-        mkdir(vfsStream::url('directory').'/a/'.md5('b').'/data');
+        mkdir(vfsStream::url('directory') . '/a');
+        mkdir(vfsStream::url('directory') . '/a/' . md5('b'));
+        mkdir(vfsStream::url('directory') . '/a/' . md5('b') . '/data');
 
         // when
         $returnCode = $this->SUT->run(
@@ -96,10 +107,10 @@ class CacheRestoreCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenTestDirectoryContainsData_WhenCacheRestoreIsExecutedAndItFails_ItDisplaysErrorMessage()
     {
         // given
-        mkdir(vfsStream::url('directory').'/a');
-        mkdir(vfsStream::url('directory').'/a/'.md5('b'));
-        mkdir(vfsStream::url('directory').'/a/'.md5('b').'/data');
-        mkdir(vfsStream::url('directory').'/a/'.md5('b').'/data/dir');
+        mkdir(vfsStream::url('directory') . '/a');
+        mkdir(vfsStream::url('directory') . '/a/' . md5('b'));
+        mkdir(vfsStream::url('directory') . '/a/' . md5('b') . '/data');
+        mkdir(vfsStream::url('directory') . '/a/' . md5('b') . '/data/dir');
 
         $restoreProcess = $this->prophesize(Process::class);
         $restoreProcess->run()->shouldBeCalled();
@@ -110,8 +121,8 @@ class CacheRestoreCommandTest extends \PHPUnit_Framework_TestCase
         /** @var CacheProcessFactory $factory */
         $factory = $this->prophesize(CacheProcessFactory::class);
         $factory->getCacheRestoreProcess(
-            'a/'.md5('b').'/data/',
-            'a/'.md5('b')
+            'a/' . md5('b') . '/data/',
+            'a/' . md5('b')
         )->willReturn($restoreProcess->reveal())
         ->shouldBeCalled();
 
@@ -138,10 +149,10 @@ class CacheRestoreCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenTestDirectoryContainsData_WhenCacheRestoreIsExecutedAndItsSuccessful_ItDisplaysOkMessage()
     {
         // given
-        mkdir(vfsStream::url('directory').'/a');
-        mkdir(vfsStream::url('directory').'/a/'.md5('b'));
-        mkdir(vfsStream::url('directory').'/a/'.md5('b').'/data');
-        mkdir(vfsStream::url('directory').'/a/'.md5('b').'/data/dir');
+        mkdir(vfsStream::url('directory') . '/a');
+        mkdir(vfsStream::url('directory') . '/a/' . md5('b'));
+        mkdir(vfsStream::url('directory') . '/a/' . md5('b') . '/data');
+        mkdir(vfsStream::url('directory') . '/a/' . md5('b') . '/data/dir');
 
         $restoreProcess = $this->prophesize(Process::class);
         $restoreProcess->run()->shouldBeCalled();
@@ -150,8 +161,8 @@ class CacheRestoreCommandTest extends \PHPUnit_Framework_TestCase
         /** @var CacheProcessFactory $factory */
         $factory = $this->prophesize(CacheProcessFactory::class);
         $factory->getCacheRestoreProcess(
-            'a/'.md5('b').'/data/',
-            'a/'.md5('b')
+            'a/' . md5('b') . '/data/',
+            'a/' . md5('b')
         )->willReturn($restoreProcess->reveal())
         ->shouldBeCalled();
 
