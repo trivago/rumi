@@ -5,9 +5,16 @@
  * @since 20/02/16 22:01
  */
 
-namespace jakubsacha\Rumi\Commands;
+namespace Trivago\Rumi\Commands;
 
-use jakubsacha\Rumi\Process\RunningProcessesFactory;
+use Trivago\Rumi\Events;
+use Trivago\Rumi\Events\JobFinishedEvent;
+use Trivago\Rumi\Events\JobStartedEvent;
+use Trivago\Rumi\Events\RunFinishedEvent;
+use Trivago\Rumi\Events\RunStartedEvent;
+use Trivago\Rumi\Events\StageFinishedEvent;
+use Trivago\Rumi\Events\StageStartedEvent;
+use Trivago\Rumi\Process\RunningProcessesFactory;
 use org\bovigo\vfs\vfsStream;
 use Prophecy\Argument;
 use Symfony\Component\Config\FileLocator;
@@ -15,10 +22,11 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Process\Process;
 
 /**
- * @covers jakubsacha\Rumi\Commands\RunCommand
+ * @covers Trivago\Rumi\Commands\RunCommand
  */
 class RunCommandTest extends \PHPUnit_Framework_TestCase
 {
@@ -37,6 +45,11 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
      */
     private $container;
 
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
     public function setUp()
     {
         $this->output = new BufferedOutput();
@@ -47,7 +60,9 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         $loader = new XmlFileLoader($this->container, new FileLocator(__DIR__));
         $loader->load('../../config/services.xml');
 
-        $this->command = new RunCommand($this->container);
+        $this->eventDispatcher = $this->prophesize(EventDispatcherInterface::class);
+
+        $this->command = new RunCommand($this->container, $this->eventDispatcher->reveal());
         $this->command->setWorkingDir(vfsStream::url('directory'));
     }
 
@@ -84,7 +99,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $processFactory = $this->getProcessFactoryMock($startProcess, $tearDownProcess);
 
-        $this->container->set('jakubsacha.rumi.process.running_processes_factory', $processFactory->reveal());
+        $this->container->set('trivago.rumi.process.running_processes_factory', $processFactory->reveal());
 
         file_put_contents(vfsStream::url('directory').'/'.RunCommand::CONFIG_FILE, file_get_contents('fixtures/passing-.rumi.yml'));
 
@@ -109,7 +124,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         /** @var RunningProcessesFactory $processFactory */
         $processFactory = $this->getProcessFactoryMock($startProcess, $tearDownProcess);
 
-        $this->container->set('jakubsacha.rumi.process.running_processes_factory', $processFactory->reveal());
+        $this->container->set('trivago.rumi.process.running_processes_factory', $processFactory->reveal());
 
         file_put_contents(vfsStream::url('directory').'/'.RunCommand::CONFIG_FILE, file_get_contents('fixtures/failing-.rumi.yml'));
 
@@ -122,6 +137,122 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         $this->assertStringStartsWith('Stage: "Stage one"', trim($commandOutput));
         $this->assertContains('failed', $commandOutput);
         $this->assertEquals(ReturnCodes::FAILED, $returnCode);
+    }
+
+    /**
+     * @throws \Symfony\Component\Console\Exception\ExceptionInterface
+     */
+    public function testGivenJobsAreSuccessful_WhenRunIsStarted_ThenEventsAreTriggeredWithProperStatuses()
+    {
+        // given
+        $oStartProcess = $this->getStartProcess(true);
+        $oTearDownProcess = $this->getTearDownProcess();
+
+        $oProcessFactory = $this->getProcessFactoryMock($oStartProcess, $oTearDownProcess);
+
+        $this->container->set('trivago.rumi.process.running_processes_factory', $oProcessFactory->reveal());
+
+        file_put_contents(vfsStream::url('directory').'/'.RunCommand::CONFIG_FILE, file_get_contents('fixtures/passing2-.rumi.yml'));
+
+        // when
+        $this->command->run(
+            new ArrayInput(['volume' => '.']), $this->output
+        );
+
+        // then
+        $this
+            ->eventDispatcher
+            ->dispatch(Events::RUN_STARTED, Argument::type(RunStartedEvent::class))
+            ->shouldBeCalledTimes(1);
+
+        $this
+            ->eventDispatcher
+            ->dispatch(Events::STAGE_STARTED, Argument::type(StageStartedEvent::class))
+            ->shouldBeCalledTimes(2);
+
+        $this
+            ->eventDispatcher
+            ->dispatch(Events::JOB_STARTED, Argument::type(JobStartedEvent::class))
+            ->shouldBeCalledTimes(4);
+
+        $this
+            ->eventDispatcher
+            ->dispatch(Events::JOB_FINISHED, Argument::that(function (JobFinishedEvent $e) {
+                return $e->getStatus() == JobFinishedEvent::STATUS_SUCCESS;
+            }))
+            ->shouldBeCalledTimes(4);
+
+        $this
+            ->eventDispatcher
+            ->dispatch(Events::STAGE_FINISHED, Argument::that(function (StageFinishedEvent $e) {
+                return $e->getStatus() == StageFinishedEvent::STATUS_SUCCESS;
+            }))
+            ->shouldBeCalledTimes(2);
+
+        $this
+            ->eventDispatcher
+            ->dispatch(Events::RUN_FINISHED, Argument::that(function (RunFinishedEvent $e) {
+                return $e->getStatus() == RunFinishedEvent::STATUS_SUCCESS;
+            }))
+            ->shouldBeCalledTimes(1);
+    }
+
+    /**
+     * @throws \Symfony\Component\Console\Exception\ExceptionInterface
+     */
+    public function testGivenJobFails_WhenRunIsStarted_ThenEventsAreTriggeredWithProperStatuses()
+    {
+        // given
+        $oStartProcess = $this->getStartProcess(false);
+        $oTearDownProcess = $this->getTearDownProcess();
+
+        $oProcessFactory = $this->getProcessFactoryMock($oStartProcess, $oTearDownProcess);
+
+        $this->container->set('trivago.rumi.process.running_processes_factory', $oProcessFactory->reveal());
+
+        file_put_contents(vfsStream::url('directory').'/'.RunCommand::CONFIG_FILE, file_get_contents('fixtures/passing-.rumi.yml'));
+
+        // when
+        $this->command->run(
+            new ArrayInput(['volume' => '.']), $this->output
+        );
+
+        // then
+        $this
+            ->eventDispatcher
+            ->dispatch(Events::RUN_STARTED, Argument::type(RunStartedEvent::class))
+            ->shouldBeCalledTimes(1);
+
+        $this
+            ->eventDispatcher
+            ->dispatch(Events::STAGE_STARTED, Argument::type(StageStartedEvent::class))
+            ->shouldBeCalledTimes(1);
+
+        $this
+            ->eventDispatcher
+            ->dispatch(Events::JOB_STARTED, Argument::type(JobStartedEvent::class))
+            ->shouldBeCalledTimes(1);
+
+        $this
+            ->eventDispatcher
+            ->dispatch(Events::JOB_FINISHED, Argument::that(function (JobFinishedEvent $e) {
+                return $e->getStatus() == JobFinishedEvent::STATUS_FAILED;
+            }))
+            ->shouldBeCalledTimes(1);
+
+        $this
+            ->eventDispatcher
+            ->dispatch(Events::STAGE_FINISHED, Argument::that(function (StageFinishedEvent $e) {
+                return $e->getStatus() == StageFinishedEvent::STATUS_FAILED;
+            }))
+            ->shouldBeCalledTimes(1);
+
+        $this
+            ->eventDispatcher
+            ->dispatch(Events::RUN_FINISHED, Argument::that(function (RunFinishedEvent $e) {
+                return $e->getStatus() == RunFinishedEvent::STATUS_FAILED;
+            }))
+            ->shouldBeCalledTimes(1);
     }
 
     /**

@@ -1,12 +1,12 @@
 <?php
 
-namespace jakubsacha\Rumi\Docker;
+namespace Trivago\Rumi\Docker;
 
-use jakubsacha\Rumi\Process\VolumeInspectProcessFactory;
+use Trivago\Rumi\Process\VolumeInspectProcessFactory;
 use Symfony\Component\Process\Process;
 
 /**
- * @covers jakubsacha\Rumi\Docker\VolumeInspector
+ * @covers Trivago\Rumi\Docker\VolumeInspector
  */
 class VolumeInspectorTest extends \PHPUnit_Framework_TestCase
 {

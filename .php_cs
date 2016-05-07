@@ -26,5 +26,6 @@ return Symfony\CS\Config\Config::create()
     ->fixers([
         'concat_with_spaces',
         'header_comment',
+        'ordered_use',
     ])
 ;

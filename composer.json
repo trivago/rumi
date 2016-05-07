@@ -1,11 +1,15 @@
 {
-    "name": "jakubsacha/runner",
+    "name": "trivago/rumi",
     "require": {
         "symfony/console": "^3.0",
         "symfony/yaml": "^3.0",
         "symfony/process": "^3.0",
         "symfony/dependency-injection": "^3.0",
-        "symfony/config": "^3.0"
+        "symfony/config": "^3.0",
+        "symfony/event-dispatcher": "^3.0",
+        "guzzlehttp/guzzle": "^6.2",
+        "symfony/serializer": "^3.0",
+        "symfony/property-access": "^3.0"
     },
     "license": "Apache-2.0",
     "authors": [
@@ -16,12 +20,12 @@
     ],
     "autoload": {
         "psr-4": {
-            "jakubsacha\\Rumi\\": "src/"
+            "Trivago\\Rumi\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "jakubsacha\\Rumi\\": "test/"
+            "Trivago\\Rumi\\": "test/"
         }
     },
     "require-dev": {

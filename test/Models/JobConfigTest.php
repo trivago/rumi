@@ -5,10 +5,10 @@
  * @since 02/03/16 12:14
  */
 
-namespace jakubsacha\Rumi\Models;
+namespace Trivago\Rumi\Models;
 
 /**
- * @covers jakubsacha\Rumi\Models\JobConfig
+ * @covers Trivago\Rumi\Models\JobConfig
  */
 class JobConfigTest extends \PHPUnit_Framework_TestCase
 {

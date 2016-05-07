@@ -5,9 +5,9 @@
  * @since 24/02/16 08:26
  */
 
-namespace jakubsacha\Rumi\Commands;
+namespace Trivago\Rumi\Commands;
 
-use jakubsacha\Rumi\Process\CacheProcessFactory;
+use Trivago\Rumi\Process\CacheProcessFactory;
 use org\bovigo\vfs\vfsStream;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Process\Process;
 
 /**
- * @covers jakubsacha\Rumi\Commands\CacheRestoreCommand
+ * @covers Trivago\Rumi\Commands\CacheRestoreCommand
  */
 class CacheRestoreCommandTest extends \PHPUnit_Framework_TestCase
 {
@@ -115,7 +115,7 @@ class CacheRestoreCommandTest extends \PHPUnit_Framework_TestCase
         )->willReturn($restoreProcess->reveal())
         ->shouldBeCalled();
 
-        $this->container->set('jakubsacha.rumi.process.cache_process_factory', $factory->reveal());
+        $this->container->set('trivago.rumi.process.cache_process_factory', $factory->reveal());
 
         // when
         $returnCode = $this->SUT->run(
@@ -155,7 +155,7 @@ class CacheRestoreCommandTest extends \PHPUnit_Framework_TestCase
         )->willReturn($restoreProcess->reveal())
         ->shouldBeCalled();
 
-        $this->container->set('jakubsacha.rumi.process.cache_process_factory', $factory->reveal());
+        $this->container->set('trivago.rumi.process.cache_process_factory', $factory->reveal());
 
         // when
         $code = $this->SUT->run(

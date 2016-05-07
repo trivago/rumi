@@ -1,8 +1,8 @@
 <?php
 
-namespace jakubsacha\Rumi\Builders;
+namespace Trivago\Rumi\Builders;
 
-use jakubsacha\Rumi\Models\MetricConfig;
+use Trivago\Rumi\Models\MetricConfig;
 
 class MetricConfigBuilder
 {
@@ -22,7 +22,7 @@ class MetricConfigBuilder
     /**
      * @param $composeConfig
      *
-     * @return \jakubsacha\Rumi\Models\MetricConfig[]
+     * @return \Trivago\Rumi\Models\MetricConfig[]
      *
      * @throws \Exception
      */

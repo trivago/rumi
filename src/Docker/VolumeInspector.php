@@ -5,9 +5,9 @@
  * @since 27/02/16 14:15
  */
 
-namespace jakubsacha\Rumi\Docker;
+namespace Trivago\Rumi\Docker;
 
-use jakubsacha\Rumi\Process\VolumeInspectProcessFactory;
+use Trivago\Rumi\Process\VolumeInspectProcessFactory;
 
 class VolumeInspector
 {

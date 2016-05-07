@@ -1,12 +1,12 @@
 <?php
 
-namespace jakubsacha\Rumi\Builders;
+namespace Trivago\Rumi\Builders;
 
-use jakubsacha\Rumi\Models\JobConfig;
-use jakubsacha\Rumi\Models\MetricConfig;
+use Trivago\Rumi\Models\JobConfig;
+use Trivago\Rumi\Models\MetricConfig;
 
 /**
- * @covers jakubsacha\Rumi\Builders\JobConfigBuilder
+ * @covers Trivago\Rumi\Builders\JobConfigBuilder
  */
 class JobConfigBuilderTest extends \PHPUnit_Framework_TestCase
 {

@@ -5,12 +5,12 @@
  * @since 01/03/16 22:35
  */
 
-namespace jakubsacha\Rumi\Builders;
+namespace Trivago\Rumi\Builders;
 
-use jakubsacha\Rumi\Models\MetricConfig;
+use Trivago\Rumi\Models\MetricConfig;
 
 /**
- * @covers jakubsacha\Rumi\Builders\MetricConfigBuilder
+ * @covers Trivago\Rumi\Builders\MetricConfigBuilder
  */
 class MetricConfigBuilderTest extends \PHPUnit_Framework_TestCase
 {
