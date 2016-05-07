@@ -1,51 +1,64 @@
 <?php
-/**
- * @author jsacha
- * @since 23/02/16 08:15
+
+/*
+ * Copyright 2016 trivago GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
-namespace jakubsacha\Rumi\Process;
-
+namespace Trivago\Rumi\Process;
 
 use Symfony\Component\Process\Process;
 
 class GitCheckoutProcessFactory
 {
-    protected $fetch_command = 'GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git fetch origin';
+    protected $fetchCommand = 'GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git fetch origin';
 
-    public function getFullCloneProcess($_sRepositoryUrl)
+    public function getFullCloneProcess($repositoryUrl)
     {
-        $_oProcess = new Process(
-            "git init && git remote add origin " . $_sRepositoryUrl . ' && ' . $this->fetch_command
+        $process = new Process(
+            'git init && git remote add origin ' . $repositoryUrl . ' && ' . $this->fetchCommand
         );
-        $_oProcess->setTimeout(600)->setIdleTimeout(600);
+        $process->setTimeout(600)->setIdleTimeout(600);
 
-        return $_oProcess;
+        return $process;
     }
 
     public function getFetchProcess()
     {
-        $_oProcess = new Process($this->fetch_command);
-        $_oProcess->setTimeout(600)->setIdleTimeout(600);
+        $process = new Process($this->fetchCommand);
+        $process->setTimeout(600)->setIdleTimeout(600);
 
-        return $_oProcess;
+        return $process;
     }
 
-    public function getCheckoutCommitProcess($sCommitSha)
+    public function getCheckoutCommitProcess($commitSha)
     {
-        $_oProcess = new Process(
-            "git reset --hard && git checkout " . $sCommitSha
+        $process = new Process(
+            'git reset --hard && git checkout ' . $commitSha
         );
-        $_oProcess->setTimeout(600)->setIdleTimeout(600);
-        return $_oProcess;
+        $process->setTimeout(600)->setIdleTimeout(600);
+
+        return $process;
     }
 
-    public function getMergeProcess($sBranch)
+    public function getMergeProcess($branch)
     {
-        $_oProcess = new Process(
-            "git merge --no-edit " . $sBranch
+        $process = new Process(
+            'git merge --no-edit ' . $branch
         );
-        $_oProcess->setTimeout(60)->setIdleTimeout(60);
-        return $_oProcess;
+        $process->setTimeout(60)->setIdleTimeout(60);
+
+        return $process;
     }
 }

@@ -1,167 +1,180 @@
 <?php
-namespace jakubsacha\Rumi\Builders;
 
-use jakubsacha\Rumi\Models\JobConfig;
-use jakubsacha\Rumi\Models\MetricConfig;
+/*
+ * Copyright 2016 trivago GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+namespace Trivago\Rumi\Builders;
+
+use Trivago\Rumi\Models\JobConfig;
+use Trivago\Rumi\Models\MetricConfig;
 
 /**
- * @covers jakubsacha\Rumi\Builders\JobConfigBuilder
+ * @covers Trivago\Rumi\Builders\JobConfigBuilder
  */
 class JobConfigBuilderTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var JobConfigBuilder
      */
-    private $oSUT;
+    private $SUT;
 
     /**
      * @var MetricConfigBuilder
      */
-    private $metrics_builder;
+    private $metricsBuilder;
 
     /**
      * @var ComposeParser
      */
-    private $compose_parser;
+    private $composeParser;
 
     protected function setUp()
     {
-        $this->metrics_builder = $this->prophesize(MetricConfigBuilder::class);
-        $this->compose_parser = $this->prophesize(ComposeParser::class);
+        $this->metricsBuilder = $this->prophesize(MetricConfigBuilder::class);
+        $this->composeParser = $this->prophesize(ComposeParser::class);
 
-        $this->oSUT = new JobConfigBuilder(
-            $this->metrics_builder->reveal(),
-            $this->compose_parser->reveal()
+        $this->SUT = new JobConfigBuilder(
+            $this->metricsBuilder->reveal(),
+            $this->composeParser->reveal()
         );
     }
 
     public function testGivenEmptyJobsGiven_WhenBuildExecuted_ThenOutputIsEmptyArray()
     {
         // given
-        $aConfig = [];
+        $config = [];
 
         // when
-        $aJobs = $this->oSUT->build($aConfig);
+        $jobs = $this->SUT->build($config);
 
         // then
-        $this->assertEmpty($aJobs);
-        $this->assertTrue(is_array($aJobs));
+        $this->assertEmpty($jobs);
+        $this->assertTrue(is_array($jobs));
     }
 
     public function testGivenOneJobDefined_WhenBuildExecuted_ThenOutputIsCorrectJobObject()
     {
         // given
-        $aConfig = [
+        $config = [
             'Do something fun' => [
-            ]
+            ],
         ];
 
         // when
-        $aJobs = $this->oSUT->build($aConfig);
+        $jobs = $this->SUT->build($config);
 
         // then
-        $this->assertCount(1, $aJobs);
-        /** @var JobConfig $oJob */
-        $oJob = $aJobs[0];
+        $this->assertCount(1, $jobs);
+        /** @var JobConfig $job */
+        $job = $jobs[0];
 
-        $this->assertInstanceOf(JobConfig::class, $oJob);
-        $this->assertSame("Do something fun", $oJob->getName());
+        $this->assertInstanceOf(JobConfig::class, $job);
+        $this->assertSame('Do something fun', $job->getName());
     }
 
     public function testGivenJobWithCiImageSpecified_WhenBuildExecuted_ThenJobConfigContainsCiImage()
     {
         // given
-        $aConfig = [
+        $config = [
             'Do something fun' => [
-                'ci_image'=>'__container__',
-            ]
+                'ci_image' => '__container__',
+            ],
         ];
 
         // when
-        $aJobs = $this->oSUT->build($aConfig);
+        $jobs = $this->SUT->build($config);
 
         // then
-        $this->assertCount(1, $aJobs);
-        /** @var JobConfig $oJob */
-        $oJob = $aJobs[0];
+        $this->assertCount(1, $jobs);
+        /** @var JobConfig $job */
+        $job = $jobs[0];
 
-        $this->assertSame("__container__", $oJob->getCiContainer());
+        $this->assertSame('__container__', $job->getCiContainer());
     }
 
     public function testGivenJobWithEntypointSpecified_WhenBuildExecuted_ThenJobConfigContainsEntrypoint()
     {
         // given
-        $aConfig = [
+        $config = [
             'Do something fun' => [
-                'entrypoint'=>'__entrypoint__',
-            ]
+                'entrypoint' => '__entrypoint__',
+            ],
         ];
 
         // when
-        $aJobs = $this->oSUT->build($aConfig);
+        $jobs = $this->SUT->build($config);
 
         // then
-        $this->assertCount(1, $aJobs);
-        /** @var JobConfig $oJob */
-        $oJob = $aJobs[0];
+        $this->assertCount(1, $jobs);
+        /** @var JobConfig $job */
+        $job = $jobs[0];
 
-        $this->assertSame("__entrypoint__", $oJob->getEntryPoint());
+        $this->assertSame('__entrypoint__', $job->getEntryPoint());
     }
 
     public function testGivenJobWithCommandSpecified_WhenBuildExecuted_ThenJobConfigContainsCommand()
     {
         // given
-        $aCommands = ['__commands__'];
-        $aConfig = [
+        $commands = ['__commands__'];
+        $config = [
             'Do something fun' => [
-                'commands'=> $aCommands,
-            ]
+                'commands' => $commands,
+            ],
         ];
 
         // when
-        $aJobs = $this->oSUT->build($aConfig);
+        $jobs = $this->SUT->build($config);
 
         // then
-        $this->assertCount(1, $aJobs);
-        /** @var JobConfig $oJob */
-        $oJob = $aJobs[0];
+        $this->assertCount(1, $jobs);
+        /** @var JobConfig $job */
+        $job = $jobs[0];
 
-        $this->assertSame($aCommands, $oJob->getCommands());
+        $this->assertSame($commands, $job->getCommands());
     }
 
     public function testGivenComposeFileContainsMetrics_WhenBuildExecuted_ThenMetricsAreBuild()
     {
         // given
-        $aConfig = [
-            'Job one' =>
-            [
-                'docker'=> [
-                    'image' => 'php:latest'
+        $config = [
+            'Job one' => [
+                'docker' => [
+                    'image' => 'php:latest',
                 ],
-                'metrics' =>[
-                    'Some fun metric' =>
-                    [
+                'metrics' => [
+                    'Some fun metric' => [
 
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ];
 
         $metricConfig = [new MetricConfig('name', 'docker_compose', 'ci_container', 'entrypoint', 'commands')];
 
-        $this->metrics_builder
-            ->build(['Some fun metric' =>
-                [
+        $this->metricsBuilder
+            ->build(['Some fun metric' => [
 
                 ]])
             ->willReturn($metricConfig)
             ->shouldBeCalled();
 
         // when
-        $aJobConfigs = $this->oSUT->build($aConfig);
+        $jobConfigs = $this->SUT->build($config);
 
         // then
-        $this->assertContainsOnlyInstancesOf($metricConfig[0], $aJobConfigs[0]->getMetrics());
+        $this->assertContainsOnlyInstancesOf($metricConfig[0], $jobConfigs[0]->getMetrics());
     }
-
 }

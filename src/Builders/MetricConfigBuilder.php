@@ -1,43 +1,61 @@
 <?php
 
-namespace jakubsacha\Rumi\Builders;
+/*
+ * Copyright 2016 trivago GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-use jakubsacha\Rumi\Models\MetricConfig;
+namespace Trivago\Rumi\Builders;
+
+use Trivago\Rumi\Models\MetricConfig;
 
 class MetricConfigBuilder
 {
     /**
      * @var ComposeParser
      */
-    private $compose_handler;
+    private $composeHandler;
 
     /**
-     * @param ComposeParser $compose_handler
+     * @param ComposeParser $composeHandler
      */
-    public function __construct(ComposeParser $compose_handler)
+    public function __construct(ComposeParser $composeHandler)
     {
-        $this->compose_handler = $compose_handler;
+        $this->composeHandler = $composeHandler;
     }
 
     /**
-     * @param $compose_config
-     * @return \jakubsacha\Rumi\Models\MetricConfig[]
+     * @param $composeConfig
+     *
      * @throws \Exception
+     *
+     * @return \Trivago\Rumi\Models\MetricConfig[]
      */
-    public function build($compose_config)
+    public function build($composeConfig)
     {
-        $aMetrics = [];
+        $metrics = [];
 
-        foreach ($compose_config as $name => $config){
-            $aMetrics[] = new MetricConfig(
+        foreach ($composeConfig as $name => $config) {
+            $metrics[] = new MetricConfig(
                 $name,
-                $this->compose_handler->parseComposePart(!empty($config['docker']) ? $config['docker'] : null),
+                $this->composeHandler->parseComposePart(!empty($config['docker']) ? $config['docker'] : null),
                 !empty($config['ci_image']) ? $config['ci_image'] : null,
                 !empty($config['entrypoint']) ? $config['entrypoint'] : null,
                 !empty($config['commands']) ? $config['commands'] : null
             );
         }
 
-        return $aMetrics;
+        return $metrics;
     }
 }

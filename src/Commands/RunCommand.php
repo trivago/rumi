@@ -1,56 +1,91 @@
 <?php
 
-namespace jakubsacha\Rumi\Commands;
+/*
+ * Copyright 2016 trivago GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-use jakubsacha\Rumi\Builders\DockerComposeYamlBuilder;
-use jakubsacha\Rumi\Exceptions\CommandFailedException;
-use jakubsacha\Rumi\Models\RunningCommand;
-use jakubsacha\Rumi\Models\JobConfig;
-use jakubsacha\Rumi\Timer;
+namespace Trivago\Rumi\Commands;
+
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Yaml\Parser;
+use Trivago\Rumi\Builders\DockerComposeYamlBuilder;
+use Trivago\Rumi\Builders\JobConfigBuilder;
+use Trivago\Rumi\Events;
+use Trivago\Rumi\Events\JobFinishedEvent;
+use Trivago\Rumi\Events\JobStartedEvent;
+use Trivago\Rumi\Events\RunFinishedEvent;
+use Trivago\Rumi\Events\RunStartedEvent;
+use Trivago\Rumi\Events\StageFinishedEvent;
+use Trivago\Rumi\Events\StageStartedEvent;
+use Trivago\Rumi\Exceptions\CommandFailedException;
+use Trivago\Rumi\Models\JobConfig;
+use Trivago\Rumi\Models\RunConfig;
+use Trivago\Rumi\Models\RunningCommand;
+use Trivago\Rumi\Process\RunningProcessesFactory;
+use Trivago\Rumi\Timer;
 
 class RunCommand extends Command
 {
     const CONFIG_FILE = '.rumi.yml';
+    const GIT_COMMIT = 'git_commit';
+    const VOLUME = 'volume';
 
-    private $volume;
     /**
-     * @var DockerComposeYamlBuilder
+     * @var string|null
      */
-    private $oDockerComposeYmlBuilder;
+    private $volume;
 
     /**
      * @var string
      */
-    private $sWorkingDir;
+    private $workingDir;
+
     /**
      * @var ContainerInterface
      */
-    private $oContainer;
+    private $container;
 
     /**
-     * RunCommand constructor.
-     * @param ContainerInterface $oContainer
+     * @var EventDispatcherInterface
      */
-    public function __construct(ContainerInterface $oContainer)
+    private $eventDispatcher;
+
+    /**
+     * @param ContainerInterface       $container
+     * @param EventDispatcherInterface $eventDispatcher
+     */
+    public function __construct(ContainerInterface $container, EventDispatcherInterface $eventDispatcher)
     {
         parent::__construct();
-        $this->oContainer = $oContainer;
+        $this->container = $container;
+        $this->eventDispatcher = $eventDispatcher;
     }
-
 
     protected function configure()
     {
         $this
             ->setName('run')
             ->setDescription('Run tests')
-            ->addArgument('volume', InputArgument::OPTIONAL, "Docker volume containing data");
-        $this->sWorkingDir = getcwd();
+            ->addArgument(self::VOLUME, InputArgument::OPTIONAL, 'Docker volume containing data')
+            ->addArgument(self::GIT_COMMIT, InputArgument::OPTIONAL, 'Commit id');
+        $this->workingDir = getcwd();
     }
 
     /**
@@ -58,7 +93,7 @@ class RunCommand extends Command
      */
     public function setWorkingDir($dir)
     {
-        $this->sWorkingDir = $dir;
+        $this->workingDir = $dir;
     }
 
     /**
@@ -66,144 +101,191 @@ class RunCommand extends Command
      */
     private function getWorkingDir()
     {
-        if (empty($this->sWorkingDir))
-        {
-            return null;
+        if (empty($this->workingDir)) {
+            return;
         }
-        return $this->sWorkingDir . '/';
+
+        return $this->workingDir . '/';
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        try
-        {
-            if (trim($input->getArgument('volume')) != "" ){
-                $this->volume = $input->getArgument('volume');
-            }
-            else
-            {
+        try {
+            if (trim($input->getArgument('volume')) != '') {
+                $this->volume = $input->getArgument(self::VOLUME);
+            } else {
                 $this->volume = $this->getWorkingDir();
             }
-            $iTime = Timer::execute(function() use ($output){
-                $aCI = $this->readCiConfigFile();
-                $oJobConfigBuilder = $this->oContainer->get('jakubsacha.rumi.job_config_builder');
+            $timeTaken = Timer::execute(function () use ($input, $output) {
+                $runConfig = $this->readCiConfigFile();
 
-                foreach ($aCI['stages'] as $sStageName => $aStageConfig)
-                {
-                    $aJobs = $oJobConfigBuilder->build($aStageConfig);
+                /** @var JobConfigBuilder $jobConfigBuilder */
+                $jobConfigBuilder = $this->container->get('trivago.rumi.job_config_builder');
 
-                    $output->writeln(sprintf('<info>Stage: "%s"</info>', $sStageName));
+                $this->eventDispatcher->dispatch(
+                    Events::RUN_STARTED, new RunStartedEvent($runConfig)
+                );
 
-                    $iTime = Timer::execute(
-                        function() use ($aJobs, $output) {
-                            $this->executeStage($aJobs, $output);
-                        }
-                    );
+                foreach ($runConfig->getStages() as $stageName => $stageConfig) {
+                    try {
+                        $jobs = $jobConfigBuilder->build($stageConfig);
 
-                    $output->writeln("<info>Stage completed: ".$iTime."</info>" . PHP_EOL);
+                        $this->eventDispatcher->dispatch(
+                            Events::STAGE_STARTED,
+                            new StageStartedEvent($stageName, $jobs)
+                        );
+
+                        $output->writeln(sprintf('<info>Stage: "%s"</info>', $stageName));
+
+                        $time = Timer::execute(
+                            function () use ($jobs, $output) {
+                                $this->executeStage($jobs, $output);
+                            }
+                        );
+
+                        $output->writeln('<info>Stage completed: ' . $time . '</info>' . PHP_EOL);
+
+                        $this->eventDispatcher->dispatch(
+                            Events::STAGE_FINISHED,
+                            new StageFinishedEvent(StageFinishedEvent::STATUS_SUCCESS, $stageName)
+                        );
+                    } catch (\Exception $e) {
+                        $this->eventDispatcher->dispatch(
+                            Events::STAGE_FINISHED,
+                            new StageFinishedEvent(StageFinishedEvent::STATUS_FAILED, $stageName)
+                        );
+
+                        throw $e;
+                    }
                 }
+
+                $this->eventDispatcher->dispatch(Events::RUN_FINISHED, new RunFinishedEvent(RunFinishedEvent::STATUS_SUCCESS));
             });
 
-            $output->writeln("<info>Build successful: ".$iTime."</info>");
-        } catch (\Exception $e)
-        {
-            $output->writeln("<error>" . $e->getMessage() . "</error>");
-            return $e->getCode() > 0 ? $e->getCode(): ReturnCodes::FAILED;
+            $output->writeln('<info>Build successful: ' . $timeTaken . '</info>');
+        } catch (\Exception $e) {
+            $output->writeln('<error>' . $e->getMessage() . '</error>');
+
+            $this->eventDispatcher->dispatch(Events::RUN_FINISHED, new RunFinishedEvent(RunFinishedEvent::STATUS_FAILED));
+
+            return $e->getCode() > 0 ? $e->getCode() : ReturnCodes::FAILED;
         }
+
         return 0;
     }
 
     /**
-     * @return array
      * @throws \Exception
+     *
+     * @return RunConfig
      */
     private function readCiConfigFile()
     {
-        if (!file_exists($this->getWorkingDir().self::CONFIG_FILE))
-        {
-            throw new \Exception('Required file \'' . RunCommand::CONFIG_FILE . '\' does not exist', ReturnCodes::RUMI_YML_DOES_NOT_EXIST);
+        if (!file_exists($this->getWorkingDir() . self::CONFIG_FILE)) {
+            throw new \Exception('Required file \'' . self::CONFIG_FILE . '\' does not exist', ReturnCodes::RUMI_YML_DOES_NOT_EXIST);
         }
-        $aParser = new Parser();
+        $parser = new Parser();
 
-        return $aParser->parse(file_get_contents($this->getWorkingDir().self::CONFIG_FILE));
+        $ciConfig = $parser->parse(file_get_contents($this->getWorkingDir() . self::CONFIG_FILE));
+
+        return new RunConfig($ciConfig['stages']);
     }
 
-    private function executeStage($aJobs, OutputInterface $output)
+    private function executeStage($jobs, OutputInterface $output)
     {
-        $this->handleProcesses($output, $this->startStageProcesses($aJobs));
+        $this->handleProcesses($output, $this->startStageProcesses($jobs));
     }
 
     /**
-     * @param JobConfig[] $aJobs
+     * @param JobConfig[] $jobs
+     *
      * @return array
      */
-    private function startStageProcesses($aJobs)
+    private function startStageProcesses($jobs)
     {
-        $_oDockerComposeYamlBuilder = $this->oContainer->get('jakubsacha.rumi.docker_compose_yaml_builder');
+        $processes = [];
 
-        $this->oDockerComposeYmlBuilder = $this->oContainer->get('jakubsacha.rumi.docker_compose_yaml_builder');
-        $aProcesses = [];
-        foreach ($aJobs as $oJobConfig)
-        {
-            $oRunningCommand = new RunningCommand(
-                $oJobConfig,
-                $_oDockerComposeYamlBuilder->build($oJobConfig, $this->volume),
-                $this->oContainer->get('jakubsacha.rumi.process.running_processes_factory')
+        /** @var DockerComposeYamlBuilder $dockerComposeYamlBuilder */
+        $dockerComposeYamlBuilder = $this->container->get('trivago.rumi.docker_compose_yaml_builder');
+
+        /** @var RunningProcessesFactory $runningProcessFactory */
+        $runningProcessFactory = $this->container->get('trivago.rumi.process.running_processes_factory');
+
+        foreach ($jobs as $jobConfig) {
+            $runningCommand = new RunningCommand(
+                $jobConfig,
+                $dockerComposeYamlBuilder->build($jobConfig, $this->volume),
+                $runningProcessFactory
             );
 
-            $oRunningCommand->start();
+            $this->eventDispatcher->dispatch(Events::JOB_STARTED, new JobStartedEvent($jobConfig->getName()));
 
-            $aProcesses[] = $oRunningCommand;
+            $runningCommand->start();
+
+            $processes[] = $runningCommand;
         }
 
-        return $aProcesses;
+        return $processes;
     }
 
     /**
-     * @param OutputInterface $output
-     * @param RunningCommand[] $aProcesses
+     * @param OutputInterface  $output
+     * @param RunningCommand[] $processes
+     *
      * @throws \Exception
      */
-    private function handleProcesses(OutputInterface $output, $aProcesses)
+    private function handleProcesses(OutputInterface $output, $processes)
     {
-        try
-        {
-            while (count($aProcesses))
-            {
-                foreach ($aProcesses as $id => $oRunningCommand)
-                {
-                    if ($oRunningCommand->isRunning())
-                    {
+        try {
+            while (count($processes)) {
+                foreach ($processes as $id => $runningCommand) {
+                    if ($runningCommand->isRunning()) {
                         continue;
                     }
-                    $output->writeln(sprintf('<info>Executing job: %s</info>', $oRunningCommand->getJobName()));
-                    $output->write($oRunningCommand->getOutput());
-                    if (!$oRunningCommand->getProcess()->isSuccessful())
-                    {
-                        $output->write($oRunningCommand->getProcess()->getErrorOutput());
-                        throw new CommandFailedException($oRunningCommand->getCommand());
-                    }
+                    unset($processes[$id]);
 
-                    $oRunningCommand->tearDown();
-                    unset($aProcesses[$id]);
+                    $output->writeln(sprintf('<info>Executing job: %s</info>', $runningCommand->getJobName()));
+                    $output->write($runningCommand->getOutput());
+
+                    $isSuccessful = $runningCommand->getProcess()->isSuccessful();
+
+                    $this->eventDispatcher->dispatch(
+                        Events::JOB_FINISHED, new JobFinishedEvent(
+                            $isSuccessful ? JobFinishedEvent::STATUS_SUCCESS : JobFinishedEvent::STATUS_FAILED,
+                            $runningCommand->getJobName(),
+                            $runningCommand->getOutput()
+                        )
+                    );
+
+                    $runningCommand->tearDown();
+
+                    if (!$isSuccessful) {
+                        $output->write($runningCommand->getProcess()->getErrorOutput());
+                        throw new CommandFailedException($runningCommand->getCommand());
+                    }
                 }
                 usleep(500000);
             }
-        }
-        catch (CommandFailedException $e)
-        {
-            $output->writeln("<error>Command '".$e->getMessage()."' failed</error>");
-            if (!empty($aProcesses))
-            {
-                $output->writeln("Shutting down jobs in background...", OutputInterface::VERBOSITY_VERBOSE);
-                foreach ($aProcesses as $oRunningCommand)
-                {
-                    $output->writeln("- " . $oRunningCommand->getCommand(), OutputInterface::VERBOSITY_VERBOSE);
-                    $oRunningCommand->tearDown();
+        } catch (CommandFailedException $e) {
+            $output->writeln("<error>Command '" . $e->getMessage() . "' failed</error>");
+            if (!empty($processes)) {
+                $output->writeln('Shutting down jobs in background...', OutputInterface::VERBOSITY_VERBOSE);
+                foreach ($processes as $runningCommand) {
+                    $output->writeln('- ' . $runningCommand->getCommand(), OutputInterface::VERBOSITY_VERBOSE);
+
+                    $this->eventDispatcher->dispatch(
+                        Events::JOB_FINISHED,
+                        new JobFinishedEvent(
+                            JobFinishedEvent::STATUS_ABORTED,
+                            $runningCommand->getJobName(),
+                            $runningCommand->getOutput()
+                        )
+                    );
+                    $runningCommand->tearDown();
                 }
             }
 
-            throw new \Exception("Stage failed", ReturnCodes::FAILED);
+            throw new \Exception('Stage failed', ReturnCodes::FAILED);
         }
     }
 }

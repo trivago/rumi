@@ -1,9 +1,23 @@
 <?php
 
-namespace jakubsacha\Rumi\Commands;
+/*
+ * Copyright 2016 trivago GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-use jakubsacha\Rumi\Process\GitCheckoutProcessFactory;
-use jakubsacha\Rumi\Timer;
+namespace Trivago\Rumi\Commands;
+
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,26 +25,29 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Parser;
+use Trivago\Rumi\Process\GitCheckoutProcessFactory;
+use Trivago\Rumi\Timer;
 
 class CheckoutCommand extends Command
 {
     /**
      * @var ContainerInterface
      */
-    private $oContainer;
+    private $container;
     /**
      * @var string
      */
-    private $sWorkingDir;
+    private $workingDir;
 
     /**
      * RunCommand constructor.
-     * @param ContainerInterface $oContainer
+     *
+     * @param ContainerInterface $container
      */
-    public function __construct(ContainerInterface $oContainer)
+    public function __construct(ContainerInterface $container)
     {
         parent::__construct();
-        $this->oContainer = $oContainer;
+        $this->container = $container;
     }
 
     protected function configure()
@@ -38,10 +55,10 @@ class CheckoutCommand extends Command
         $this
             ->setName('checkout')
             ->setDescription('Checkout code')
-            ->addArgument('repository', InputArgument::REQUIRED, "Repository url")
-            ->addArgument('commit', InputArgument::REQUIRED, "Commit id/branch name to checkout");
+            ->addArgument('repository', InputArgument::REQUIRED, 'Repository url')
+            ->addArgument('commit', InputArgument::REQUIRED, 'Commit id/branch name to checkout');
 
-        $this->sWorkingDir = getcwd();
+        $this->workingDir = getcwd();
     }
 
     /**
@@ -49,7 +66,7 @@ class CheckoutCommand extends Command
      */
     public function setWorkingDir($dir)
     {
-        $this->sWorkingDir = $dir;
+        $this->workingDir = $dir;
     }
 
     /**
@@ -57,58 +74,52 @@ class CheckoutCommand extends Command
      */
     private function getWorkingDir()
     {
-        if (empty($this->sWorkingDir))
-        {
-            return null;
+        if (empty($this->workingDir)) {
+            return;
         }
-        return $this->sWorkingDir . '/';
+
+        return $this->workingDir . '/';
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        try
-        {
-            /** @var GitCheckoutProcessFactory $_oProcessFactory */
-            $_oProcessFactory =  $this
-                ->oContainer
-                ->get('jakubsacha.rumi.process.git_checkout_process_factory');
+        try {
+            /** @var GitCheckoutProcessFactory $processFactory */
+            $processFactory = $this
+                ->container
+                ->get('trivago.rumi.process.git_checkout_process_factory');
 
-            if (!file_exists($this->getWorkingDir() . ".git"))
-            {
-                $output->writeln("Cloning...");
-                $_oProcess =
-                    $_oProcessFactory->getFullCloneProcess($input->getArgument('repository'));
-            }
-            else
-            {
-                $output->writeln("Fetching changes...");
-                $_oProcess =
-                    $_oProcessFactory->getFetchProcess();
+            if (!file_exists($this->getWorkingDir() . '.git')) {
+                $output->writeln('Cloning...');
+                $process =
+                    $processFactory->getFullCloneProcess($input->getArgument('repository'));
+            } else {
+                $output->writeln('Fetching changes...');
+                $process =
+                    $processFactory->getFetchProcess();
             }
 
-            $output->writeln($this->executeProcess($_oProcess));
+            $output->writeln($this->executeProcess($process));
 
-            $output->writeln("Checking out " . $input->getArgument('commit') . ' ');
-            $_oProcess = $_oProcessFactory->getCheckoutCommitProcess($input->getArgument('commit'));
+            $output->writeln('Checking out ' . $input->getArgument('commit') . ' ');
+            $process = $processFactory->getCheckoutCommitProcess($input->getArgument('commit'));
 
-            $output->writeln($this->executeProcess($_oProcess));
+            $output->writeln($this->executeProcess($process));
 
-            $_sMergeBranch = $this->getMergeBranch();
-            if (!empty($_sMergeBranch))
-            {
-                $output->writeln("Merging with " . $_sMergeBranch);
+            $mergeBranch = $this->getMergeBranch();
+            if (!empty($mergeBranch)) {
+                $output->writeln('Merging with ' . $mergeBranch);
                 try {
-                    $this->executeProcess($_oProcessFactory->getMergeProcess($_sMergeBranch));
-                }
-                catch (\Exception $e){
-                    throw new \Exception("Can not clearly merge with " . $_sMergeBranch);
+                    $this->executeProcess($processFactory->getMergeProcess($mergeBranch));
+                } catch (\Exception $e) {
+                    throw new \Exception('Can not clearly merge with ' . $mergeBranch);
                 }
             }
 
-            $output->writeln("<info>Checkout done</info>");
-        } catch (\Exception $e)
-        {
-            $output->writeln("<error>" . $e->getMessage() . "</error>");
+            $output->writeln('<info>Checkout done</info>');
+        } catch (\Exception $e) {
+            $output->writeln('<error>' . $e->getMessage() . '</error>');
+
             return -1;
         }
 
@@ -116,55 +127,51 @@ class CheckoutCommand extends Command
     }
 
     /**
-     * @param $_oProcess
+     * @param $process
+     *
      * @return string
      */
-    protected function executeProcess(Process $_oProcess)
+    protected function executeProcess(Process $process)
     {
-        $_iTime = Timer::execute(
-            function () use ($_oProcess)
-            {
-                $_oProcess->run();
+        $time = Timer::execute(
+            function () use ($process) {
+                $process->run();
 
-                if (!$_oProcess->isSuccessful())
-                {
-                    throw new \Exception($_oProcess->getErrorOutput());
+                if (!$process->isSuccessful()) {
+                    throw new \Exception($process->getErrorOutput());
                 }
             }
         );
 
-        return $_iTime;
+        return $time;
     }
 
     private function getMergeBranch()
     {
         try {
-            $oConfig = $this->readCiConfigFile();
+            $config = $this->readCiConfigFile();
 
-            if (isset($oConfig['merge_branch'])) {
-                return $oConfig['merge_branch'];
+            if (isset($config['merge_branch'])) {
+                return $config['merge_branch'];
             }
-        }
-        catch (\Exception $e)
-        {
-
+        } catch (\Exception $e) {
         }
 
-        return null;
+        return;
     }
 
     /**
-     * @return array
      * @throws \Exception
+     *
+     * @return array
      */
     private function readCiConfigFile()
     {
-        if (!file_exists($this->getWorkingDir().RunCommand::CONFIG_FILE))
-        {
+        if (!file_exists($this->getWorkingDir() . RunCommand::CONFIG_FILE)) {
             throw new \Exception('Required file \'' . RunCommand::CONFIG_FILE . '\' does not exist');
         }
-        $aParser = new Parser();
+        $parser = new Parser();
 
-        return $aParser->parse(file_get_contents($this->getWorkingDir() . RunCommand::CONFIG_FILE));
+        return $parser->parse(file_get_contents($this->getWorkingDir() . RunCommand::CONFIG_FILE));
     }
 }

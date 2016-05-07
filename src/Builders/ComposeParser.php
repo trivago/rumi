@@ -1,45 +1,61 @@
 <?php
 
-namespace jakubsacha\Rumi\Builders;
+/*
+ * Copyright 2016 trivago GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+namespace Trivago\Rumi\Builders;
 
 use Symfony\Component\Yaml\Parser;
 
 class ComposeParser
 {
     /**
-     * @param $sDockerFilePath
-     * @return array|mixed|string
+     * @param $dockerFilePath
+     *
      * @throws \Exception
+     *
+     * @return array|mixed|string
      */
-    public function parseComposePart($sDockerFilePath)
+    public function parseComposePart($dockerFilePath)
     {
-        if (is_string($sDockerFilePath))
-        {
-            return $this->loadDockerCompose($sDockerFilePath);
+        if (is_string($dockerFilePath)) {
+            return $this->loadDockerCompose($dockerFilePath);
         }
 
-        if (is_array($sDockerFilePath))
-        {
-            return $sDockerFilePath;
+        if (is_array($dockerFilePath)) {
+            return $dockerFilePath;
         }
 
-        throw new \Exception(sprintf('Invalid docker configuration %s', $sDockerFilePath));
+        throw new \Exception(sprintf('Invalid docker configuration %s', $dockerFilePath));
     }
 
     /**
-     * @param $sDockerFilePath
-     * @return mixed
+     * @param $dockerFilePath
+     *
      * @throws \Exception
+     *
+     * @return mixed
      */
-    private function loadDockerCompose($sDockerFilePath)
+    private function loadDockerCompose($dockerFilePath)
     {
-        if (!file_exists($sDockerFilePath))
-        {
-            throw new \Exception(sprintf("File %s does not exist", $sDockerFilePath));
+        if (!file_exists($dockerFilePath)) {
+            throw new \Exception(sprintf('File %s does not exist', $dockerFilePath));
         }
-        $oParser = new Parser();
-        $aParsed = $oParser->parse(file_get_contents($sDockerFilePath));
+        $parser = new Parser();
 
-        return $aParsed;
+        return $parser->parse(file_get_contents($dockerFilePath));
     }
 }

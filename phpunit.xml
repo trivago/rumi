@@ -24,8 +24,7 @@
     </testsuites>
 
     <logging>
-        <log type="coverage-html" target="clover-html" charset="UTF-8" yui="true" highlight="true" lowUpperBound="35" highLowerBound="70"/>
-        <log type="coverage-clover" target="clover.xml"/>
+        <log type="coverage-text" target="php://stdout" showUncoveredFiles="false" showOnlySummary="true" />
     </logging>
 
     <filter>

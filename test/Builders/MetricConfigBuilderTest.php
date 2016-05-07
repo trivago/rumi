@@ -1,35 +1,46 @@
 <?php
-/**
- * @author jsacha
- * @since 01/03/16 22:35
+
+/*
+ * Copyright 2016 trivago GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
-namespace jakubsacha\Rumi\Builders;
+namespace Trivago\Rumi\Builders;
 
-
-use jakubsacha\Rumi\Models\MetricConfig;
+use Trivago\Rumi\Models\MetricConfig;
 
 /**
- * @covers jakubsacha\Rumi\Builders\MetricConfigBuilder
+ * @covers Trivago\Rumi\Builders\MetricConfigBuilder
  */
 class MetricConfigBuilderTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var MetricConfigBuilder
      */
-    private $oSUT;
+    private $SUT;
 
     /**
      * @var ComposeParser
      */
-    private $compose_parser;
+    private $composeParser;
 
     protected function setUp()
     {
-        $this->compose_parser = $this->prophesize(ComposeParser::class);
+        $this->composeParser = $this->prophesize(ComposeParser::class);
 
-        $this->oSUT = new MetricConfigBuilder(
-            $this->compose_parser->reveal()
+        $this->SUT = new MetricConfigBuilder(
+            $this->composeParser->reveal()
         );
     }
 
@@ -38,11 +49,10 @@ class MetricConfigBuilderTest extends \PHPUnit_Framework_TestCase
         //given
 
         //when
-        $oSth = $this->oSUT->build(['jobName' => ['docker'=>['image'=>'php']]]);
+        $metricConfig = $this->SUT->build(['jobName' => ['docker' => ['image' => 'php']]]);
 
         // then
-        $this->assertContainsOnlyInstancesOf(MetricConfig::class, $oSth);
-        $this->assertEquals('jobName', $oSth[0]->getName());
+        $this->assertContainsOnlyInstancesOf(MetricConfig::class, $metricConfig);
+        $this->assertEquals('jobName', $metricConfig[0]->getName());
     }
-
 }

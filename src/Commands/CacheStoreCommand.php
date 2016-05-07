@@ -1,9 +1,23 @@
 <?php
 
-namespace jakubsacha\Rumi\Commands;
+/*
+ * Copyright 2016 trivago GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-use jakubsacha\Rumi\Exceptions\SkipException;
-use jakubsacha\Rumi\Timer;
+namespace Trivago\Rumi\Commands;
+
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -12,27 +26,30 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Parser;
+use Trivago\Rumi\Exceptions\SkipException;
+use Trivago\Rumi\Timer;
 
 class CacheStoreCommand extends Command
 {
     /**
      * @var ContainerInterface
      */
-    private $oContainer;
+    private $container;
 
     /**
      * @var string
      */
-    private $sWorkingDir = null;
+    private $workingDir = null;
 
     /**
      * RunCommand constructor.
-     * @param ContainerInterface $oContainer
+     *
+     * @param ContainerInterface $container
      */
-    public function __construct(ContainerInterface $oContainer)
+    public function __construct(ContainerInterface $container)
     {
         parent::__construct();
-        $this->oContainer = $oContainer;
+        $this->container = $container;
     }
 
     protected function configure()
@@ -40,18 +57,17 @@ class CacheStoreCommand extends Command
         $this
             ->setName('cache:store')
             ->setDescription('Store cache')
-            ->addArgument('cache_dir', InputArgument::REQUIRED, "cache directory")
-            ->addArgument('git_repository', InputArgument::REQUIRED, "repository")
-            ->addArgument('git_branch', InputArgument::REQUIRED, "currently built branch");
+            ->addArgument('cache_dir', InputArgument::REQUIRED, 'cache directory')
+            ->addArgument('git_repository', InputArgument::REQUIRED, 'repository')
+            ->addArgument('git_branch', InputArgument::REQUIRED, 'currently built branch');
     }
-
 
     /**
      * @param $dir
      */
     public function setWorkingDir($dir)
     {
-        $this->sWorkingDir = $dir;
+        $this->workingDir = $dir;
     }
 
     /**
@@ -59,61 +75,57 @@ class CacheStoreCommand extends Command
      */
     private function getWorkingDir()
     {
-        if (empty($this->sWorkingDir))
-        {
-            return null;
+        if (empty($this->workingDir)) {
+            return;
         }
-        return $this->sWorkingDir . '/';
+
+        return $this->workingDir . '/';
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        try
-        {
+        try {
             $this->SkipIfConfigFileDoesNotExist();
 
-            $aCiConfig = $this->readCiConfigFile();
-            $sCacheDir = $input->getArgument('cache_dir').'/'.md5($input->getArgument('git_repository'));
+            $ciConfig = $this->readCiConfigFile();
+            $cacheDir = $input->getArgument('cache_dir') . '/' . md5($input->getArgument('git_repository'));
 
-            $this->SkipIfCacheIsEmpty($aCiConfig);
+            $this->SkipIfCacheIsEmpty($ciConfig);
             $this->SkipIfCacheDirDoesNotExist($input);
-            $this->SkipIfNotMasterAndCacheFilled($input->getArgument('git_branch'), $sCacheDir);
+            $this->SkipIfNotMasterAndCacheFilled($input->getArgument('git_branch'), $cacheDir);
 
-            $this->createCacheDirectory($sCacheDir);
+            $this->createCacheDirectory($cacheDir);
 
-            foreach ($aCiConfig['cache'] as $sDir)
-            {
-                $output->write("Storing cache for: " . $sDir . "... ");
+            foreach ($ciConfig['cache'] as $dir) {
+                $output->write('Storing cache for: ' . $dir . '... ');
 
-                $oProcess = $this
-                    ->oContainer
-                    ->get('jakubsacha.rumi.process.cache_process_factory')
-                    ->getCacheStoreProcess($sDir, $sCacheDir);
+                $process = $this
+                    ->container
+                    ->get('trivago.rumi.process.cache_process_factory')
+                    ->getCacheStoreProcess($dir, $cacheDir);
 
-                $sTime = Timer::execute(function() use ($oProcess){
-                    $oProcess->run();
+                $time = Timer::execute(function () use ($process) {
+                    $process->run();
                 });
 
-                $output->writeln($sTime);
+                $output->writeln($time);
 
-                if (!$oProcess->isSuccessful())
-                {
-                    throw new Exception($oProcess->getOutput() . $oProcess->getErrorOutput());
+                if (!$process->isSuccessful()) {
+                    throw new Exception($process->getOutput() . $process->getErrorOutput());
                 }
             }
 
-            $output->writeln("<info>Cache store done</info>");
-        }
-        catch (SkipException $e)
-        {
-            $output->writeln("<info>" . $e->getMessage() . "</info>");
+            $output->writeln('<info>Cache store done</info>');
+        } catch (SkipException $e) {
+            $output->writeln('<info>' . $e->getMessage() . '</info>');
+
             return 0;
-        }
-        catch (\Exception $e)
-        {
-            $output->writeln("<error>" . $e->getMessage() . "</error>");
+        } catch (\Exception $e) {
+            $output->writeln('<error>' . $e->getMessage() . '</error>');
+
             return -1;
         }
+
         return 0;
     }
 
@@ -122,81 +134,77 @@ class CacheStoreCommand extends Command
      */
     protected function readCiConfigFile()
     {
-        $aParser = new Parser();
-        $aCiConfig = $aParser->parse(file_get_contents($this->getWorkingDir().RunCommand::CONFIG_FILE));
+        $parser = new Parser();
 
-        return $aCiConfig;
+        return $parser->parse(file_get_contents($this->getWorkingDir() . RunCommand::CONFIG_FILE));
     }
 
     /**
-     * @param $sCacheDir
+     * @param $cacheDir
+     *
      * @return Process
      */
-    protected function createCacheDirectory($sCacheDir)
+    protected function createCacheDirectory($cacheDir)
     {
-        if (file_exists($sCacheDir . '/data/'))
-        {
+        if (file_exists($cacheDir . '/data/')) {
             return;
         }
 
-        $oProcess = $this
-            ->oContainer
-            ->get('jakubsacha.rumi.process.cache_process_factory')
-            ->getCreateCacheDirectoryProcess($sCacheDir);
+        $process = $this
+            ->container
+            ->get('trivago.rumi.process.cache_process_factory')
+            ->getCreateCacheDirectoryProcess($cacheDir);
 
-        $oProcess->run();
+        $process->run();
     }
 
     /**
-     * @param $aCiConfig
+     * @param $ciConfig
+     *
      * @throws SkipException
      */
-    protected function SkipIfCacheIsEmpty($aCiConfig)
+    protected function SkipIfCacheIsEmpty($ciConfig)
     {
-        if (empty($aCiConfig['cache']))
-        {
-            throw new SkipException("Cache config is empty. Skipping.");
+        if (empty($ciConfig['cache'])) {
+            throw new SkipException('Cache config is empty. Skipping.');
         }
     }
 
     /**
      * @param InputInterface $input
+     *
      * @throws SkipException
      */
     protected function SkipIfCacheDirDoesNotExist(InputInterface $input)
     {
-        if (!file_exists($input->getArgument('cache_dir')))
-        {
-            throw new SkipException("Destination cache directory does not exist. Skipping.");
+        if (!file_exists($input->getArgument('cache_dir'))) {
+            throw new SkipException('Destination cache directory does not exist. Skipping.');
         }
     }
 
     protected function SkipIfConfigFileDoesNotExist()
     {
-        if (!file_exists($this->getWorkingDir().RunCommand::CONFIG_FILE))
-        {
+        if (!file_exists($this->getWorkingDir() . RunCommand::CONFIG_FILE)) {
             throw new \Exception('Required file \'' . RunCommand::CONFIG_FILE . '\' does not exist');
         }
     }
 
     /**
      * @param $argument
-     * @param $sCacheDir
+     * @param $cacheDir
+     *
      * @throws SkipException
      */
-    protected function SkipIfNotMasterAndCacheFilled($argument, $sCacheDir)
+    protected function SkipIfNotMasterAndCacheFilled($argument, $cacheDir)
     {
-        if ($argument == 'origin/master' || $argument == 'master')
-        {
+        if ($argument == 'origin/master' || $argument == 'master') {
             return;
         }
 
-        if (!file_exists($sCacheDir))
-        {
-            return ;
+        if (!file_exists($cacheDir)) {
+            return;
         }
 
-        throw new SkipException("Cache is written only for the first build and master branch. Skipping.");
-
+        throw new SkipException('Cache is written only for the first build and master branch. Skipping.');
     }
 }

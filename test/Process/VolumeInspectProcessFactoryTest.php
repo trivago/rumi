@@ -1,21 +1,36 @@
 <?php
 
-namespace jakubsacha\Rumi\Process;
+/*
+ * Copyright 2016 trivago GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+namespace Trivago\Rumi\Process;
 
 /**
- * @covers jakubsacha\Rumi\Process\VolumeInspectProcessFactory
+ * @covers Trivago\Rumi\Process\VolumeInspectProcessFactory
  */
 class VolumeInspectProcessFactoryTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var VolumeInspectProcessFactory
      */
-    private $oSUT;
+    private $SUT;
 
     protected function setUp()
     {
-        $this->oSUT = new VolumeInspectProcessFactory();
-
+        $this->SUT = new VolumeInspectProcessFactory();
     }
 
     public function testGetInspectProcess()
@@ -23,9 +38,9 @@ class VolumeInspectProcessFactoryTest extends \PHPUnit_Framework_TestCase
         //given
 
         // when
-        $oProcess = $this->oSUT->getInspectProcess('volume_name');
+        $process = $this->SUT->getInspectProcess('volume_name');
 
         // then
-        $this->assertEquals('docker volume inspect \'volume_name\'', $oProcess->getCommandLine());
+        $this->assertEquals('docker volume inspect \'volume_name\'', $process->getCommandLine());
     }
 }

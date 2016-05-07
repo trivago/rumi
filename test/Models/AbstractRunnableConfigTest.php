@@ -1,73 +1,84 @@
 <?php
-/**
- * @author jsacha
- * @since 20/02/16 19:57
+
+/*
+ * Copyright 2016 trivago GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
-namespace jakubsacha\Rumi\Models;
+namespace Trivago\Rumi\Models;
 
-class RunnableConfig extends AbstractRunnableConfig {
-
+class RunnableConfig extends AbstractRunnableConfig
+{
 }
 /**
- * @covers jakubsacha\Rumi\Models\AbstractRunnableConfig
+ * @covers Trivago\Rumi\Models\AbstractRunnableConfig
  */
 class AbstractRunnableConfigTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testGivenNoCiContainerDefined_WhenGetCiContainerAsStringCalled_ThenFirstContainerIsUsed()
     {
-        $oJob = new RunnableConfig(
+        $job = new RunnableConfig(
             'name',
-            ["www" => [], "second" => []],
+            ['www' => [], 'second' => []],
             null,
             null,
             null
         );
 
-        $this->assertEquals("www", $oJob->getCiContainer());
+        $this->assertEquals('www', $job->getCiContainer());
     }
 
     public function testGivenCiContainerIsDefined_WhenGetCiContainerAsStringCalled_ThenDefinedContainerIsUsed()
     {
-        $oJob = new RunnableConfig(
+        $job = new RunnableConfig(
             'name',
-            ["www" => [], "second" => []],
+            ['www' => [], 'second' => []],
             'second',
             null,
             null
         );
 
-        $this->assertEquals("second", $oJob->getCiContainer());
+        $this->assertEquals('second', $job->getCiContainer());
     }
 
     public function testGivenParamsArePassed_WhenNewObjectCreated_ThenGettersAreFine()
     {
-        $oJob = new RunnableConfig(
+        $job = new RunnableConfig(
             'name',
-            ["www" => [], "second" => []],
+            ['www' => [], 'second' => []],
             'second',
             'third',
             ['fourth', 'sixth']
         );
 
-        $this->assertEquals('name', $oJob->getName());
-        $this->assertEquals('fourth ;sixth', $oJob->getCommandsAsString());
-        $this->assertEquals(['fourth', 'sixth'], $oJob->getCommands());
-        $this->assertEquals(["www" => [], "second" => []], $oJob->getDockerCompose());
-        $this->assertEquals('third', $oJob->getEntryPoint());
+        $this->assertEquals('name', $job->getName());
+        $this->assertEquals('fourth ;sixth', $job->getCommandsAsString());
+        $this->assertEquals(['fourth', 'sixth'], $job->getCommands());
+        $this->assertEquals(['www' => [], 'second' => []], $job->getDockerCompose());
+        $this->assertEquals('third', $job->getEntryPoint());
     }
 
     public function testGivenEmptyCommands_WhenNewObjectCreated_ThenGetCommandAsStringReturnsNull()
     {
-        $oJob = new RunnableConfig(
+        $job = new RunnableConfig(
             'name',
-            ["www" => [], "second" => []],
+            ['www' => [], 'second' => []],
             'second',
             'third',
             null
         );
 
-        $this->assertEquals('', $oJob->getCommandsAsString());
+        $this->assertEquals('', $job->getCommandsAsString());
     }
 }

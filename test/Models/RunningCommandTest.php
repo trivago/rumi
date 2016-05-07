@@ -1,18 +1,29 @@
 <?php
-/**
- * @author jsacha
- * @since 02/03/16 12:07
+
+/*
+ * Copyright 2016 trivago GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
-namespace jakubsacha\Rumi\Models;
+namespace Trivago\Rumi\Models;
 
-
-use jakubsacha\Rumi\Process\RunningProcessesFactory;
 use Prophecy\Argument;
 use Symfony\Component\Process\Process;
+use Trivago\Rumi\Process\RunningProcessesFactory;
 
 /**
- * @covers jakubsacha\Rumi\Models\RunningCommand
+ * @covers Trivago\Rumi\Models\RunningCommand
  */
 class RunningCommandTest extends \PHPUnit_Framework_TestCase
 {
@@ -105,10 +116,10 @@ class RunningCommandTest extends \PHPUnit_Framework_TestCase
 
         // when
         $this->SUT->start();
-        $bRunning = $this->SUT->isRunning();
+        $isRunning = $this->SUT->isRunning();
 
         // then
-        $this->assertTrue($bRunning);
+        $this->assertTrue($isRunning);
     }
 
     public function testGivenProcessDone_WhenGetOutputCalled_ThenItReturnsIt()
@@ -133,5 +144,4 @@ class RunningCommandTest extends \PHPUnit_Framework_TestCase
         // then
         $this->assertEquals('outputerroroutput', $output);
     }
-
 }

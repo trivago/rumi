@@ -1,10 +1,22 @@
 <?php
-/**
- * @author jsacha
- * @since 01/03/16 22:57
+
+/*
+ * Copyright 2016 trivago GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
-namespace jakubsacha\Rumi\Models;
+namespace Trivago\Rumi\Models;
 
 abstract class AbstractRunnableConfig
 {
@@ -42,8 +54,7 @@ abstract class AbstractRunnableConfig
      */
     public function __construct(
         $name, $docker_compose, $ci_container, $entrypoint, $commands
-    )
-    {
+    ) {
         $this->name = $name;
         $this->docker_compose = $docker_compose;
         $this->ci_container = $ci_container;
@@ -69,12 +80,11 @@ abstract class AbstractRunnableConfig
 
     public function getCommandsAsString()
     {
-        if (count($this->getCommands()) == 0)
-        {
-            return null;
+        if (count($this->getCommands()) == 0) {
+            return;
         }
 
-        return implode(" ;", $this->getCommands());
+        return implode(' ;', $this->getCommands());
     }
 
     /**
@@ -87,15 +97,14 @@ abstract class AbstractRunnableConfig
 
     /**
      * Returns container used for ci execution. If it's not defined, first container
-     * from docker-compose part is used
+     * from docker-compose part is used.
      *
      * @return string
      */
     public function getCiContainer()
     {
         // if ci_image is not defined, use first defined container
-        if (empty($this->ci_container))
-        {
+        if (empty($this->ci_container)) {
             return current(array_keys($this->getDockerCompose()));
         }
 
@@ -103,7 +112,7 @@ abstract class AbstractRunnableConfig
     }
 
     /**
-     * Returns entry point used to spin up container
+     * Returns entry point used to spin up container.
      *
      * @return string|null
      */
