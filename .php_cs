@@ -21,11 +21,21 @@ EOF;
 Symfony\CS\Fixer\Contrib\HeaderCommentFixer::setHeader($header);
 
 return Symfony\CS\Config\Config::create()
-    ->finder(Symfony\CS\Finder\DefaultFinder::create()->in(__DIR__ . '/src'))
+    ->finder(
+        Symfony\CS\Finder\DefaultFinder::create()
+            ->in(__DIR__ . '/')
+            ->exclude(__DIR__ . '/vendor')
+    )
+    ->level(Symfony\CS\FixerInterface::SYMFONY_LEVEL)
     ->setUsingCache(true)
     ->fixers([
         'concat_with_spaces',
+        'single_blank_line_before_namespace',
         'header_comment',
         'ordered_use',
+        'phpdoc_order',
+        'phpdoc_separation',
+        'lowercase_constants',
+
     ])
 ;

@@ -1,13 +1,23 @@
 <?php
-/**
- * @author jsacha
+
+/*
+ * Copyright 2016 trivago GmbH
  *
- * @since 23/02/16 10:42
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 namespace Trivago\Rumi\Commands;
 
-use Trivago\Rumi\Process\CacheProcessFactory;
 use org\bovigo\vfs\vfsStream;
 use Prophecy\Argument;
 use Symfony\Component\Config\FileLocator;
@@ -16,6 +26,7 @@ use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Process\Process;
+use Trivago\Rumi\Process\CacheProcessFactory;
 
 /**
  * @covers Trivago\Rumi\Commands\CacheStoreCommand
@@ -61,7 +72,7 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
         $this->SUT->run(
             new ArrayInput(
                 [
-                    'cache_dir' => vfsStream::url('directory').'/cache',
+                    'cache_dir' => vfsStream::url('directory') . '/cache',
                     'git_repository' => 'abc',
                     'git_branch' => 'master',
                 ]
@@ -70,19 +81,19 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
         );
 
         // then
-        $this->assertEquals('Required file \''.RunCommand::CONFIG_FILE.'\' does not exist', trim($this->output->fetch()));
+        $this->assertEquals('Required file \'' . RunCommand::CONFIG_FILE . '\' does not exist', trim($this->output->fetch()));
     }
 
     public function testGivenCiCacheConfigIsEmpty_WhenCacheStoreRun_ThenItSkipsExecution()
     {
         // given
-        touch(vfsStream::url('directory').'/'.RunCommand::CONFIG_FILE);
+        touch(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE);
 
         // when
         $this->SUT->run(
             new ArrayInput(
                 [
-                    'cache_dir' => vfsStream::url('directory').'/cache',
+                    'cache_dir' => vfsStream::url('directory') . '/cache',
                     'git_repository' => 'abc',
                     'git_branch' => 'master',
                 ]
@@ -97,15 +108,15 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenCacheDirectoryDoesExist_WhenCacheStoreRun_ThenItDoesNotCreateIt()
     {
         // given
-        file_put_contents(vfsStream::url('directory').'/'.RunCommand::CONFIG_FILE, 'cache:'.PHP_EOL.'   - .git');
-        mkdir(vfsStream::url('directory').'/cache');
-        mkdir(vfsStream::url('directory').'/cache/'.md5('abc'));
-        mkdir(vfsStream::url('directory').'/cache/'.md5('abc').'/data');
+        file_put_contents(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE, 'cache:' . PHP_EOL . '   - .git');
+        mkdir(vfsStream::url('directory') . '/cache');
+        mkdir(vfsStream::url('directory') . '/cache/' . md5('abc'));
+        mkdir(vfsStream::url('directory') . '/cache/' . md5('abc') . '/data');
 
         /** @var CacheProcessFactory $factory */
         $factory = $this->prophesize(CacheProcessFactory::class);
         $factory->getCreateCacheDirectoryProcess(Argument::any())->shouldNotBeCalled();
-        $factory->getCacheStoreProcess('.git', vfsStream::url('directory').'/cache/'.md5('abc'))
+        $factory->getCacheStoreProcess('.git', vfsStream::url('directory') . '/cache/' . md5('abc'))
             ->willReturn($this->prophesize(Process::class)->reveal());
 
         $this
@@ -116,7 +127,7 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
         $this->SUT->run(
             new ArrayInput(
                 [
-                    'cache_dir' => vfsStream::url('directory').'/cache',
+                    'cache_dir' => vfsStream::url('directory') . '/cache',
                     'git_repository' => 'abc',
                     'git_branch' => 'origin/master',
                 ]
@@ -130,13 +141,13 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenDestinationCacheDirDoesNotExist_WhenCacheStoreRun_ThenItSkipsExecution()
     {
         // given
-        file_put_contents(vfsStream::url('directory').'/'.RunCommand::CONFIG_FILE, 'cache:'.PHP_EOL.'   - .git');
+        file_put_contents(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE, 'cache:' . PHP_EOL . '   - .git');
 
         // when
         $this->SUT->run(
             new ArrayInput(
                 [
-                    'cache_dir' => vfsStream::url('directory').'/cache',
+                    'cache_dir' => vfsStream::url('directory') . '/cache',
                     'git_repository' => 'abc',
                     'git_branch' => 'master',
                 ]
@@ -151,16 +162,16 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenNotMasterBranchAndCacheExists_WhenCacheStoreRun_ThenItSkips()
     {
         // given
-        file_put_contents(vfsStream::url('directory').'/'.RunCommand::CONFIG_FILE, 'cache:'.PHP_EOL.'   - .git');
-        mkdir(vfsStream::url('directory').'/cache');
+        file_put_contents(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE, 'cache:' . PHP_EOL . '   - .git');
+        mkdir(vfsStream::url('directory') . '/cache');
         // create cache directory for repository
-        mkdir(vfsStream::url('directory').'/cache/'.md5('abc'));
+        mkdir(vfsStream::url('directory') . '/cache/' . md5('abc'));
 
         // when
         $this->SUT->run(
             new ArrayInput(
                 [
-                    'cache_dir' => vfsStream::url('directory').'/cache',
+                    'cache_dir' => vfsStream::url('directory') . '/cache',
                     'git_repository' => 'abc',
                     'git_branch' => 'test',
                 ]
@@ -175,12 +186,12 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenCiCacheConfigIsCorrect_WhenCacheStoreRunWithOriginMasterBranch_ThenItStoresCache()
     {
         // given
-        file_put_contents(vfsStream::url('directory').'/'.RunCommand::CONFIG_FILE, 'cache:'.PHP_EOL.'   - .git');
-        mkdir(vfsStream::url('directory').'/cache');
+        file_put_contents(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE, 'cache:' . PHP_EOL . '   - .git');
+        mkdir(vfsStream::url('directory') . '/cache');
 
         /** @var CacheProcessFactory $factory */
         $factory = $this->prophesize(CacheProcessFactory::class);
-        $cacheDir = vfsStream::url('directory').'/cache/'.md5('abc');
+        $cacheDir = vfsStream::url('directory') . '/cache/' . md5('abc');
         mkdir($cacheDir);
 
         $factory
@@ -209,7 +220,7 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
         $this->SUT->run(
             new ArrayInput(
                 [
-                    'cache_dir' => vfsStream::url('directory').'/cache',
+                    'cache_dir' => vfsStream::url('directory') . '/cache',
                     'git_repository' => 'abc',
                     'git_branch' => 'origin/master',
                 ]
@@ -223,12 +234,12 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenCiCacheConfigIsCorrect_WhenCacheStoreRunWithMasterBranch_ThenItStoresCache()
     {
         // given
-        file_put_contents(vfsStream::url('directory').'/'.RunCommand::CONFIG_FILE, 'cache:'.PHP_EOL.'   - .git');
-        mkdir(vfsStream::url('directory').'/cache');
+        file_put_contents(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE, 'cache:' . PHP_EOL . '   - .git');
+        mkdir(vfsStream::url('directory') . '/cache');
 
         /** @var CacheProcessFactory $factory */
         $factory = $this->prophesize(CacheProcessFactory::class);
-        $cacheDir = vfsStream::url('directory').'/cache/'.md5('abc');
+        $cacheDir = vfsStream::url('directory') . '/cache/' . md5('abc');
         mkdir($cacheDir);
 
         $factory
@@ -257,7 +268,7 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
         $this->SUT->run(
             new ArrayInput(
                 [
-                    'cache_dir' => vfsStream::url('directory').'/cache',
+                    'cache_dir' => vfsStream::url('directory') . '/cache',
                     'git_repository' => 'abc',
                     'git_branch' => 'master',
                 ]
@@ -271,12 +282,12 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenCiCacheConfigIsCorrect_WhenCacheStoreFails_ThenItReturnsErrorCode()
     {
         // given
-        file_put_contents(vfsStream::url('directory').'/'.RunCommand::CONFIG_FILE, 'cache:'.PHP_EOL.'   - .git');
-        mkdir(vfsStream::url('directory').'/cache');
+        file_put_contents(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE, 'cache:' . PHP_EOL . '   - .git');
+        mkdir(vfsStream::url('directory') . '/cache');
 
         /** @var CacheProcessFactory $factory */
         $factory = $this->prophesize(CacheProcessFactory::class);
-        $cacheDir = vfsStream::url('directory').'/cache/'.md5('abc');
+        $cacheDir = vfsStream::url('directory') . '/cache/' . md5('abc');
         $factory
             ->getCreateCacheDirectoryProcess($cacheDir)
             ->willReturn($this->prophesize(Process::class)->reveal())
@@ -313,7 +324,7 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
         $errorCode = $this->SUT->run(
             new ArrayInput(
                 [
-                    'cache_dir' => vfsStream::url('directory').'/cache',
+                    'cache_dir' => vfsStream::url('directory') . '/cache',
                     'git_repository' => 'abc',
                     'git_branch' => 'master',
                 ]

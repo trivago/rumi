@@ -1,19 +1,30 @@
 <?php
-/**
- * @author jsacha
+
+/*
+ * Copyright 2016 trivago GmbH
  *
- * @since 06/05/16 09:59
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 namespace Trivago\Rumi\Plugins\CouchDB;
 
-use Trivago\Rumi\Events;
 use Prophecy\Argument;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Trivago\Rumi\Events;
 
 /**
  * @covers Trivago\Rumi\Plugins\CouchDB\CouchDbPlugin
@@ -42,7 +53,7 @@ class CouchDbPluginTest extends \PHPUnit_Framework_TestCase
     {
         // given
         $eventDispatcher = $this->prophesize(EventDispatcherInterface::class);
-        putenv(CouchDbPlugin::ENV_VARIABLE.'=abc');
+        putenv(CouchDbPlugin::ENV_VARIABLE . '=abc');
 
         // when
         new CouchDbPlugin(

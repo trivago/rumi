@@ -1,20 +1,23 @@
 <?php
-/**
- * @author jsacha
+
+/*
+ * Copyright 2016 trivago GmbH
  *
- * @since 20/02/16 22:01
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 namespace Trivago\Rumi\Commands;
 
-use Trivago\Rumi\Events;
-use Trivago\Rumi\Events\JobFinishedEvent;
-use Trivago\Rumi\Events\JobStartedEvent;
-use Trivago\Rumi\Events\RunFinishedEvent;
-use Trivago\Rumi\Events\RunStartedEvent;
-use Trivago\Rumi\Events\StageFinishedEvent;
-use Trivago\Rumi\Events\StageStartedEvent;
-use Trivago\Rumi\Process\RunningProcessesFactory;
 use org\bovigo\vfs\vfsStream;
 use Prophecy\Argument;
 use Symfony\Component\Config\FileLocator;
@@ -24,6 +27,14 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Process\Process;
+use Trivago\Rumi\Events;
+use Trivago\Rumi\Events\JobFinishedEvent;
+use Trivago\Rumi\Events\JobStartedEvent;
+use Trivago\Rumi\Events\RunFinishedEvent;
+use Trivago\Rumi\Events\RunStartedEvent;
+use Trivago\Rumi\Events\StageFinishedEvent;
+use Trivago\Rumi\Events\StageStartedEvent;
+use Trivago\Rumi\Process\RunningProcessesFactory;
 
 /**
  * @covers Trivago\Rumi\Commands\RunCommand
@@ -74,14 +85,14 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         $returnCode = $this->command->run(new ArrayInput([]), $this->output);
 
         // then
-        $this->assertSame("Required file '".RunCommand::CONFIG_FILE."' does not exist", trim($this->output->fetch()));
+        $this->assertSame("Required file '" . RunCommand::CONFIG_FILE . "' does not exist", trim($this->output->fetch()));
         $this->assertEquals(ReturnCodes::RUMI_YML_DOES_NOT_EXIST, $returnCode);
     }
 
     public function testGivenCiYamlSyntaxIsWrong_WhenExecuted_ThenDisplaysErrorMessage()
     {
         // given
-        file_put_contents(vfsStream::url('directory').'/'.RunCommand::CONFIG_FILE, 'wrong::'.PHP_EOL.'::yaml_file');
+        file_put_contents(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE, 'wrong::' . PHP_EOL . '::yaml_file');
 
         // when
         $returnCode = $this->command->run(new ArrayInput(['volume' => '.']), $this->output);
@@ -101,7 +112,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->container->set('trivago.rumi.process.running_processes_factory', $processFactory->reveal());
 
-        file_put_contents(vfsStream::url('directory').'/'.RunCommand::CONFIG_FILE, file_get_contents('fixtures/passing-.rumi.yml'));
+        file_put_contents(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE, file_get_contents('fixtures/passing-.rumi.yml'));
 
         // when
         $returnCode = $this->command->run(new ArrayInput(['volume' => '.']), $this->output);
@@ -126,7 +137,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->container->set('trivago.rumi.process.running_processes_factory', $processFactory->reveal());
 
-        file_put_contents(vfsStream::url('directory').'/'.RunCommand::CONFIG_FILE, file_get_contents('fixtures/failing-.rumi.yml'));
+        file_put_contents(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE, file_get_contents('fixtures/failing-.rumi.yml'));
 
         // when
         $returnCode = $this->command->run(new ArrayInput(['volume' => '.']), $this->output);
@@ -152,7 +163,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->container->set('trivago.rumi.process.running_processes_factory', $oProcessFactory->reveal());
 
-        file_put_contents(vfsStream::url('directory').'/'.RunCommand::CONFIG_FILE, file_get_contents('fixtures/passing2-.rumi.yml'));
+        file_put_contents(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE, file_get_contents('fixtures/passing2-.rumi.yml'));
 
         // when
         $this->command->run(
@@ -210,7 +221,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->container->set('trivago.rumi.process.running_processes_factory', $oProcessFactory->reveal());
 
-        file_put_contents(vfsStream::url('directory').'/'.RunCommand::CONFIG_FILE, file_get_contents('fixtures/passing-.rumi.yml'));
+        file_put_contents(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE, file_get_contents('fixtures/passing-.rumi.yml'));
 
         // when
         $this->command->run(
