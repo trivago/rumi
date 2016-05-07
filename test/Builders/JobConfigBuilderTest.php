@@ -177,4 +177,16 @@ class JobConfigBuilderTest extends \PHPUnit_Framework_TestCase
         // then
         $this->assertContainsOnlyInstancesOf($metricConfig[0], $jobConfigs[0]->getMetrics());
     }
+
+    public function testGivenEmptyJobsDefinition_WhenBuilderExecuted_ThenItDoesNothing()
+    {
+        // given
+
+
+        // when
+        $jobs = $this->SUT->build(null);
+
+        // then
+        $this->assertEmpty($jobs);
+    }
 }

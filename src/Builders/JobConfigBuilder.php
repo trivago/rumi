@@ -44,6 +44,10 @@ class JobConfigBuilder
 
     public function build($stageConfig)
     {
+        if (empty($stageConfig))
+        {
+            return [];
+        }
         $jobs = [];
         foreach ($stageConfig as $jobName => $jobConfig) {
             $job = new JobConfig(
