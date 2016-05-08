@@ -18,7 +18,6 @@
 
 namespace Trivago\Rumi\Commands;
 
-use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,7 +26,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Parser;
 use Trivago\Rumi\Exceptions\SkipException;
-use Trivago\Rumi\Timer;
 
 class CacheStoreCommand extends Command
 {
@@ -90,29 +88,16 @@ class CacheStoreCommand extends Command
             $ciConfig = $this->readCiConfigFile();
             $cacheDir = $input->getArgument('cache_dir') . '/' . md5($input->getArgument('git_repository'));
 
-            $this->SkipIfCacheIsEmpty($ciConfig);
-            $this->SkipIfCacheDirDoesNotExist($input);
+            $this->SkipIfCacheConfigIsEmpty($ciConfig);
+            $this->SkipIfDestCacheDirDoesNotExist($input);
             $this->SkipIfNotMasterAndCacheFilled($input->getArgument('git_branch'), $cacheDir);
 
             $this->createCacheDirectory($cacheDir);
 
+            $cacheStoreDir = $this->container->get('trivago.rumi.commands.cache_store.cache_store_dir');
+
             foreach ($ciConfig['cache'] as $dir) {
-                $output->write('Storing cache for: ' . $dir . '... ');
-
-                $process = $this
-                    ->container
-                    ->get('trivago.rumi.process.cache_process_factory')
-                    ->getCacheStoreProcess($dir, $cacheDir);
-
-                $time = Timer::execute(function () use ($process) {
-                    $process->run();
-                });
-
-                $output->writeln($time);
-
-                if (!$process->isSuccessful()) {
-                    throw new Exception($process->getOutput() . $process->getErrorOutput());
-                }
+                $output->writeln($cacheStoreDir->store($dir, $cacheDir));
             }
 
             $output->writeln('<info>Cache store done</info>');
@@ -163,7 +148,7 @@ class CacheStoreCommand extends Command
      *
      * @throws SkipException
      */
-    protected function SkipIfCacheIsEmpty($ciConfig)
+    protected function SkipIfCacheConfigIsEmpty($ciConfig)
     {
         if (empty($ciConfig['cache'])) {
             throw new SkipException('Cache config is empty. Skipping.');
@@ -175,7 +160,7 @@ class CacheStoreCommand extends Command
      *
      * @throws SkipException
      */
-    protected function SkipIfCacheDirDoesNotExist(InputInterface $input)
+    protected function SkipIfDestCacheDirDoesNotExist(InputInterface $input)
     {
         if (!file_exists($input->getArgument('cache_dir'))) {
             throw new SkipException('Destination cache directory does not exist. Skipping.');
