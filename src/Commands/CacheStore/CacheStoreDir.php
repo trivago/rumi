@@ -36,20 +36,24 @@ class CacheStoreDir
         $this->cacheProcessFactory = $cacheProcessFactory;
     }
 
-    public function store($dir, $cacheDir)
+    public function store($source, $cacheDir)
     {
+        if (!file_exists($source)) {
+            return 'Source directory: '.$source.' does not exist';
+        }
+
         $process = $this
             ->cacheProcessFactory
-            ->getCacheStoreProcess($dir, $cacheDir);
+            ->getCacheStoreProcess($source, $cacheDir);
 
         $time = Timer::execute(function () use ($process) {
             $process->run();
         });
 
         if (!$process->isSuccessful()) {
-            throw new \Exception($process->getOutput() . $process->getErrorOutput());
+            throw new \Exception($process->getOutput().$process->getErrorOutput());
         }
 
-        return 'Storing cache for: ' . $dir . '... ' . $time;
+        return 'Storing cache for: '.$source.'... '.$time;
     }
 }
