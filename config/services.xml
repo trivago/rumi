@@ -23,6 +23,9 @@
             <argument type="service" id="trivago.rumi.process.volume_inspect_process_factory" />
         </service>
 
+        <service class="Trivago\Rumi\Commands\CacheStore\CacheStoreDir" id="trivago.rumi.commands.cache_store.cache_store_dir">
+            <argument id="trivago.rumi.process.cache_process_factory" type="service"/>
+        </service>
 
         <service class="Trivago\Rumi\Process\RunningProcessesFactory" id="trivago.rumi.process.running_processes_factory"/>
         <service class="Trivago\Rumi\Process\GitCheckoutProcessFactory" id="trivago.rumi.process.git_checkout_process_factory"/>
