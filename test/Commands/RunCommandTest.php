@@ -112,7 +112,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->container->set('trivago.rumi.process.running_processes_factory', $processFactory->reveal());
 
-        file_put_contents(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE, file_get_contents('fixtures/passing-.rumi.yml'));
+        file_put_contents(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE, file_get_contents('test/_fixtures/passing-.rumi.yml'));
 
         // when
         $returnCode = $this->command->run(new ArrayInput(['volume' => '.']), $this->output);
@@ -137,7 +137,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->container->set('trivago.rumi.process.running_processes_factory', $processFactory->reveal());
 
-        file_put_contents(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE, file_get_contents('fixtures/failing-.rumi.yml'));
+        file_put_contents(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE, file_get_contents('test/_fixtures/failing-.rumi.yml'));
 
         // when
         $returnCode = $this->command->run(new ArrayInput(['volume' => '.']), $this->output);
@@ -163,7 +163,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->container->set('trivago.rumi.process.running_processes_factory', $oProcessFactory->reveal());
 
-        file_put_contents(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE, file_get_contents('fixtures/passing2-.rumi.yml'));
+        file_put_contents(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE, file_get_contents('test/_fixtures/passing2-.rumi.yml'));
 
         // when
         $this->command->run(
@@ -221,7 +221,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->container->set('trivago.rumi.process.running_processes_factory', $oProcessFactory->reveal());
 
-        file_put_contents(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE, file_get_contents('fixtures/passing-.rumi.yml'));
+        file_put_contents(vfsStream::url('directory') . '/' . RunCommand::CONFIG_FILE, file_get_contents('test/_fixtures/passing-.rumi.yml'));
 
         // when
         $this->command->run(
