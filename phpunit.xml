@@ -14,8 +14,7 @@
          stopOnFailure="false"
          stopOnIncomplete="false"
          stopOnSkipped="false"
-         verbose="true"
-         coverage-clover="clover.xml">
+         verbose="true">
 
     <testsuites>
         <testsuite name="Unit Tests">
