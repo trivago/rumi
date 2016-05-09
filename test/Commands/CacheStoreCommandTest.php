@@ -56,7 +56,7 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->container = new ContainerBuilder();
         $loader = new XmlFileLoader($this->container, new FileLocator(__DIR__));
-        $loader->load('../../config/services.xml');
+        $loader->load('../../src/Resources/config/services.xml');
 
         $this->SUT = new CacheStoreCommand(
             $this->container
