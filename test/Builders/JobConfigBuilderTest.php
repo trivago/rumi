@@ -182,7 +182,6 @@ class JobConfigBuilderTest extends \PHPUnit_Framework_TestCase
     {
         // given
 
-
         // when
         $jobs = $this->SUT->build(null);
 

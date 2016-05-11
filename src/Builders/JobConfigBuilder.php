@@ -44,8 +44,7 @@ class JobConfigBuilder
 
     public function build($stageConfig)
     {
-        if (empty($stageConfig))
-        {
+        if (empty($stageConfig)) {
             return [];
         }
         $jobs = [];
