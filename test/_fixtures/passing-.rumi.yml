@@ -1,0 +1,6 @@
+stages:
+  Stage one:
+    Job one:
+      docker:
+        www:
+          image: busybox

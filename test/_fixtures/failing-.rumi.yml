@@ -1,0 +1,9 @@
+stages:
+  Stage one:
+    Job one:
+      docker:
+        www:
+          image: busybox
+      entrypoint: sh
+      commands:
+        - exit 1

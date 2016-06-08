@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="trivago.rumi.event_dispatcher" class="Symfony\Component\EventDispatcher\EventDispatcher"/>
+
+        <service class="Trivago\Rumi\Services\ConfigReader" id="trivago.rumi.services.config_reader"/>
+
+        <service class="Trivago\Rumi\Commands\Run\StageExecutor" id="trivago.rumi.commands.run.stage_executor">
+            <argument id="trivago.rumi.event_dispatcher" type="service"/>
+            <argument id="trivago.rumi.docker_compose_yaml_builder" type="service"/>
+            <argument id="trivago.rumi.process.running_processes_factory" type="service"/>
+        </service>
+
+        <service class="Trivago\Rumi\Builders\ComposeParser" id="trivago.rumi.builders.compose_handler"/>
+
+        <service class="Trivago\Rumi\Builders\DockerComposeYamlBuilder" id="trivago.rumi.docker_compose_yaml_builder">
+            <argument type="service" id="trivago.rumi.docker.volume_inspector" />
+        </service>
+
+        <service class="Trivago\Rumi\Builders\JobConfigBuilder" id="trivago.rumi.job_config_builder">
+            <argument type="service" id="trivago.rumi.builders.metric_config_builder" />
+            <argument type="service" id="trivago.rumi.builders.compose_handler" />
+        </service>
+        <service class="Trivago\Rumi\Builders\MetricConfigBuilder" id="trivago.rumi.builders.metric_config_builder">
+            <argument type="service" id="trivago.rumi.builders.compose_handler" />
+        </service>
+
+
+        <service class="Trivago\Rumi\Docker\VolumeInspector" id="trivago.rumi.docker.volume_inspector">
+            <argument type="service" id="trivago.rumi.process.volume_inspect_process_factory" />
+        </service>
+
+        <service class="Trivago\Rumi\Commands\CacheStore\CacheStoreDir" id="trivago.rumi.commands.cache_store.cache_store_dir">
+            <argument id="trivago.rumi.process.cache_process_factory" type="service"/>
+        </service>
+
+        <service class="Trivago\Rumi\Process\RunningProcessesFactory" id="trivago.rumi.process.running_processes_factory"/>
+        <service class="Trivago\Rumi\Process\GitCheckoutProcessFactory" id="trivago.rumi.process.git_checkout_process_factory"/>
+        <service class="Trivago\Rumi\Process\CacheProcessFactory" id="trivago.rumi.process.cache_process_factory"/>
+        <service class="Trivago\Rumi\Process\VolumeInspectProcessFactory" id="trivago.rumi.process.volume_inspect_process_factory"/>
+
+    </services>
+</container>
