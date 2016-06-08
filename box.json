@@ -2,7 +2,6 @@
   "chmod": "0755",
   "directories": [
     "src",
-    "config",
     "vendor"
   ],
   "files": [
