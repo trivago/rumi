@@ -24,4 +24,5 @@ interface ReturnCodes
     const FAILED = 1;
 
     const RUMI_YML_DOES_NOT_EXIST = 2;
+    const VOLUME_MOUNT_FROM_FILESYSTEM = 3;
 }

@@ -19,6 +19,7 @@
 namespace Trivago\Rumi\Builders;
 
 use Symfony\Component\Yaml\Dumper;
+use Trivago\Rumi\Commands\ReturnCodes;
 use Trivago\Rumi\Docker\VolumeInspector;
 use Trivago\Rumi\Models\JobConfig;
 
@@ -77,6 +78,8 @@ class DockerComposeYamlBuilder
             }
 
             foreach ($composeConfig[$container]['volumes'] as $volumeKey => $volumeSpec) {
+                $this->validateVolume($volumeSpec);
+
                 $composeConfig[$container]['volumes'][$volumeKey] = $this->handlePathsReplacement($volume, $volumeSpec);
             }
         }
@@ -91,17 +94,17 @@ class DockerComposeYamlBuilder
      */
     protected function dumpFile($parsedDockerCompose)
     {
-        $tempTestDirectory = tempnam(sys_get_temp_dir(), 'RUNNER').md5(microtime()).'_d';
+        $tempTestDirectory = tempnam(sys_get_temp_dir(), 'RUNNER') . md5(microtime()) . '_d';
         usleep(1);
         mkdir($tempTestDirectory);
 
         $dumper = new Dumper();
         file_put_contents(
-            $tempTestDirectory.'/docker-compose.yml',
+            $tempTestDirectory . '/docker-compose.yml',
             $dumper->dump($parsedDockerCompose)
         );
 
-        return $tempTestDirectory.'/docker-compose.yml';
+        return $tempTestDirectory . '/docker-compose.yml';
     }
 
     /**
@@ -124,7 +127,7 @@ class DockerComposeYamlBuilder
     {
         // if the full volume is mounted, there is no magic needed
         if (strpos($volumeSpecification, './') !== 0) {
-            return str_replace('.:', $volumeName.':', $volumeSpecification);
+            return str_replace('.:', $volumeName . ':', $volumeSpecification);
         }
 
         // if we use systempath instead of docker volume
@@ -134,5 +137,19 @@ class DockerComposeYamlBuilder
 
         // we need to get real docker volume path and use it
         return str_replace('./', $this->volumeInspector->getVolumeRealPath($volumeName), $volumeSpecification);
+    }
+
+    /**
+     * @param $volumeSpec
+     *
+     * @throws \Exception
+     */
+    private function validateVolume($volumeSpec)
+    {
+        if (substr($volumeSpec, 0, 1) == '/') {
+            throw new \Exception(
+                'You can specify absolute mounts',
+                ReturnCodes::VOLUME_MOUNT_FROM_FILESYSTEM);
+        }
     }
 }

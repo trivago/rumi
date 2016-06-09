@@ -45,6 +45,22 @@ class DockerComposeYamlBuilderTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @expectedException \Exception
+     * @expectedExceptionCode 3
+     */
+    public function testGivenMountFromRootFilesystemInConfig_WhenYamlFileBuild_ThenExceptionIsThrown()
+    {
+        // given
+        $stageConfig = $this->prepareJobConfig(null, [], ['www' => ['volumes' => ['/:/sth']]]);
+
+        // when
+        $yamlConfigFile = $this->SUT->build($stageConfig, '.');
+
+        // then
+        // exception is expected
+    }
+
     public function testBuildReturnsPathToTmpYmlFile()
     {
         // given
