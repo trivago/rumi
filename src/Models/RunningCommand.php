@@ -95,7 +95,7 @@ class RunningCommand
     private function getTmpName()
     {
         if (empty($this->tempContainerId)) {
-            $this->tempContainerId = 'cirunner-'.md5(uniqid().time().$this->getCommand());
+            $this->tempContainerId = 'cirunner-' . md5(uniqid() . time() . $this->getCommand());
         }
 
         return $this->tempContainerId;
@@ -139,7 +139,7 @@ class RunningCommand
      */
     public function getOutput()
     {
-        return $this->process->getOutput().$this->process->getErrorOutput();
+        return $this->process->getOutput() . $this->process->getErrorOutput();
     }
 
     /**

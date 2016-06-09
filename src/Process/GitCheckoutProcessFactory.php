@@ -27,7 +27,7 @@ class GitCheckoutProcessFactory
     public function getFullCloneProcess($repositoryUrl)
     {
         $process = new Process(
-            'git init && git remote add origin '.$repositoryUrl.' && '.$this->fetchCommand
+            'git init && git remote add origin ' . $repositoryUrl . ' && ' . $this->fetchCommand
         );
         $process->setTimeout(600)->setIdleTimeout(600);
 
@@ -45,7 +45,7 @@ class GitCheckoutProcessFactory
     public function getCheckoutCommitProcess($commitSha)
     {
         $process = new Process(
-            'git reset --hard && git checkout '.$commitSha
+            'git reset --hard && git checkout ' . $commitSha
         );
         $process->setTimeout(600)->setIdleTimeout(600);
 
@@ -55,7 +55,7 @@ class GitCheckoutProcessFactory
     public function getMergeProcess($branch)
     {
         $process = new Process(
-            'git merge --no-edit '.$branch
+            'git merge --no-edit ' . $branch
         );
         $process->setTimeout(60)->setIdleTimeout(60);
 

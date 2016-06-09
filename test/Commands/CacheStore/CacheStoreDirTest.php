@@ -64,7 +64,7 @@ class CacheStoreDirTest extends \PHPUnit_Framework_TestCase
         $returnValue = $this->SUT->store($source, $cacheDestinationDirectory);
 
         //then
-        $this->assertStringStartsWith('Storing cache for: '.$source.'... ', $returnValue);
+        $this->assertStringStartsWith('Storing cache for: ' . $source . '... ', $returnValue);
     }
 
     /**
@@ -87,7 +87,7 @@ class CacheStoreDirTest extends \PHPUnit_Framework_TestCase
         $returnValue = $this->SUT->store($source, $cacheDestinationDirectory);
 
         //then
-        $this->assertStringStartsWith('Storing cache for: '.$source.'... ', $returnValue);
+        $this->assertStringStartsWith('Storing cache for: ' . $source . '... ', $returnValue);
     }
 
     public function testGivenSourceDirectoryDoesNotExist_WhenExecuted_ThenItReturnsWarningMessage()
@@ -99,7 +99,7 @@ class CacheStoreDirTest extends \PHPUnit_Framework_TestCase
         $returnValue = $this->SUT->store($nonExisting, 'some_target');
 
         // then
-        $this->assertEquals('Source directory: '.$nonExisting.' does not exist', $returnValue);
+        $this->assertEquals('Source directory: ' . $nonExisting . ' does not exist', $returnValue);
     }
 
     /**
@@ -123,8 +123,8 @@ class CacheStoreDirTest extends \PHPUnit_Framework_TestCase
      */
     private function getExistingSourcePath()
     {
-        mkdir(vfsStream::url('directory').'/source_file');
+        mkdir(vfsStream::url('directory') . '/source_file');
 
-        return vfsStream::url('directory').'/source_file';
+        return vfsStream::url('directory') . '/source_file';
     }
 }

@@ -33,8 +33,8 @@ class CacheProcessFactory
         $process = new Process('
                 (
                     flock -x 200 || exit 1;
-                    rsync --delete -axH '.$directory.'/ '.$cacheDestinationDirectory.'/data/'.$directory.'
-                ) 200>'.$cacheDestinationDirectory.'/.rsync.lock');
+                    rsync --delete -axH ' . $directory . '/ ' . $cacheDestinationDirectory . '/data/' . $directory . '
+                ) 200>' . $cacheDestinationDirectory . '/.rsync.lock');
         $process->setTimeout(600)->setIdleTimeout(600);
 
         return $process;
@@ -47,7 +47,7 @@ class CacheProcessFactory
      */
     public function getCreateCacheDirectoryProcess($cacheDir)
     {
-        return new Process('mkdir -p '.$cacheDir.'/data/');
+        return new Process('mkdir -p ' . $cacheDir . '/data/');
     }
 
     /**
@@ -61,8 +61,8 @@ class CacheProcessFactory
         $process = new Process('
                 (
                     flock -x 200 || exit 1;
-                    rsync --delete -axH '.$cacheDir.' . ;
-                ) 200>'.$lockDir.'/.rsync.lock');
+                    rsync --delete -axH ' . $cacheDir . ' . ;
+                ) 200>' . $lockDir . '/.rsync.lock');
 
         $process->setTimeout(600)->setIdleTimeout(600);
 

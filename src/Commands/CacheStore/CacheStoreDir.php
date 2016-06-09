@@ -39,7 +39,7 @@ class CacheStoreDir
     public function store($source, $cacheDir)
     {
         if (!file_exists($source)) {
-            return 'Source directory: '.$source.' does not exist';
+            return 'Source directory: ' . $source . ' does not exist';
         }
 
         $process = $this
@@ -51,9 +51,9 @@ class CacheStoreDir
         });
 
         if (!$process->isSuccessful()) {
-            throw new \Exception($process->getOutput().$process->getErrorOutput());
+            throw new \Exception($process->getOutput() . $process->getErrorOutput());
         }
 
-        return 'Storing cache for: '.$source.'... '.$time;
+        return 'Storing cache for: ' . $source . '... ' . $time;
     }
 }

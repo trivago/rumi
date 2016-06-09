@@ -85,9 +85,9 @@ class CacheRestoreCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenTestDirectoryIsEmpty_WhenCacheRestoreIsExecuted_ItSkipsRestore()
     {
         // given
-        mkdir(vfsStream::url('directory').'/a');
-        mkdir(vfsStream::url('directory').'/a/'.md5('b'));
-        mkdir(vfsStream::url('directory').'/a/'.md5('b').'/data');
+        mkdir(vfsStream::url('directory') . '/a');
+        mkdir(vfsStream::url('directory') . '/a/' . md5('b'));
+        mkdir(vfsStream::url('directory') . '/a/' . md5('b') . '/data');
 
         // when
         $returnCode = $this->SUT->run(
@@ -107,10 +107,10 @@ class CacheRestoreCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenTestDirectoryContainsData_WhenCacheRestoreIsExecutedAndItFails_ItDisplaysErrorMessage()
     {
         // given
-        mkdir(vfsStream::url('directory').'/a');
-        mkdir(vfsStream::url('directory').'/a/'.md5('b'));
-        mkdir(vfsStream::url('directory').'/a/'.md5('b').'/data');
-        mkdir(vfsStream::url('directory').'/a/'.md5('b').'/data/dir');
+        mkdir(vfsStream::url('directory') . '/a');
+        mkdir(vfsStream::url('directory') . '/a/' . md5('b'));
+        mkdir(vfsStream::url('directory') . '/a/' . md5('b') . '/data');
+        mkdir(vfsStream::url('directory') . '/a/' . md5('b') . '/data/dir');
 
         $restoreProcess = $this->prophesize(Process::class);
         $restoreProcess->run()->shouldBeCalled();
@@ -121,8 +121,8 @@ class CacheRestoreCommandTest extends \PHPUnit_Framework_TestCase
         /** @var CacheProcessFactory $factory */
         $factory = $this->prophesize(CacheProcessFactory::class);
         $factory->getCacheRestoreProcess(
-            'a/'.md5('b').'/data/',
-            'a/'.md5('b')
+            'a/' . md5('b') . '/data/',
+            'a/' . md5('b')
         )->willReturn($restoreProcess->reveal())
         ->shouldBeCalled();
 
@@ -149,10 +149,10 @@ class CacheRestoreCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenTestDirectoryContainsData_WhenCacheRestoreIsExecutedAndItsSuccessful_ItDisplaysOkMessage()
     {
         // given
-        mkdir(vfsStream::url('directory').'/a');
-        mkdir(vfsStream::url('directory').'/a/'.md5('b'));
-        mkdir(vfsStream::url('directory').'/a/'.md5('b').'/data');
-        mkdir(vfsStream::url('directory').'/a/'.md5('b').'/data/dir');
+        mkdir(vfsStream::url('directory') . '/a');
+        mkdir(vfsStream::url('directory') . '/a/' . md5('b'));
+        mkdir(vfsStream::url('directory') . '/a/' . md5('b') . '/data');
+        mkdir(vfsStream::url('directory') . '/a/' . md5('b') . '/data/dir');
 
         $restoreProcess = $this->prophesize(Process::class);
         $restoreProcess->run()->shouldBeCalled();
@@ -161,8 +161,8 @@ class CacheRestoreCommandTest extends \PHPUnit_Framework_TestCase
         /** @var CacheProcessFactory $factory */
         $factory = $this->prophesize(CacheProcessFactory::class);
         $factory->getCacheRestoreProcess(
-            'a/'.md5('b').'/data/',
-            'a/'.md5('b')
+            'a/' . md5('b') . '/data/',
+            'a/' . md5('b')
         )->willReturn($restoreProcess->reveal())
         ->shouldBeCalled();
 

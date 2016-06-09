@@ -75,14 +75,14 @@ class CacheRestoreCommand extends Command
             return;
         }
 
-        return $this->workingDir.'/';
+        return $this->workingDir . '/';
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $cacheDir = $input->getArgument('cache_dir').'/'.md5($input->getArgument('git_repository')).'/data/';
-            $lockDir = $input->getArgument('cache_dir').'/'.md5($input->getArgument('git_repository'));
+            $cacheDir = $input->getArgument('cache_dir') . '/' . md5($input->getArgument('git_repository')) . '/data/';
+            $lockDir = $input->getArgument('cache_dir') . '/' . md5($input->getArgument('git_repository'));
 
             $this->SkipIfCacheDoesNotExist($cacheDir);
             $this->SkipIfCacheDirIsEmpty($cacheDir);
@@ -104,17 +104,17 @@ class CacheRestoreCommand extends Command
 
             if (!$process->isSuccessful()) {
                 throw new \Exception(
-                    '<info>Failed to restore cache</info>'.PHP_EOL.
-                    $process->getOutput().$process->getErrorOutput()
+                    '<info>Failed to restore cache</info>' . PHP_EOL .
+                    $process->getOutput() . $process->getErrorOutput()
                 );
             }
             $output->writeln('<info>Cache restored</info>');
         } catch (SkipException $e) {
-            $output->writeln('<info>'.$e->getMessage().'</info>');
+            $output->writeln('<info>' . $e->getMessage() . '</info>');
 
             return 0;
         } catch (\Exception $e) {
-            $output->writeln('<error>'.$e->getMessage().'</error>');
+            $output->writeln('<error>' . $e->getMessage() . '</error>');
 
             return -1;
         }
@@ -129,7 +129,7 @@ class CacheRestoreCommand extends Command
      */
     protected function SkipIfCacheDoesNotExist($cacheDirectory)
     {
-        if (!file_exists($this->getWorkingDir().$cacheDirectory)) {
+        if (!file_exists($this->getWorkingDir() . $cacheDirectory)) {
             throw new SkipException('<info>Cache directory does not exist. Nothing to restore.</info>');
         }
     }
@@ -141,7 +141,7 @@ class CacheRestoreCommand extends Command
      */
     protected function SkipIfCacheDirIsEmpty($cacheDirectory)
     {
-        if (count(scandir($this->getWorkingDir().$cacheDirectory)) == 2) {
+        if (count(scandir($this->getWorkingDir() . $cacheDirectory)) == 2) {
             throw new SkipException('<info>Cache directory is empty. Nothing to restore.</info>');
         }
     }

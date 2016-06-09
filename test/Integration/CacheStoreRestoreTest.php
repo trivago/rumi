@@ -57,36 +57,36 @@ class CacheStoreRestoreTest extends \PHPUnit_Framework_TestCase
             $this->markTestSkipped('flock not supported in unix');
         }
         // given
-        $tempWorkDir = sys_get_temp_dir().'/runner-integration-'.time();
+        $tempWorkDir = sys_get_temp_dir() . '/runner-integration-' . time();
         mkdir($tempWorkDir);
-        mkdir($tempWorkDir.'/workdir');
-        mkdir($tempWorkDir.'/workdir2');
-        mkdir($tempWorkDir.'/cache');
+        mkdir($tempWorkDir . '/workdir');
+        mkdir($tempWorkDir . '/workdir2');
+        mkdir($tempWorkDir . '/cache');
 
-        file_put_contents($tempWorkDir.'/workdir/'.ConfigReader::CONFIG_FILE, 'cache:'.PHP_EOL.'    - .git');
-        mkdir($tempWorkDir.'/workdir/.git');
-        touch($tempWorkDir.'/workdir/.git/test');
+        file_put_contents($tempWorkDir . '/workdir/' . ConfigReader::CONFIG_FILE, 'cache:' . PHP_EOL . '    - .git');
+        mkdir($tempWorkDir . '/workdir/.git');
+        touch($tempWorkDir . '/workdir/.git/test');
 
         // when
 
-        chdir($tempWorkDir.'/workdir');
+        chdir($tempWorkDir . '/workdir');
         $cacheStoreCommand = new CacheStoreCommand($this->container);
         $cacheStoreCommand->run(
             new ArrayInput(
                 [
-                    'cache_dir' => $tempWorkDir.'/cache',
+                    'cache_dir' => $tempWorkDir . '/cache',
                     'git_repository' => 'a',
                     'git_branch' => 'origin/master',
                 ]
             ),
             $this->output
         );
-        chdir($tempWorkDir.'/workdir2');
+        chdir($tempWorkDir . '/workdir2');
         $cacheRestoreCommand = new CacheRestoreCommand($this->container);
         $cacheRestoreCommand->run(
             new ArrayInput(
                 [
-                    'cache_dir' => $tempWorkDir.'/cache',
+                    'cache_dir' => $tempWorkDir . '/cache',
                     'git_repository' => 'a',
                 ]
             ),
@@ -96,8 +96,8 @@ class CacheStoreRestoreTest extends \PHPUnit_Framework_TestCase
 
         // then
         $this->assertFileEquals(
-            $tempWorkDir.'/workdir/.git/test',
-            $tempWorkDir.'/workdir2/.git/test',
+            $tempWorkDir . '/workdir/.git/test',
+            $tempWorkDir . '/workdir2/.git/test',
             $this->output->fetch()
         );
     }

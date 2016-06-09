@@ -53,7 +53,7 @@ class CouchDbPluginTest extends \PHPUnit_Framework_TestCase
     {
         // given
         $eventDispatcher = $this->prophesize(EventDispatcherInterface::class);
-        putenv(CouchDbPlugin::ENV_VARIABLE.'=abc');
+        putenv(CouchDbPlugin::ENV_VARIABLE . '=abc');
 
         // when
         new CouchDbPlugin(

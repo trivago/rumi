@@ -66,10 +66,10 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
         ];
         $dumper = new Dumper();
 
-        file_put_contents(vfsStream::url('directory').'/'.ConfigReader::CONFIG_FILE, $dumper->dump($config));
+        file_put_contents(vfsStream::url('directory') . '/' . ConfigReader::CONFIG_FILE, $dumper->dump($config));
 
         //when
-        $runConfig = $this->SUT->getConfig(vfsStream::url('directory').'/');
+        $runConfig = $this->SUT->getConfig(vfsStream::url('directory') . '/');
 
         //then
         $this->assertEquals($cache, $runConfig->getCache());
@@ -84,10 +84,10 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
     public function testGivenYamlFileSyntaxIsIncorrect_WhenExecuted_ThenItThrowsException()
     {
         //given
-        file_put_contents(vfsStream::url('directory').'/'.ConfigReader::CONFIG_FILE, 'wrong::'.PHP_EOL.'::yaml_file');
+        file_put_contents(vfsStream::url('directory') . '/' . ConfigReader::CONFIG_FILE, 'wrong::' . PHP_EOL . '::yaml_file');
 
         // when
-        $this->SUT->getConfig(vfsStream::url('directory').'/');
+        $this->SUT->getConfig(vfsStream::url('directory') . '/');
 
         // then
     }

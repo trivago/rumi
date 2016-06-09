@@ -30,7 +30,7 @@ class VolumeInspectProcessFactory
     public function getInspectProcess($volumeName)
     {
         $process = new Process(
-            'docker volume inspect '.escapeshellarg($volumeName)
+            'docker volume inspect ' . escapeshellarg($volumeName)
         );
 
         return $process;

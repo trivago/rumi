@@ -77,7 +77,7 @@ class CheckoutCommand extends Command
             return;
         }
 
-        return $this->workingDir.'/';
+        return $this->workingDir . '/';
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -88,7 +88,7 @@ class CheckoutCommand extends Command
                 ->container
                 ->get('trivago.rumi.process.git_checkout_process_factory');
 
-            if (!file_exists($this->getWorkingDir().'.git')) {
+            if (!file_exists($this->getWorkingDir() . '.git')) {
                 $output->writeln('Cloning...');
                 $process =
                     $processFactory->getFullCloneProcess($input->getArgument('repository'));
@@ -100,24 +100,24 @@ class CheckoutCommand extends Command
 
             $output->writeln($this->executeProcess($process));
 
-            $output->writeln('Checking out '.$input->getArgument('commit').' ');
+            $output->writeln('Checking out ' . $input->getArgument('commit') . ' ');
             $process = $processFactory->getCheckoutCommitProcess($input->getArgument('commit'));
 
             $output->writeln($this->executeProcess($process));
 
             $mergeBranch = $this->getMergeBranch();
             if (!empty($mergeBranch)) {
-                $output->writeln('Merging with '.$mergeBranch);
+                $output->writeln('Merging with ' . $mergeBranch);
                 try {
                     $this->executeProcess($processFactory->getMergeProcess($mergeBranch));
                 } catch (\Exception $e) {
-                    throw new \Exception('Can not clearly merge with '.$mergeBranch);
+                    throw new \Exception('Can not clearly merge with ' . $mergeBranch);
                 }
             }
 
             $output->writeln('<info>Checkout done</info>');
         } catch (\Exception $e) {
-            $output->writeln('<error>'.$e->getMessage().'</error>');
+            $output->writeln('<error>' . $e->getMessage() . '</error>');
 
             return -1;
         }

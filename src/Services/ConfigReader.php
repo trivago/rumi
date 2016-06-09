@@ -35,11 +35,11 @@ class ConfigReader
      */
     public function getConfig($workingDir)
     {
-        $configFilePath = $workingDir.self::CONFIG_FILE;
+        $configFilePath = $workingDir . self::CONFIG_FILE;
 
         if (!file_exists($configFilePath)) {
             throw new \Exception(
-                'Required file \''.self::CONFIG_FILE.'\' does not exist',
+                'Required file \'' . self::CONFIG_FILE . '\' does not exist',
                 ReturnCodes::RUMI_YML_DOES_NOT_EXIST
             );
         }

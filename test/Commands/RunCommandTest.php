@@ -95,7 +95,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
     {
         // given
         $this->configReader->getConfig(Argument::any())->willThrow(new \Exception(
-            'Required file \''.ConfigReader::CONFIG_FILE.'\' does not exist',
+            'Required file \'' . ConfigReader::CONFIG_FILE . '\' does not exist',
             ReturnCodes::RUMI_YML_DOES_NOT_EXIST
         ));
 
@@ -103,7 +103,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         $returnCode = $this->command->run(new ArrayInput([]), $this->output);
 
         // then
-        $this->assertSame("Required file '".ConfigReader::CONFIG_FILE."' does not exist", trim($this->output->fetch()));
+        $this->assertSame("Required file '" . ConfigReader::CONFIG_FILE . "' does not exist", trim($this->output->fetch()));
         $this->assertEquals(ReturnCodes::RUMI_YML_DOES_NOT_EXIST, $returnCode);
     }
 

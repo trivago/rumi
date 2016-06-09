@@ -78,7 +78,7 @@ class CacheStoreCommand extends Command
             return;
         }
 
-        return $this->workingDir.'/';
+        return $this->workingDir . '/';
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -86,7 +86,7 @@ class CacheStoreCommand extends Command
         try {
             $ciConfig = $this->getCiConfig();
 
-            $cacheDir = $input->getArgument('cache_dir').'/'.md5($input->getArgument('git_repository'));
+            $cacheDir = $input->getArgument('cache_dir') . '/' . md5($input->getArgument('git_repository'));
 
             $this->SkipIfCacheConfigIsEmpty($ciConfig);
             $this->SkipIfDestCacheDirDoesNotExist($input);
@@ -102,11 +102,11 @@ class CacheStoreCommand extends Command
 
             $output->writeln('<info>Cache store done</info>');
         } catch (SkipException $e) {
-            $output->writeln('<info>'.$e->getMessage().'</info>');
+            $output->writeln('<info>' . $e->getMessage() . '</info>');
 
             return 0;
         } catch (\Exception $e) {
-            $output->writeln('<error>'.$e->getMessage().'</error>');
+            $output->writeln('<error>' . $e->getMessage() . '</error>');
 
             return -1;
         }
@@ -121,7 +121,7 @@ class CacheStoreCommand extends Command
      */
     protected function createCacheDirectory($cacheDir)
     {
-        if (file_exists($cacheDir.'/data/')) {
+        if (file_exists($cacheDir . '/data/')) {
             return;
         }
 
@@ -181,7 +181,7 @@ class CacheStoreCommand extends Command
         try {
             return $this->container->get('trivago.rumi.services.config_reader')->getConfig($this->getWorkingDir());
         } catch (\Exception $e) {
-            throw new \Exception('Required file \''.ConfigReader::CONFIG_FILE.'\' does not exist');
+            throw new \Exception('Required file \'' . ConfigReader::CONFIG_FILE . '\' does not exist');
         }
     }
 }
