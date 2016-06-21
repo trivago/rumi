@@ -71,7 +71,10 @@ class DockerComposeYamlBuilder
 
         // remove all port mappings (we do not want to expose anything) and fix volumes settings
         foreach ($composeConfig as $container => $settings) {
-            unset($composeConfig[$container]['ports']);
+            if (!empty($composeConfig[$container]['ports']))
+            {
+                unset($composeConfig[$container]['ports']);
+            }
 
             if (!isset($composeConfig[$container]['volumes'])) {
                 continue;
