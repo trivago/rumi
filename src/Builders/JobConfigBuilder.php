@@ -23,22 +23,15 @@ use Trivago\Rumi\Models\JobConfig;
 class JobConfigBuilder
 {
     /**
-     * @var MetricConfigBuilder
-     */
-    private $metricsConfigBuilder;
-    /**
      * @var ComposeParser
      */
     private $composeHandler;
 
     /**
-     * @param MetricConfigBuilder $metrics_config_builder
      * @param ComposeParser       $compose_handler
      */
-    public function __construct(MetricConfigBuilder $metrics_config_builder,
-                                ComposeParser $compose_handler)
+    public function __construct(ComposeParser $compose_handler)
     {
-        $this->metricsConfigBuilder = $metrics_config_builder;
         $this->composeHandler = $compose_handler;
     }
 
@@ -56,10 +49,6 @@ class JobConfigBuilder
                 !empty($jobConfig['entrypoint']) ? $jobConfig['entrypoint'] : null,
                 !empty($jobConfig['commands']) ? $jobConfig['commands'] : null
             );
-
-            if (!empty($jobConfig['metrics'])) {
-                $job->setMetrics($this->metricsConfigBuilder->build($jobConfig['metrics']));
-            }
 
             $jobs[] = $job;
         }

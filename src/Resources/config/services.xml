@@ -21,13 +21,8 @@
         </service>
 
         <service class="Trivago\Rumi\Builders\JobConfigBuilder" id="trivago.rumi.job_config_builder">
-            <argument type="service" id="trivago.rumi.builders.metric_config_builder" />
             <argument type="service" id="trivago.rumi.builders.compose_handler" />
         </service>
-        <service class="Trivago\Rumi\Builders\MetricConfigBuilder" id="trivago.rumi.builders.metric_config_builder">
-            <argument type="service" id="trivago.rumi.builders.compose_handler" />
-        </service>
-
 
         <service class="Trivago\Rumi\Docker\VolumeInspector" id="trivago.rumi.docker.volume_inspector">
             <argument type="service" id="trivago.rumi.process.volume_inspect_process_factory" />

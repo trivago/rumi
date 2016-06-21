@@ -32,22 +32,15 @@ class JobConfigBuilderTest extends \PHPUnit_Framework_TestCase
     private $SUT;
 
     /**
-     * @var MetricConfigBuilder
-     */
-    private $metricsBuilder;
-
-    /**
      * @var ComposeParser
      */
     private $composeParser;
 
     protected function setUp()
     {
-        $this->metricsBuilder = $this->prophesize(MetricConfigBuilder::class);
         $this->composeParser = $this->prophesize(ComposeParser::class);
 
         $this->SUT = new JobConfigBuilder(
-            $this->metricsBuilder->reveal(),
             $this->composeParser->reveal()
         );
     }
@@ -146,37 +139,6 @@ class JobConfigBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($commands, $job->getCommands());
     }
 
-    public function testGivenComposeFileContainsMetrics_WhenBuildExecuted_ThenMetricsAreBuild()
-    {
-        // given
-        $config = [
-            'Job one' => [
-                'docker' => [
-                    'image' => 'php:latest',
-                ],
-                'metrics' => [
-                    'Some fun metric' => [
-
-                    ],
-                ],
-            ],
-        ];
-
-        $metricConfig = [new MetricConfig('name', 'docker_compose', 'ci_container', 'entrypoint', 'commands')];
-
-        $this->metricsBuilder
-            ->build(['Some fun metric' => [
-
-                ]])
-            ->willReturn($metricConfig)
-            ->shouldBeCalled();
-
-        // when
-        $jobConfigs = $this->SUT->build($config);
-
-        // then
-        $this->assertContainsOnlyInstancesOf($metricConfig[0], $jobConfigs[0]->getMetrics());
-    }
 
     public function testGivenEmptyJobsDefinition_WhenBuilderExecuted_ThenItDoesNothing()
     {

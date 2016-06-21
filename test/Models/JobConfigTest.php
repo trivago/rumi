@@ -23,29 +23,59 @@ namespace Trivago\Rumi\Models;
  */
 class JobConfigTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var JobConfig
-     */
-    private $SUT;
-
-    public function setUp()
+    public function testGivenNoCiContainerDefined_WhenGetCiContainerAsStringCalled_ThenFirstContainerIsUsed()
     {
-        $this->SUT = new JobConfig(
+        $job = new JobConfig(
+            'name',
+            ['www' => [], 'second' => []],
+            null,
+            null,
+            null
+        );
+
+        $this->assertEquals('www', $job->getCiContainer());
+    }
+
+    public function testGivenCiContainerIsDefined_WhenGetCiContainerAsStringCalled_ThenDefinedContainerIsUsed()
+    {
+        $job = new JobConfig(
+            'name',
+            ['www' => [], 'second' => []],
+            'second',
+            null,
+            null
+        );
+
+        $this->assertEquals('second', $job->getCiContainer());
+    }
+
+    public function testGivenParamsArePassed_WhenNewObjectCreated_ThenGettersAreFine()
+    {
+        $job = new JobConfig(
             'name',
             ['www' => [], 'second' => []],
             'second',
             'third',
             ['fourth', 'sixth']
         );
+
+        $this->assertEquals('name', $job->getName());
+        $this->assertEquals('fourth ;sixth', $job->getCommandsAsString());
+        $this->assertEquals(['fourth', 'sixth'], $job->getCommands());
+        $this->assertEquals(['www' => [], 'second' => []], $job->getDockerCompose());
+        $this->assertEquals('third', $job->getEntryPoint());
     }
 
-    public function testMetricsSetterAndGetter()
+    public function testGivenEmptyCommands_WhenNewObjectCreated_ThenGetCommandAsStringReturnsNull()
     {
-        //given
-        $metrics = [$this->prophesize(MetricConfig::class)->reveal()];
+        $job = new JobConfig(
+            'name',
+            ['www' => [], 'second' => []],
+            'second',
+            'third',
+            null
+        );
 
-        $this->SUT->setMetrics($metrics);
-
-        $this->assertEquals($metrics, $this->SUT->getMetrics());
+        $this->assertEquals('', $job->getCommandsAsString());
     }
 }
