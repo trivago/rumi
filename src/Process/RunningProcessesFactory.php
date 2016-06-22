@@ -1,6 +1,5 @@
 <?php
-
-/*
+/*!
  * Copyright 2016 trivago GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,40 +18,57 @@
 namespace Trivago\Rumi\Process;
 
 use Symfony\Component\Process\Process;
+use Symfony\Component\Process\ProcessUtils;
 
 class RunningProcessesFactory
 {
     /**
-     * @param $yamlPath
-     * @param $tmpName
-     * @param $ciImage
-     *
+     * @param string $yamlPath
+     * @param string $tmpName
+     * @param string $ciImage
+     * @param int $timeout [optional]
      * @return Process
      */
-    public function getJobStartProcess($yamlPath, $tmpName, $ciImage)
+    public function getJobStartProcess($yamlPath, $tmpName, $ciImage, $timeout = 1200)
     {
-        $process = new Process(
-            'docker-compose -f ' . $yamlPath . ' run --name ' . $tmpName . ' ' . $ciImage
-        );
-        $process->setTimeout(1200)->setIdleTimeout(1200);
+        $yamlPath = ProcessUtils::escapeArgument($yamlPath);
+        $tmpName  = ProcessUtils::escapeArgument($tmpName);
+        $ciImage  = ProcessUtils::escapeArgument($ciImage);
 
-        return $process;
+        return $this->buildProcess("docker-compose --file {$yamlPath} run -d --name {$tmpName} {$ciImage}", $timeout);
     }
 
     /**
-     * @param $yamlPath
-     * @param $tmpName
-     *
+     * @param string $yamlPath
+     * @param string $tmpName
+     * @param int $timeout [optional]
      * @return Process
      */
-    public function getTearDownProcess($yamlPath, $tmpName)
+    public function getTearDownProcess($yamlPath, $tmpName, $timeout = 300)
     {
-        $process = new Process(
-            'docker rm -f ' . $tmpName . ';
-            docker-compose -f ' . $yamlPath . ' rm --force;
-            docker rm -f $(docker-compose -f ' . $yamlPath . ' ps -q)'
+        $yamlPath = ProcessUtils::escapeArgument($yamlPath);
+        $tmpName  = ProcessUtils::escapeArgument($tmpName);
+
+        return $this->buildProcess(
+            "docker rm --force {$tmpName};" .
+            "docker-compose --file {$yamlPath} rm --force;" .
+            "docker rm --force $(docker-compose --file {$yamlPath} ps -q);",
+            $timeout
         );
-        $process->setTimeout(300)->setIdleTimeout(300);
+    }
+
+    /**
+     * Build process for the given commandline and set timeout as well as idle timeout.
+     *
+     * @param string $commandline
+     * @param int $timeout
+     * @return Process
+     */
+    private function buildProcess($commandline, $timeout)
+    {
+        $process = new Process($commandline);
+        $process->setTimeout($timeout);
+        $process->setIdleTimeout($timeout);
 
         return $process;
     }
