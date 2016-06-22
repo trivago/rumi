@@ -1,7 +1,6 @@
 #!/usr/bin/env php
 <?php
-
-/*
+/*!
  * Copyright 2016 trivago GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,18 +16,18 @@
  * limitations under the License.
  */
 
-set_time_limit(0);
-
-require __DIR__ . '/vendor/autoload.php';
-
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use Trivago\Rumi\RumiApplication;
 
+call_user_func(function () {
+    require __DIR__ . '/vendor/autoload.php';
 
-$input = new ArgvInput();
-$output = new ConsoleOutput();
+    $application = new RumiApplication;
+    $input       = new ArgvInput;
+    $output      = new ConsoleOutput;
 
-$application = new \Trivago\Rumi\RumiApplication();
+    $application->loadPlugins($input, $output);
 
-$application->loadPlugins($input, $output);
-$application->run($input, $output);
+    exit($application->run());
+});
