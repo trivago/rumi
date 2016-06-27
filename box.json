@@ -1,14 +1,14 @@
 {
-  "chmod": "0755",
-  "directories": [
-    "src",
-    "vendor"
-  ],
-  "files": [
-    "rumi"
-  ],
-  "git-version": "package_version",
-  "main": "rumi",
-  "output": "rumi.phar",
-  "stub": true
+    "chmod": "0755",
+    "directories": [
+        "src",
+        "vendor"
+    ],
+    "files": [
+        "rumi"
+    ],
+    "git-version": "package_version",
+    "main": "rumi",
+    "output": "rumi.phar",
+    "stub": true
 }

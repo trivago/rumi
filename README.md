@@ -1,16 +1,14 @@
 # rumi
-
-rumi is a container-based job execution platform.  
-It reads and executes job definitions from a `.rumi.yml` file in your project directory.
-The goal is to make job execution more flexible and put the responsibility for configuration in the project maintainers hands.
+rumi is a container based job execution platform. It reads and executes
+ jobs that are defined in a `.rumi.yml` file in a project. The goal is it
+ to make job execution more flexible and put the responsibility for
+ configuration in projects into the maintainer’s hands.
 
 ## Syntax
-
 ### Introduction
-
-CI jobs are grouped into stages. Stages are executed sequentially. Jobs in each stage are executed in parallel.
-
-First failed job aborts and fails the build itself.
+CI jobs are grouped into stages which are executed sequentially. The jobs
+ in each stage are executed in parallel. A failed job aborts the complete
+ build.
 
 ### Stages
 ```

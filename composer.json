@@ -44,15 +44,14 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Trivago\\Rumi\\": "test/"
+            "Trivago\\Rumi\\": "tests/"
         }
     },
     "scripts": {
-        "test": "bin/phpunit",
-        "test-quick": "bin/phpunit --no-coverage"
+        "test": "phpunit",
+        "test-quick": "phpunit --no-coverage"
     },
     "config": {
-        "bin-dir": "bin",
         "sort-packages": true
     }
 }
