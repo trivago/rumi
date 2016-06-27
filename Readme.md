@@ -1,5 +1,7 @@
 # rumi
 
+[![Build Status](https://travis-ci.org/trivago/rumi.svg?branch=master)](https://travis-ci.org/trivago/rumi)
+
 rumi is a container-based job execution platform.  
 It reads and executes job definitions from a `.rumi.yml` file in your project directory.
 The goal is to make job execution more flexible and put the responsibility for configuration in the project maintainers hands.
