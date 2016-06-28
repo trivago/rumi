@@ -1,10 +1,10 @@
 @ECHO off
 SETLOCAL EnableDelayedExpansion
 
-REM Current directory must be in Unix style and not Windows style for docker.
+REM Current directory must be in Unix and not Windows style for docker.
 SET PWD=%CD%
 
-REM Replace back slashes with slashes.
+REM Replace back with forward slashes.
 SET PWD=%PWD:\=/%
 
 REM Remove the drive colon.
