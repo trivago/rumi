@@ -4,6 +4,6 @@ stages:
       docker:
         www:
           image: busybox
-      entry_point: sh
+      entrypoint: sh
       commands:
         - exit 1

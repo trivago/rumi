@@ -26,4 +26,4 @@ RUN echo "CI RUNNER BUILD: $(git rev-parse HEAD)" > /rumi/RELEASE
 
 WORKDIR /workdir
 
-ENTRYPOINT ["/rumi/entry_point"]
+ENTRYPOINT ["/rumi/entrypoint"]
