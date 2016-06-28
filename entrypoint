@@ -10,15 +10,15 @@ set -e
 cat ${DIR}/RELEASE 2>/dev/null || echo "No release set"
 
 if [ -z "$SKIP_CACHE" ]; then
-    php ${DIR}/rumi cache:restore /cache $GIT_URL
+    php ${DIR}/rumi.php cache:restore /cache $GIT_URL
 fi
-php ${DIR}/rumi checkout $GIT_URL $GIT_COMMIT
+php ${DIR}/rumi.php checkout $GIT_URL $GIT_COMMIT
 if [[ ! -z "$REGISTRY_USERNAME" ]] && [[ ! -z "$REGISTRY_PASSWORD" ]]; then
     echo "Performing docker login:"
     docker login -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD
 fi
-php ${DIR}/rumi run $DOCKER_DATA_VOLUME $GIT_COMMIT
+php ${DIR}/rumi.php run $DOCKER_DATA_VOLUME $GIT_COMMIT
 # set -e guarantees that we don't reach it for failed builds
 if [ -z "$SKIP_CACHE" ]; then
-    php ${DIR}/rumi cache:store /cache $GIT_URL $GIT_BRANCH
+    php ${DIR}/rumi.php cache:store /cache $GIT_URL $GIT_BRANCH
 fi
