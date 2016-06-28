@@ -17,11 +17,11 @@ login()
 {
     if [ "${REGISTRY_USERNAME}" ] && [ "${REGISTRY_PASSWORD}" ]
     then
-        printf 'Logging in to %s ...\n' "${REGISTRY_SERVER:-Docker}"
+        printf 'Logging in to %s ...\n' "${REGISTRY_SERVER:-Docker Hub}"
         docker login \
             --username "${REGISTRY_USERNAME}" \
             --password "${REGISTRY_PASSWORD}" \
-            "${REGISTRY_SERVER-}"
+            "${REGISTRY_SERVER:-}"
     fi
 }
 
