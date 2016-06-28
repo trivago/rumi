@@ -19,4 +19,4 @@ SET PWD=%FIRST%%PWD:~1%
 REM Add a slash to make it absolute.
 SET PWD=/%PWD%
 
-docker run -ti --rm -v %PWD%:/workdir -v /var/run/docker.sock:/var/run/docker.sock --entrypoint /rumi/entrypoint_local trivago/rumi:stable %PWD%
+docker run -ti --rm -v %PWD%:/workdir -v /var/run/docker.sock:/var/run/docker.sock --entrypoint /rumi/entrypoint_local trivago/rumi:stable %PWD% %*
