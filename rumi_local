@@ -1,0 +1,3 @@
+#!/bin/sh
+
+docker run -ti -v "${PWD}":/workdir -v /var/run/docker.sock:/var/run/docker.sock --entrypoint /rumi/entrypoint_local rumi:dev "${PWD}"
