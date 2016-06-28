@@ -7,8 +7,6 @@
 # inside a single file system.
 #
 
-readonly CWD=$(cd -- $(dirname -- "${0}"); pwd)
-
 readonly GIT_URL=$1
 readonly GIT_COMMIT=$2
 readonly GIT_BRANCH=$3
@@ -16,7 +14,7 @@ readonly GIT_BRANCH=$3
 readonly DOCKER_DATA_VOLUME=$4
 readonly SKIP_CACHE=$5
 
-. "${CWD}"/.functions.sh
+. "$(cd -- $(dirname -- "${0}"); pwd)"/.functions.sh
 
 release
 

@@ -6,9 +6,7 @@
 # directly forwarded to the `rumi run` command.
 #
 
-readonly CWD=$(cd -- $(dirname -- "${0}"); pwd)
-
-. "${CWD}"/.functions.sh
+. "$(cd -- $(dirname -- "${0}"); pwd)"/.functions.sh
 
 release
 login

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+readonly __DIR__=$(cd -- $(dirname -- "${0}"); pwd)
+
 #
 # Login to Docker registry.
 #
@@ -28,7 +30,7 @@ login()
 #
 release()
 {
-    cat "${CWD}"/../RELEASE 2>&- || printf 'No Release\n'
+    cat "${__DIR__}"/../RELEASE 2>&- || printf 'No Release\n'
 }
 
 #
@@ -36,5 +38,5 @@ release()
 #
 rumi()
 {
-    php "${CWD}"/rumi $*
+    php "${__DIR__}"/rumi $*
 }
