@@ -1,7 +1,6 @@
 cache:
   - .git
   - vendor
-  - bin
 
 stages:
   Prepare:

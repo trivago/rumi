@@ -1,0 +1,35 @@
+#!/bin/sh
+
+#
+# Extended Docker entrypoint with git branch support is meant for
+# execution in automated build systems like Jenkins. Arguments must follow
+# a specific order and a Docker data volume is used to keep all operations
+# inside a single file system.
+#
+
+readonly CWD=$(cd -- $(dirname -- "${0}"); pwd)
+
+readonly GIT_URL=$1
+readonly GIT_COMMIT=$2
+readonly GIT_BRANCH=$3
+
+readonly DOCKER_DATA_VOLUME=$4
+readonly SKIP_CACHE=$5
+
+. "${CWD}"/.functions.sh
+
+release
+
+if [ -z "${SKIP_CACHE}" ]
+    then rumi cache:restore /cache "${GIT_URL}"
+fi
+
+rumi checkout "${GIT_URL}" "${GIT_COMMIT}"
+
+login
+
+rumi run "${DOCKER_DATA_VOLUME}" "${GIT_COMMIT}"
+
+if [ -z "${SKIP_CACHE}" ]
+    then rumi cache:store /cache "${GIT_URL}" "${GIT_BRANCH}"
+fi
