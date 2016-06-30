@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Invoke me like this:
+# bin/test_ci_execution https://github.com/trivago/rumi.git 59a6adbe20ad6959547beee80d5356c5a4e95a08 master
+
+GIT_URL=$1
+GIT_COMMIT=$2
+GIT_BRANCH=$3
+
+
+docker build -t rumi:dev .
+
+DOCKER=$(which docker)
+
+VOLUME_ID="local-test-ci-execution"
+
+CONT=$($DOCKER run -e REGISTRY_USERNAME -e REGISTRY_PASSWORD -e RUMI_COUCHDB=10.1.3.73:5984 -d -v /var/run/docker.sock:/var/run/docker.sock -v "${VOLUME_ID}":/workdir -v rumi_cache:/cache rumi:dev "${GIT_URL}" "${GIT_COMMIT}" "${GIT_BRANCH}" "${VOLUME_ID}")
+
+$DOCKER logs -f $CONT
+
+RC=$($DOCKER wait $CONT)
+$DOCKER rm -f "$CONT"  > /dev/null
+$DOCKER volume rm "local-test-ci-execution" > /dev/null

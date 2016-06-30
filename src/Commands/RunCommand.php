@@ -164,7 +164,7 @@ class RunCommand extends Command
 
             $output->writeln('<info>Build successful: ' . $timeTaken . '</info>');
         } catch (\Exception $e) {
-            $output->writeln('<error>' . $e->getMessage() . '</error>'.$e->getTraceAsString());
+            $output->writeln('<error>' . $e->getMessage() . '</error>');
 
             $this->eventDispatcher->dispatch(Events::RUN_FINISHED, new RunFinishedEvent(RunFinishedEvent::STATUS_FAILED));
 
