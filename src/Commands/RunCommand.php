@@ -108,6 +108,9 @@ class RunCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
+            var_dump($input->getArguments());
+            return -1;
+
             if (trim($input->getArgument('volume')) != '') {
                 $this->volume = $input->getArgument(self::VOLUME);
             } else {
