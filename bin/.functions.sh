@@ -38,6 +38,5 @@ print_build_version()
 #
 rumi()
 {
-    ## debug all passed parameters
     php "${__DIR__}"/rumi $*
 }
