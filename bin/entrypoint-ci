@@ -16,7 +16,7 @@ readonly SKIP_CACHE=$5
 
 . "$(cd -- $(dirname -- "${0}"); pwd)"/.functions.sh
 
-release
+print_build_version
 
 if [ -z "${SKIP_CACHE}" ]
     then rumi cache:restore /cache "${GIT_URL}"

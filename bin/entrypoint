@@ -8,6 +8,6 @@
 
 . "$(cd -- $(dirname -- "${0}"); pwd)"/.functions.sh
 
-release
+print_build_version
 login
 rumi run $*

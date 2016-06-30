@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-HOST_PATH=$1
-set -e
-
-cat ${DIR}/RELEASE 2>/dev/null || echo "No release set"
-
-php ${DIR}/rumi.php run "${HOST_PATH}"

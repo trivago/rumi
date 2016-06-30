@@ -26,11 +26,11 @@ login()
 }
 
 #
-# Print release file content if present.
+# Print build version file content if present.
 #
-release()
+print_build_version()
 {
-    cat "${__DIR__}"/../RELEASE 2>&- || printf 'No Release\n'
+    cat "${__DIR__}"/../BUILD_VERSION 2>&- || printf 'Build version unknown\n'
 }
 
 #

@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-docker rm -f $(docker ps -a | grep trivago/rumi:php-dev-latest | awk '{print $1}') > /dev/null
+docker rm -f $(docker ps -a | grep trivago/rumi:php-dev-latest | awk '{print $1}') > /dev/null | echo ""
 
 docker run -it -v ${PWD}:/src -w /src trivago/rumi:php-dev-latest vendor/bin/phpunit
