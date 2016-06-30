@@ -109,7 +109,6 @@ class RunCommand extends Command
     {
         try {
             var_dump($input->getArguments());
-            return -1;
 
             if (trim($input->getArgument('volume')) != '') {
                 $this->volume = $input->getArgument(self::VOLUME);
