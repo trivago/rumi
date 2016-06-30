@@ -21,7 +21,7 @@ login()
         docker login \
             --username "${REGISTRY_USERNAME}" \
             --password "${REGISTRY_PASSWORD}" \
-            "${REGISTRY_SERVER:-}"
+            "${REGISTRY_SERVER:-https://index.docker.io/v1/}"
     fi
 }
 
