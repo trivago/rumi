@@ -1,7 +1,6 @@
 cache:
   - .git
   - vendor
-  - bin
 
 stages:
   Prepare:
@@ -22,4 +21,4 @@ stages:
           volumes:
             - ".:/var/www/html:rw"
       commands:
-        - cd /var/www/html && bin/phpunit
+        - cd /var/www/html && vendor/bin/phpunit

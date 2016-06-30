@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+./bin/unit_tests
+filewatcher --restart "**/*.php" 'clear; bin/unit_tests'

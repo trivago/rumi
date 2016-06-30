@@ -1,3 +1,25 @@
 #!/bin/sh
 
-docker run --rm -ti -v "${PWD}":/workdir -v /var/run/docker.sock:/var/run/docker.sock --entrypoint /rumi/entrypoint_local rumi:stable "${PWD}"
+#
+# rumi executor for POSIX and compliant systems.
+#
+# NOTE: The additional forward slashes in front of each path are required
+# for cygwin based shell emulators on Windows, because they otherwise
+# simply transform the paths to Windows paths. This behavior is usually
+# exactly what is desired but not in this case since docker is Linux
+# based and cannot handle Windows paths. Note further that POSIX compliant
+# systems have to replace three or more leading slashes with a single
+# slash (see POSIX 1003.1).
+#
+
+readonly CWD="//${PWD}"
+readonly SOCK=///var/run/docker.sock
+
+docker run                              \
+    --interactive                       \
+    --rm                                \
+    --tty                               \
+    --volume="${CWD}":///workdir        \
+    --volume="${SOCK}:${SOCK}"          \
+    --entrypoint ///rumi/bin/entrypoint \
+    trivago/rumi:stable "${CWD}" $*
