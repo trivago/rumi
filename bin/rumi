@@ -29,5 +29,5 @@ call_user_func(function () {
 
     $application->loadPlugins($input, $output);
 
-    exit($application->run());
+    exit($application->run($input, $output));
 });

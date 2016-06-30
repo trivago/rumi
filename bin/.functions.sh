@@ -39,7 +39,5 @@ print_build_version()
 rumi()
 {
     ## debug all passed parameters
-    echo "Arguments passed to rumi function:"
-    echo $*
     php "${__DIR__}"/rumi $*
 }

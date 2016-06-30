@@ -14,9 +14,6 @@ readonly GIT_BRANCH=$3
 readonly DOCKER_DATA_VOLUME=$4
 readonly SKIP_CACHE=$5
 
-echo "Arguments passed to entrypoint:"
-echo $*
-
 . "$(cd -- $(dirname -- "${0}"); pwd)"/.functions.sh
 
 print_build_version

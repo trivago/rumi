@@ -108,8 +108,6 @@ class RunCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            var_dump($input->getArguments());
-
             if (trim($input->getArgument('volume')) != '') {
                 $this->volume = $input->getArgument(self::VOLUME);
             } else {
@@ -166,7 +164,7 @@ class RunCommand extends Command
 
             $output->writeln('<info>Build successful: ' . $timeTaken . '</info>');
         } catch (\Exception $e) {
-            $output->writeln('<error>' . $e->getMessage() . '</error>');
+            $output->writeln('<error>' . $e->getMessage() . '</error>'.$e->getTraceAsString());
 
             $this->eventDispatcher->dispatch(Events::RUN_FINISHED, new RunFinishedEvent(RunFinishedEvent::STATUS_FAILED));
 
