@@ -22,8 +22,8 @@ ADD . /rumi
 
 RUN php composer install -o --no-dev
 
-RUN echo "CI RUNNER BUILD: $(git rev-parse HEAD)" > /rumi/RELEASE
+RUN echo "RUMI BUILD: $(git rev-parse HEAD)" > /rumi/BUILD_VERSION
 
 WORKDIR /workdir
 
-ENTRYPOINT ["/rumi/entrypoint"]
+ENTRYPOINT ["/rumi/bin/entrypoint-ci"]
