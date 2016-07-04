@@ -15,11 +15,38 @@
 readonly CWD="//${PWD}"
 readonly SOCK=///var/run/docker.sock
 
-docker run                              \
-    --interactive                       \
-    --rm                                \
-    --tty                               \
-    --volume="${CWD}":///workdir        \
-    --volume="${SOCK}:${SOCK}"          \
-    --entrypoint ///rumi/bin/entrypoint \
-    trivago/rumi:stable "${CWD}" $*
+# Start Docker with rumi.
+#
+# GLOBALS:
+#  $CWD - Current working directory.
+#  $SOCK - Socket path for Docker socket.
+# RETURNS:
+#  0 - On success.
+#  ? - Check the `docker run` exit code documentation.
+start_docker()
+{
+    docker run                              \
+        --interactive                       \
+        --rm                                \
+        --tty                               \
+        --volume="${CWD}":///workdir        \
+        --volume="${SOCK}:${SOCK}"          \
+        --entrypoint ///rumi/bin/entrypoint \
+        trivago/rumi:stable "${CWD}" $*
+}
+
+start_docker
+
+if [ $? = 125 ]
+then
+    printf 'Trying to start default machine...\n'
+    docker-machine start
+
+    # 125 is returned if the notice about new IP addresses is printed.
+    if [ $? = 0 ] || [ $? = 125 ]
+    then
+        printf 'Exporting Docker machine environment...\n'
+        eval $(docker-machine env)
+        start_docker
+    fi
+fi

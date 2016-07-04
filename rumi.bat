@@ -25,6 +25,24 @@ SET CWD=/%CWD%
 
 SET SOCK="/var/run/docker.sock"
 
+CALL :start_docker
+
+IF %ERRORLEVEL% EQU 125 (
+    ECHO. && ECHO Trying to start default machine...
+    docker-machine start
+
+    REM 125 is returned if the notice about new IP addresses is printed.
+    IF %ERRORLEVEL% NEQ 0 IF %ERRORLEVEL% NEQ 125 GOTO END
+
+    ECHO. && ECHO Exporting Docker machine environment...
+    FOR /F "tokens=*" %%G IN ('docker-machine env') DO @%%G
+    CALL :start_docker
+)
+
+:END
+EXIT /B %ERRORLEVEL%
+
+:start_docker
 docker run^
  --interactive^
  --rm^
