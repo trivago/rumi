@@ -52,7 +52,6 @@
         "test-quick": "bin/phpunit --no-coverage"
     },
     "config": {
-        "bin-dir": "bin",
         "sort-packages": true
     }
 }

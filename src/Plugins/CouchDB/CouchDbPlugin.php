@@ -65,7 +65,8 @@ class CouchDbPlugin implements PluginInterface
         $this->uploader = new Uploader(getenv(self::ENV_VARIABLE), new Client());
 
         $eventDispatcher->addListener(Events::RUN_STARTED, function (Events\RunStartedEvent $e) use ($eventDispatcher, $input) {
-            if (empty($input->getArgument(RunCommand::GIT_COMMIT))) {
+            if (empty($input->hasArgument(RunCommand::GIT_COMMIT))) {
+                $this->output->writeln("CouchDB: ".RunCommand::GIT_COMMIT.' argument is empty. Skipping writing to CouchDB');
                 return;
             }
             $this->run = new Run($input->getArgument(RunCommand::GIT_COMMIT));

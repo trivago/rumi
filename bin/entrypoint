@@ -1,0 +1,13 @@
+#!/bin/sh
+
+#
+# Default Docker entrypoint is meant for local execution without any
+# special argument handling. All arguments passed to this file are
+# directly forwarded to the `rumi run` command.
+#
+
+. "$(cd -- $(dirname -- "${0}"); pwd)"/.functions.sh
+
+print_build_version
+login
+rumi run $*
