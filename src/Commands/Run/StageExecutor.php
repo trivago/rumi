@@ -113,6 +113,9 @@ class StageExecutor
             while (count($processes)) {
                 foreach ($processes as $id => $runningCommand) {
                     if ($runningCommand->isRunning()) {
+
+                        $runningCommand->getProcess()->checkTimeout();
+                        
                         continue;
                     }
                     unset($processes[$id]);
