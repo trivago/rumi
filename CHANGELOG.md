@@ -5,10 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Added
 - Change log to repository.
+- Shell and Batch scripts for local execution.
 ### Changed
 - Directory where tests reside.
 - PHPUnit configuration file extension to use `.dist` as suffix.
 - Formatting of some meta files to comply with conventions.
+- `entrypoint` files were moved to `bin` directory and renamed.
 ### Removed
 - Special `bin` directory configuration from composer.
 
