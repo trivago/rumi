@@ -1,5 +1,9 @@
 sudo: required
 
+cache:
+  directories:
+  - vendor
+
 services:
   - docker
 
