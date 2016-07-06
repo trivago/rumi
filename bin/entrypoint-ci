@@ -6,6 +6,7 @@
 # a specific order and a Docker data volume is used to keep all operations
 # inside a single file system.
 #
+set -e
 
 readonly GIT_URL=$1
 readonly GIT_COMMIT=$2

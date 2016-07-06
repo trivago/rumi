@@ -20,3 +20,5 @@ $DOCKER logs -f $CONT
 RC=$($DOCKER wait $CONT)
 $DOCKER rm -f "$CONT"  > /dev/null
 $DOCKER volume rm "local-test-ci-execution" > /dev/null
+
+exit $RC
