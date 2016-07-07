@@ -1,0 +1,24 @@
+sudo: required
+
+cache:
+  directories:
+  - vendor
+
+services:
+  - docker
+
+before_install:
+- cd docker
+
+- docker pull trivago/rumi:php-latest
+- docker build -t trivago/rumi:php-latest -f Dockerfile_php .
+
+- docker pull trivago/rumi:php-dev-latest
+- docker build -t trivago/rumi:php-dev-latest -f Dockerfile_php-dev .
+
+- cd ..
+
+script:
+- docker run -v ${PWD}:/src -w /src trivago/rumi:php-dev-latest composer install
+- docker run -v ${PWD}:/src -w /src trivago/rumi:php-dev-latest vendor/bin/phpunit
+
