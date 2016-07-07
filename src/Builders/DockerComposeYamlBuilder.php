@@ -104,7 +104,7 @@ class DockerComposeYamlBuilder
         $dumper = new Dumper();
         file_put_contents(
             $tempTestDirectory . '/docker-compose.yml',
-            $dumper->dump($parsedDockerCompose)
+            $dumper->dump($parsedDockerCompose, 10)
         );
 
         return $tempTestDirectory . '/docker-compose.yml';
@@ -135,7 +135,7 @@ class DockerComposeYamlBuilder
 
         // if we use systempath instead of docker volume
         if (!$this->isDockerVolume($volumeName)) {
-            return str_replace('./', $volumeName, $volumeSpecification);
+            return str_replace('./', rtrim($volumeName, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR, $volumeSpecification);
         }
 
         // we need to get real docker volume path and use it

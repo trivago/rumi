@@ -95,6 +95,9 @@ class StageExecutor
 
             $runningCommand->start();
 
+            // add random delay to put less stress on the docker daemon
+            usleep(rand(100000, 500000));
+
             $processes[] = $runningCommand;
         }
 
@@ -113,6 +116,9 @@ class StageExecutor
             while (count($processes)) {
                 foreach ($processes as $id => $runningCommand) {
                     if ($runningCommand->isRunning()) {
+
+                        $runningCommand->getProcess()->checkTimeout();
+
                         continue;
                     }
                     unset($processes[$id]);
