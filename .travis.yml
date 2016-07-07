@@ -16,6 +16,8 @@ before_install:
 - docker pull trivago/rumi:php-dev-latest
 - docker build -t trivago/rumi:php-dev-latest -f Dockerfile_php-dev .
 
+-- cd ..
+
 script:
 - docker run -v ${PWD}:/src -w /src trivago/rumi:php-dev-latest composer install
 - docker run -v ${PWD}:/src -w /src trivago/rumi:php-dev-latest vendor/bin/phpunit
