@@ -13,7 +13,6 @@ RUN apk add --update docker \
         && curl -L https://github.com/docker/compose/releases/download/1.7.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose \
         && chmod +x /usr/local/bin/docker-compose \
         && mkdir /workdir \
-        && cd /rumi && curl -sS http://getcomposer.org/installer | php -- --filename=composer \
         && rm -rf /var/cache/apk/*
 
 WORKDIR /rumi
