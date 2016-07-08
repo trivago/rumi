@@ -1,6 +1,5 @@
-/vendor
-/bin
-build/clover-html
-build/clover.xml
-rumi.phar
-.php_cs.cache
+/build/
+/vendor/
+/.php_cs.cache
+/phpunit.xml
+/rumi.phar

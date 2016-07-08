@@ -1,0 +1,27 @@
+#
+# Path-based git attributes
+# https://www.kernel.org/pub/software/scm/git/docs/gitattributes.html
+#
+
+*                   text=auto eol=auto
+
+.*                  text eol=lf
+*.bat               text eol=crlf
+*.json              text eol=lf
+*.lock              text eol=lf
+*.md                text eol=lf
+*.php               text eol=lf diff=php
+*.xml               text eol=lf
+*.xml.dist          text eol=lf
+*.yml               text eol=lf
+
+bin/*               text eol=lf
+
+/Dockerfile         text eol=lf
+/LICENSE            text eol=lf
+/NOTICE             text eol=lf
+/rumi               text eol=lf
+
+*.apk               binary
+
+/docker/bin/Miniconda-latest-Linux-x86_64.sh binary
