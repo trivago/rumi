@@ -152,7 +152,11 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
     {
         // given
         $startProcess = $this->getStartProcess(false);
-        $startProcess->getErrorOutput()->shouldBeCalled();
+        $startProcess->isRunning()->willReturn(true, false);
+        $startProcess->checkTimeout()->willReturn(null);
+        $errorOutput = '##error output##';
+
+        $startProcess->getErrorOutput()->willReturn($errorOutput)->shouldBeCalled();
         $tearDownProcess = $this->getTearDownProcess();
 
         /** @var RunningProcessesFactory $processFactory */
@@ -172,7 +176,8 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         $commandOutput = $this->output->fetch();
 
         $this->assertStringStartsWith('Stage: "Stage one"', trim($commandOutput));
-        $this->assertContains('failed', $commandOutput);
+        $this->assertContains($errorOutput, $commandOutput);
+        $this->assertNotContains($errorOutput.$errorOutput, $commandOutput);
         $this->assertEquals(ReturnCodes::FAILED, $returnCode);
     }
 
@@ -310,7 +315,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
     /**
      * @param $isSuccessful
      *
-     * @return \Prophecy\Prophecy\ObjectProphecy
+     * @return \Prophecy\Prophecy\ObjectProphecy|Process
      */
     protected function getStartProcess($isSuccessful)
     {

@@ -139,7 +139,6 @@ class StageExecutor
                         continue;
                     }
 
-                    $output->write($runningCommand->getProcess()->getErrorOutput());
                     throw new CommandFailedException($runningCommand->getCommand());
                 }
                 usleep(500000);
