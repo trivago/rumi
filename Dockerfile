@@ -19,7 +19,7 @@ WORKDIR /rumi
 
 ADD . /rumi
 
-RUN php composer install -o --no-dev
+RUN composer install -o --no-dev
 
 RUN echo "RUMI BUILD: $(git rev-parse HEAD)" > /rumi/BUILD_VERSION
 
