@@ -21,4 +21,4 @@ before_install:
 script:
 - docker run -v ${PWD}:/src -w /src trivago/rumi:php-dev-latest composer install
 - docker run -v ${PWD}:/src -w /src trivago/rumi:php-dev-latest vendor/bin/phpunit
-
+- docker build .
