@@ -49,7 +49,7 @@ class RunningProcessesFactory
     {
         $process = new Process(
             'docker rm -f ' . $tmpName . ';
-            docker-compose -f ' . $yamlPath . ' rm --force;
+            docker-compose -f ' . $yamlPath . ' rm -v --force;
             docker rm -f $(docker-compose -f ' . $yamlPath . ' ps -q)'
         );
         $process->setTimeout(300)->setIdleTimeout(300);

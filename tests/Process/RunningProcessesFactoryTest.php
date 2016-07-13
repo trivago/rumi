@@ -47,7 +47,7 @@ class RunningProcessesFactoryTest extends \PHPUnit_Framework_TestCase
             'a', 'b'
         );
         $this->assertEquals('docker rm -f b;
-            docker-compose -f a rm --force;
+            docker-compose -f a rm -v --force;
             docker rm -f $(docker-compose -f a ps -q)', $process->getCommandLine());
     }
 }

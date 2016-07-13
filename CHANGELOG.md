@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Change log to repository.
 - Shell and Batch scripts for local execution.
+- Fix tear down - remove also anonymous volumes
 ### Changed
 - Directory where tests reside.
 - PHPUnit configuration file extension to use `.dist` as suffix.
