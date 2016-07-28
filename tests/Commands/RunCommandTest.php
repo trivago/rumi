@@ -312,6 +312,27 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
             ->shouldBeCalledTimes(1);
     }
 
+    public function testGivenDifferentCiYamlFileName_WhenExecuted_ThenLookForThatFileInstead()
+    {
+        // given
+        $configFile = '../rumi-dev.yml';
+        $exceptionMessage = 'Required file \'' . $configFile . '\' does not exist';
+        $input = new ArrayInput([ '--config' => $configFile ]);
+
+        $this->configReader
+            ->getConfig(Argument::any(), Argument::is($configFile))
+            ->willThrow(new \Exception($exceptionMessage, ReturnCodes::RUMI_YML_DOES_NOT_EXIST))
+            ->shouldBeCalledTimes(1);
+
+        // when
+        $returnCode = $this->command->run($input, $this->output);
+
+        // then
+        $this->assertNotEquals(ConfigReader::CONFIG_FILE, $configFile);
+        $this->assertSame("Required file '" . $configFile . "' does not exist", trim($this->output->fetch()));
+        $this->assertEquals(ReturnCodes::RUMI_YML_DOES_NOT_EXIST, $returnCode);
+    }
+
     /**
      * @param $isSuccessful
      *
