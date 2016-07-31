@@ -94,7 +94,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenNoCiYamlFile_WhenExecuted_ThenDisplaysErrorMessage()
     {
         // given
-        $this->configReader->getConfig(Argument::any())->willThrow(new \Exception(
+        $this->configReader->getConfig(Argument::any(), Argument::is(null))->willThrow(new \Exception(
             'Required file \'' . ConfigReader::CONFIG_FILE . '\' does not exist',
             ReturnCodes::RUMI_YML_DOES_NOT_EXIST
         ));
@@ -110,7 +110,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenCiYamlSyntaxIsWrong_WhenExecuted_ThenDisplaysErrorMessage()
     {
         // given
-        $this->configReader->getConfig(Argument::any())->willThrow(new ParseException(
+        $this->configReader->getConfig(Argument::any(), Argument::is(null))->willThrow(new ParseException(
             'Unable to parse at line 2 (near "::yaml_file").'
         ));
 
@@ -132,7 +132,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->container->set('trivago.rumi.process.running_processes_factory', $processFactory->reveal());
 
-        $this->configReader->getConfig(Argument::any())
+        $this->configReader->getConfig(Argument::any(), Argument::is(null))
             ->willReturn(
                 new RunConfig(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]], [], null)
             );
@@ -164,7 +164,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->container->set('trivago.rumi.process.running_processes_factory', $processFactory->reveal());
 
-        $this->configReader->getConfig(Argument::any())
+        $this->configReader->getConfig(Argument::any(), Argument::is(null))
             ->willReturn(
                 new RunConfig(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]], [], null)
             );
@@ -194,7 +194,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->container->set('trivago.rumi.process.running_processes_factory', $oProcessFactory->reveal());
 
-        $this->configReader->getConfig(Argument::any())
+        $this->configReader->getConfig(Argument::any(), Argument::is(null))
             ->willReturn(
                 new RunConfig([
                     'Stage one' => [
@@ -264,7 +264,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->container->set('trivago.rumi.process.running_processes_factory', $oProcessFactory->reveal());
 
-        $this->configReader->getConfig(Argument::any())
+        $this->configReader->getConfig(Argument::any(), Argument::is(null))
             ->willReturn(
                 new RunConfig(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]], [], null)
             );
