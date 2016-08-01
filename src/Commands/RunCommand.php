@@ -83,7 +83,12 @@ class RunCommand extends Command
         $this
             ->setName('run')
             ->setDescription('Run tests')
-            ->addOption(self::CONFIG, self::CONFIG_SHORT, InputOption::VALUE_REQUIRED, 'Configuration file to read')
+            ->addOption(
+                self::CONFIG,
+                self::CONFIG_SHORT,
+                InputOption::VALUE_REQUIRED,
+                'Configuration file to read',
+                ConfigReader::CONFIG_FILE)
             ->addArgument(self::VOLUME, InputArgument::OPTIONAL, 'Docker volume containing data')
             ->addArgument(self::GIT_COMMIT, InputArgument::OPTIONAL, 'Commit id');
         $this->workingDir = getcwd();
