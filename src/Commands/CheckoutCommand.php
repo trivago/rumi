@@ -27,7 +27,7 @@ use Symfony\Component\Process\Process;
 use Trivago\Rumi\Process\GitCheckoutProcessFactory;
 use Trivago\Rumi\Timer;
 
-class CheckoutCommand extends Command
+class CheckoutCommand extends CommandAbstract
 {
     /**
      * @var ContainerInterface
@@ -51,6 +51,8 @@ class CheckoutCommand extends Command
 
     protected function configure()
     {
+        parent::configure();
+
         $this
             ->setName('checkout')
             ->setDescription('Checkout code')
@@ -105,7 +107,7 @@ class CheckoutCommand extends Command
 
             $output->writeln($this->executeProcess($process));
 
-            $mergeBranch = $this->getMergeBranch();
+            $mergeBranch = $this->getMergeBranch($input->getOption(self::CONFIG));
             if (!empty($mergeBranch)) {
                 $output->writeln('Merging with ' . $mergeBranch);
                 try {
@@ -145,10 +147,12 @@ class CheckoutCommand extends Command
         return $time;
     }
 
-    private function getMergeBranch()
+    private function getMergeBranch($configFile)
     {
         try {
-            $config = $this->container->get('trivago.rumi.services.config_reader')->getConfig($this->getWorkingDir());
+            $configReader = $this->container->get('trivago.rumi.services.config_reader');
+
+            $config = $configReader->getConfig($this->getWorkingDir(), $configFile);
 
             if (!empty($config->getMergeBranch())) {
                 return $config->getMergeBranch();

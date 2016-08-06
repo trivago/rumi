@@ -34,7 +34,7 @@ class ConfigReader
      *
      * @return RunConfig
      */
-    public function getConfig($workingDir, $configFile = self::CONFIG_FILE)
+    public function getConfig($workingDir, $configFile)
     {
         $configFilePath = $workingDir . $configFile;
 

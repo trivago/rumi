@@ -94,8 +94,8 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenNoCiYamlFile_WhenExecuted_ThenDisplaysErrorMessage()
     {
         // given
-        $this->configReader->getConfig(Argument::any(), Argument::is(ConfigReader::CONFIG_FILE))->willThrow(new \Exception(
-            'Required file \'' . ConfigReader::CONFIG_FILE . '\' does not exist',
+        $this->configReader->getConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))->willThrow(new \Exception(
+            'Required file \'' . CommandAbstract::DEFAULT_CONFIG . '\' does not exist',
             ReturnCodes::RUMI_YML_DOES_NOT_EXIST
         ));
 
@@ -103,14 +103,14 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         $returnCode = $this->command->run(new ArrayInput([]), $this->output);
 
         // then
-        $this->assertSame("Required file '" . ConfigReader::CONFIG_FILE . "' does not exist", trim($this->output->fetch()));
+        $this->assertSame("Required file '" . CommandAbstract::DEFAULT_CONFIG . "' does not exist", trim($this->output->fetch()));
         $this->assertEquals(ReturnCodes::RUMI_YML_DOES_NOT_EXIST, $returnCode);
     }
 
     public function testGivenCiYamlSyntaxIsWrong_WhenExecuted_ThenDisplaysErrorMessage()
     {
         // given
-        $this->configReader->getConfig(Argument::any(), Argument::is(ConfigReader::CONFIG_FILE))->willThrow(new ParseException(
+        $this->configReader->getConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))->willThrow(new ParseException(
             'Unable to parse at line 2 (near "::yaml_file").'
         ));
 
@@ -132,7 +132,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->container->set('trivago.rumi.process.running_processes_factory', $processFactory->reveal());
 
-        $this->configReader->getConfig(Argument::any(), Argument::is(ConfigReader::CONFIG_FILE))
+        $this->configReader->getConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
                 new RunConfig(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]], [], null)
             );
@@ -164,7 +164,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->container->set('trivago.rumi.process.running_processes_factory', $processFactory->reveal());
 
-        $this->configReader->getConfig(Argument::any(), Argument::is(ConfigReader::CONFIG_FILE))
+        $this->configReader->getConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
                 new RunConfig(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]], [], null)
             );
@@ -194,7 +194,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->container->set('trivago.rumi.process.running_processes_factory', $oProcessFactory->reveal());
 
-        $this->configReader->getConfig(Argument::any(), Argument::is(ConfigReader::CONFIG_FILE))
+        $this->configReader->getConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
                 new RunConfig([
                     'Stage one' => [
@@ -264,7 +264,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->container->set('trivago.rumi.process.running_processes_factory', $oProcessFactory->reveal());
 
-        $this->configReader->getConfig(Argument::any(), Argument::is(ConfigReader::CONFIG_FILE))
+        $this->configReader->getConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
                 new RunConfig(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]], [], null)
             );
@@ -328,7 +328,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         $returnCode = $this->command->run($input, $this->output);
 
         // then
-        $this->assertNotEquals(ConfigReader::CONFIG_FILE, $configFile);
+        $this->assertNotEquals(CommandAbstract::DEFAULT_CONFIG, $configFile);
         $this->assertSame("Required file '" . $configFile . "' does not exist", trim($this->output->fetch()));
         $this->assertEquals(ReturnCodes::RUMI_YML_DOES_NOT_EXIST, $returnCode);
     }
