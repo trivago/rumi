@@ -54,8 +54,7 @@ class JobConfig
      */
     public function __construct(
         $name, $docker_compose, $ci_container, $entrypoint, $commands
-    )
-    {
+    ) {
         $this->name = $name;
         $this->docker_compose = $docker_compose;
         $this->ci_container = $ci_container;
@@ -87,9 +86,10 @@ class JobConfig
 
         $commandsPrints = [];
         foreach ($this->getCommands() as $command) {
-            $commandsPrints[] = 'print "Executing command: ' . escapeshellcmd($command) . '"';
+            $commandsPrints[] = 'print "Executing command: '.escapeshellcmd($command).'"';
             $commandsPrints[] = $command;
         }
+
         return implode(' && ', $commandsPrints);
     }
 
