@@ -94,7 +94,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenNoCiYamlFile_WhenExecuted_ThenDisplaysErrorMessage()
     {
         // given
-        $this->configReader->getConfig(Argument::any())->willThrow(new \Exception(
+        $this->configReader->getConfig(Argument::any(), Argument::is(ConfigReader::CONFIG_FILE))->willThrow(new \Exception(
             'Required file \'' . ConfigReader::CONFIG_FILE . '\' does not exist',
             ReturnCodes::RUMI_YML_DOES_NOT_EXIST
         ));
@@ -110,7 +110,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenCiYamlSyntaxIsWrong_WhenExecuted_ThenDisplaysErrorMessage()
     {
         // given
-        $this->configReader->getConfig(Argument::any())->willThrow(new ParseException(
+        $this->configReader->getConfig(Argument::any(), Argument::is(ConfigReader::CONFIG_FILE))->willThrow(new ParseException(
             'Unable to parse at line 2 (near "::yaml_file").'
         ));
 
@@ -132,7 +132,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->container->set('trivago.rumi.process.running_processes_factory', $processFactory->reveal());
 
-        $this->configReader->getConfig(Argument::any())
+        $this->configReader->getConfig(Argument::any(), Argument::is(ConfigReader::CONFIG_FILE))
             ->willReturn(
                 new RunConfig(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]], [], null)
             );
@@ -164,7 +164,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->container->set('trivago.rumi.process.running_processes_factory', $processFactory->reveal());
 
-        $this->configReader->getConfig(Argument::any())
+        $this->configReader->getConfig(Argument::any(), Argument::is(ConfigReader::CONFIG_FILE))
             ->willReturn(
                 new RunConfig(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]], [], null)
             );
@@ -194,7 +194,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->container->set('trivago.rumi.process.running_processes_factory', $oProcessFactory->reveal());
 
-        $this->configReader->getConfig(Argument::any())
+        $this->configReader->getConfig(Argument::any(), Argument::is(ConfigReader::CONFIG_FILE))
             ->willReturn(
                 new RunConfig([
                     'Stage one' => [
@@ -264,7 +264,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->container->set('trivago.rumi.process.running_processes_factory', $oProcessFactory->reveal());
 
-        $this->configReader->getConfig(Argument::any())
+        $this->configReader->getConfig(Argument::any(), Argument::is(ConfigReader::CONFIG_FILE))
             ->willReturn(
                 new RunConfig(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]], [], null)
             );
@@ -310,6 +310,27 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
                 return $e->getStatus() == RunFinishedEvent::STATUS_FAILED;
             }))
             ->shouldBeCalledTimes(1);
+    }
+
+    public function testGivenDifferentCiYamlFileName_WhenExecuted_ThenLookForThatFileInstead()
+    {
+        // given
+        $configFile = '../rumi-dev.yml';
+        $exceptionMessage = 'Required file \'' . $configFile . '\' does not exist';
+        $input = new ArrayInput([ '--config' => $configFile ]);
+
+        $this->configReader
+            ->getConfig(Argument::any(), Argument::is($configFile))
+            ->willThrow(new \Exception($exceptionMessage, ReturnCodes::RUMI_YML_DOES_NOT_EXIST))
+            ->shouldBeCalledTimes(1);
+
+        // when
+        $returnCode = $this->command->run($input, $this->output);
+
+        // then
+        $this->assertNotEquals(ConfigReader::CONFIG_FILE, $configFile);
+        $this->assertSame("Required file '" . $configFile . "' does not exist", trim($this->output->fetch()));
+        $this->assertEquals(ReturnCodes::RUMI_YML_DOES_NOT_EXIST, $returnCode);
     }
 
     /**

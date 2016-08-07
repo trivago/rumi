@@ -21,6 +21,7 @@ namespace Trivago\Rumi\Commands;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -35,6 +36,8 @@ use Trivago\Rumi\Timer;
 
 class RunCommand extends Command
 {
+    const CONFIG = 'config';
+    const CONFIG_SHORT = 'c';
     const GIT_COMMIT = 'git_commit';
     const VOLUME = 'volume';
 
@@ -80,6 +83,12 @@ class RunCommand extends Command
         $this
             ->setName('run')
             ->setDescription('Run tests')
+            ->addOption(
+                self::CONFIG,
+                self::CONFIG_SHORT,
+                InputOption::VALUE_REQUIRED,
+                'Configuration file to read',
+                ConfigReader::CONFIG_FILE)
             ->addArgument(self::VOLUME, InputArgument::OPTIONAL, 'Docker volume containing data')
             ->addArgument(self::GIT_COMMIT, InputArgument::OPTIONAL, 'Commit id');
         $this->workingDir = getcwd();
@@ -114,7 +123,7 @@ class RunCommand extends Command
                 $this->volume = $this->getWorkingDir();
             }
             $timeTaken = Timer::execute(function () use ($input, $output) {
-                $runConfig = $this->configReader->getConfig($this->getWorkingDir());
+                $runConfig = $this->configReader->getConfig($this->getWorkingDir(), $input->getOption(self::CONFIG));
 
                 /** @var JobConfigBuilder $jobConfigBuilder */
                 $jobConfigBuilder = $this->container->get('trivago.rumi.job_config_builder');
