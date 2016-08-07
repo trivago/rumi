@@ -1,0 +1,30 @@
+cache:
+  - .git
+  - vendor
+
+stages:
+  Stage 1:
+    Simple test in first stage:
+      docker:
+        www:
+          image: alpine:latest
+      commands:
+        - sleep 1
+
+  Stage 2:
+    Test 1:
+      docker:
+        www:
+          image: alpine:latest
+          volumes:
+            - ".:/workdir:rw"
+      commands:
+        - sleep 5
+    Test 2:
+      docker:
+        www:
+          image: alpine:latest
+          volumes:
+            - ".:/workdir:rw"
+      commands:
+        - cat /workdir/.rumi.yml
