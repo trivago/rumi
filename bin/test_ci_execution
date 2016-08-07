@@ -6,7 +6,6 @@ GIT_URL=$1
 GIT_COMMIT=$2
 GIT_BRANCH=$3
 
-
 docker build -t rumi:dev .
 
 DOCKER=$(which docker)
