@@ -86,7 +86,7 @@ class JobConfig
 
         $commandsPrints = [];
         foreach ($this->getCommands() as $command) {
-            $commandsPrints[] = 'print "Executing command: '.escapeshellcmd($command).'"';
+            $commandsPrints[] = 'echo "Executing command: '.escapeshellcmd($command).'"';
             $commandsPrints[] = $command;
         }
 
