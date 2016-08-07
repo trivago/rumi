@@ -85,10 +85,8 @@ class JobConfig
             return;
         }
 
-        $commands = $this->getCommands();
-
         $commandsPrints = [];
-        foreach ($commands as $command) {
+        foreach ($this->getCommands() as $command) {
             $commandsPrints[] = 'print "Executing command: ' . escapeshellcmd($command) . '"';
             $commandsPrints[] = $command;
         }
