@@ -34,3 +34,4 @@ script:
 # execute rumi check with failing build
 - RC=$(bin/test_ci_execution https://github.com/trivago/rumi.git 30e8142692976aa05dad1f543dcad7a721f83dd7 integration-tests-failing)
 - if [[ $RC -eq 0 ]]; then echo "This build was expected to fail"; exit 1; fi
+- exit 0
