@@ -60,7 +60,7 @@ class JobConfigTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertEquals('name', $job->getName());
-        $this->assertEquals('fourth ;sixth', $job->getCommandsAsString());
+        $this->assertEquals('echo "Executing command: fourth" && fourth && echo "Executing command: sixth" && sixth', $job->getCommandsAsString());
         $this->assertEquals(['fourth', 'sixth'], $job->getCommands());
         $this->assertEquals(['www' => [], 'second' => []], $job->getDockerCompose());
         $this->assertEquals('third', $job->getEntryPoint());

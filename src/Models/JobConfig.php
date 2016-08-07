@@ -84,7 +84,13 @@ class JobConfig
             return;
         }
 
-        return implode(' ;', $this->getCommands());
+        $commandsPrints = [];
+        foreach ($this->getCommands() as $command) {
+            $commandsPrints[] = 'echo "Executing command: '.escapeshellcmd($command).'"';
+            $commandsPrints[] = $command;
+        }
+
+        return implode(' && ', $commandsPrints);
     }
 
     /**

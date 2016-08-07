@@ -105,7 +105,7 @@ class DockerComposeYamlBuilderTest extends \PHPUnit_Framework_TestCase
             $yaml['www']['entrypoint']
         );
 
-        $this->assertEquals(['-c', 'echo 1'], $yaml['www']['command']);
+        $this->assertEquals(['-c', 'echo "Executing command: echo 1" && echo 1'], $yaml['www']['command']);
     }
 
     public function testGivenContainerHasPortsDefined_WhenYamlFileBuild_ThenPortsInformationIsDiscarded()

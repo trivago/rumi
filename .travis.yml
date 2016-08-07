@@ -25,6 +25,7 @@ before_install:
 - cd ..
 
 script:
+- set -e
 - docker run -v ${PWD}:/src -w /src trivago/rumi:php-dev-latest composer install
 - docker run -v ${PWD}:/src -w /src trivago/rumi:php-dev-latest vendor/bin/phpunit
 
@@ -32,6 +33,6 @@ script:
 - bin/test_ci_execution https://github.com/trivago/rumi.git 24fa240fd3f1307c3e020d2ca4e8f1b1aebfa110 integration-tests-passing
 
 # execute rumi check with failing build
-- RC=$(bin/test_ci_execution https://github.com/trivago/rumi.git 30e8142692976aa05dad1f543dcad7a721f83dd7 integration-tests-failing)
+- RC=$(bin/test_ci_execution https://github.com/trivago/rumi.git 30e8142692976aa05dad1f543dcad7a721f83dd7 integration-tests-failing) || echo "its fine..."
 - if [[ $RC -eq 0 ]]; then echo "This build was expected to fail"; exit 1; fi
 - exit 0
