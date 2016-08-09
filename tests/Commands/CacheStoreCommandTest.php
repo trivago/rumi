@@ -92,13 +92,13 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
         );
 
         // then
-        $this->assertEquals('Required file \'' . ConfigReader::CONFIG_FILE . '\' does not exist', trim($this->output->fetch()));
+        $this->assertEquals('Required file \'' . CommandAbstract::DEFAULT_CONFIG . '\' does not exist', trim($this->output->fetch()));
     }
 
     public function testGivenCiCacheConfigIsEmpty_WhenCacheStoreRun_ThenItSkipsExecution()
     {
         // given
-        touch(vfsStream::url('directory') . '/' . ConfigReader::CONFIG_FILE);
+        touch(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG);
 
         // when
         $this->SUT->run(
@@ -119,7 +119,7 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenCacheDirectoryDoesExist_WhenCacheStoreRun_ThenItDoesNotCreateIt()
     {
         // given
-        file_put_contents(vfsStream::url('directory') . '/' . ConfigReader::CONFIG_FILE, 'cache:' . PHP_EOL . '   - .git');
+        file_put_contents(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG, 'cache:' . PHP_EOL . '   - .git');
         mkdir(vfsStream::url('directory') . '/cache');
         mkdir(vfsStream::url('directory') . '/cache/' . md5('abc'));
         mkdir(vfsStream::url('directory') . '/cache/' . md5('abc') . '/data');
@@ -152,7 +152,7 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenDestinationCacheDirDoesNotExist_WhenCacheStoreRun_ThenItSkipsExecution()
     {
         // given
-        file_put_contents(vfsStream::url('directory') . '/' . ConfigReader::CONFIG_FILE, 'cache:' . PHP_EOL . '   - .git');
+        file_put_contents(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG, 'cache:' . PHP_EOL . '   - .git');
 
         // when
         $this->SUT->run(
@@ -173,7 +173,7 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenNotMasterBranchAndCacheExists_WhenCacheStoreRun_ThenItSkips()
     {
         // given
-        file_put_contents(vfsStream::url('directory') . '/' . ConfigReader::CONFIG_FILE, 'cache:' . PHP_EOL . '   - .git');
+        file_put_contents(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG, 'cache:' . PHP_EOL . '   - .git');
         mkdir(vfsStream::url('directory') . '/cache');
         // create cache directory for repository
         mkdir(vfsStream::url('directory') . '/cache/' . md5('abc'));
@@ -197,7 +197,7 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenCiCacheConfigIsCorrect_WhenCacheStoreRunWithOriginMasterBranch_ThenItStoresCache()
     {
         // given
-        file_put_contents(vfsStream::url('directory') . '/' . ConfigReader::CONFIG_FILE, 'cache:' . PHP_EOL . '   - .git');
+        file_put_contents(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG, 'cache:' . PHP_EOL . '   - .git');
         mkdir(vfsStream::url('directory') . '/cache');
 
         /** @var CacheProcessFactory $factory */
@@ -232,7 +232,7 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenCiCacheConfigIsCorrect_WhenCacheStoreRunWithMasterBranch_ThenItStoresCache()
     {
         // given
-        file_put_contents(vfsStream::url('directory') . '/' . ConfigReader::CONFIG_FILE, 'cache:' . PHP_EOL . '   - .git');
+        file_put_contents(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG, 'cache:' . PHP_EOL . '   - .git');
         mkdir(vfsStream::url('directory') . '/cache');
 
         /** @var CacheProcessFactory $factory */
@@ -267,7 +267,7 @@ class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenCiCacheConfigIsCorrect_WhenCacheStoreFails_ThenItReturnsErrorCode()
     {
         // given
-        file_put_contents(vfsStream::url('directory') . '/' . ConfigReader::CONFIG_FILE, 'cache:' . PHP_EOL . '   - .git');
+        file_put_contents(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG, 'cache:' . PHP_EOL . '   - .git');
         mkdir(vfsStream::url('directory') . '/cache');
 
         /** @var CacheProcessFactory $factory */

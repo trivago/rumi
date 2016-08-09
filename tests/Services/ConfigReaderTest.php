@@ -20,6 +20,7 @@ namespace Trivago\Rumi\Services;
 
 use org\bovigo\vfs\vfsStream;
 use Symfony\Component\Yaml\Dumper;
+use Trivago\Rumi\Commands\CommandAbstract;
 
 /**
  * @covers \Trivago\Rumi\Services\ConfigReader
@@ -40,14 +41,14 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Exception
      * @expectedExceptionCode 2
-     * @expectedExceptionMessage Required file '.rumi.yml' does not exist
+     * @expectedExceptionMessage Required file 'not_existing' does not exist
      */
     public function testGivenCiFileDoesNotExist_WhenGetConfigCalled_ThenExceptionIsThrown()
     {
         //given
 
         //when
-        $this->SUT->getConfig(vfsStream::url('directory'));
+        $this->SUT->getConfig(vfsStream::url('directory'), 'not_existing');
 
         //then
     }
@@ -66,10 +67,10 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
         ];
         $dumper = new Dumper();
 
-        file_put_contents(vfsStream::url('directory') . '/' . ConfigReader::CONFIG_FILE, $dumper->dump($config));
+        file_put_contents(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG, $dumper->dump($config));
 
         //when
-        $runConfig = $this->SUT->getConfig(vfsStream::url('directory') . '/');
+        $runConfig = $this->SUT->getConfig(vfsStream::url('directory') . '/', CommandAbstract::DEFAULT_CONFIG);
 
         //then
         $this->assertEquals($cache, $runConfig->getCache());
@@ -84,10 +85,10 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
     public function testGivenYamlFileSyntaxIsIncorrect_WhenExecuted_ThenItThrowsException()
     {
         //given
-        file_put_contents(vfsStream::url('directory') . '/' . ConfigReader::CONFIG_FILE, 'wrong::' . PHP_EOL . '::yaml_file');
+        file_put_contents(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG, 'wrong::' . PHP_EOL . '::yaml_file');
 
         // when
-        $this->SUT->getConfig(vfsStream::url('directory') . '/');
+        $this->SUT->getConfig(vfsStream::url('directory') . '/', CommandAbstract::DEFAULT_CONFIG);
 
         // then
     }

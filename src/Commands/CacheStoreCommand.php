@@ -18,7 +18,6 @@
 
 namespace Trivago\Rumi\Commands;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -28,7 +27,7 @@ use Trivago\Rumi\Exceptions\SkipException;
 use Trivago\Rumi\Models\RunConfig;
 use Trivago\Rumi\Services\ConfigReader;
 
-class CacheStoreCommand extends Command
+class CacheStoreCommand extends CommandAbstract
 {
     /**
      * @var ContainerInterface
@@ -53,6 +52,8 @@ class CacheStoreCommand extends Command
 
     protected function configure()
     {
+        parent::configure();
+
         $this
             ->setName('cache:store')
             ->setDescription('Store cache')
@@ -84,7 +85,7 @@ class CacheStoreCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $ciConfig = $this->getCiConfig();
+            $ciConfig = $this->getCiConfig($input->getOption(self::CONFIG));
 
             $cacheDir = $input->getArgument('cache_dir') . '/' . md5($input->getArgument('git_repository'));
 
@@ -176,12 +177,15 @@ class CacheStoreCommand extends Command
         throw new SkipException('Cache is written only for the first build and master branch. Skipping.');
     }
 
-    private function getCiConfig()
+    private function getCiConfig($configFile)
     {
         try {
-            return $this->container->get('trivago.rumi.services.config_reader')->getConfig($this->getWorkingDir());
+            /** @var ConfigReader $configReader */
+            $configReader = $this->container->get('trivago.rumi.services.config_reader');
+
+            return $configReader->getConfig($this->getWorkingDir(), $configFile);
         } catch (\Exception $e) {
-            throw new \Exception('Required file \'' . ConfigReader::CONFIG_FILE . '\' does not exist');
+            throw new \Exception('Required file \'' . $configFile . '\' does not exist');
         }
     }
 }

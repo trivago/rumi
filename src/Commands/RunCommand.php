@@ -18,7 +18,6 @@
 
 namespace Trivago\Rumi\Commands;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -33,7 +32,7 @@ use Trivago\Rumi\Events\StageStartedEvent;
 use Trivago\Rumi\Services\ConfigReader;
 use Trivago\Rumi\Timer;
 
-class RunCommand extends Command
+class RunCommand extends CommandAbstract
 {
     const GIT_COMMIT = 'git_commit';
     const VOLUME = 'volume';
@@ -77,6 +76,8 @@ class RunCommand extends Command
 
     protected function configure()
     {
+        parent::configure();
+
         $this
             ->setName('run')
             ->setDescription('Run tests')
@@ -114,7 +115,7 @@ class RunCommand extends Command
                 $this->volume = $this->getWorkingDir();
             }
             $timeTaken = Timer::execute(function () use ($input, $output) {
-                $runConfig = $this->configReader->getConfig($this->getWorkingDir());
+                $runConfig = $this->configReader->getConfig($this->getWorkingDir(), $input->getOption(self::CONFIG));
 
                 /** @var JobConfigBuilder $jobConfigBuilder */
                 $jobConfigBuilder = $this->container->get('trivago.rumi.job_config_builder');
