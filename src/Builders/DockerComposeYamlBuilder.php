@@ -158,9 +158,9 @@ class DockerComposeYamlBuilder
      */
     private function validateVolume($volumeSpec)
     {
-        if (substr($volumeSpec, 0, 1) == '/') {
+        if (substr($volumeSpec, 0, 1) == '/' or substr($volumeSpec, 0, 1) == '~') {
             throw new \Exception(
-                'You can specify absolute mounts',
+                'Volume configuration: \'' .$volumeSpec.'\' is forbidden.',
                 ReturnCodes::VOLUME_MOUNT_FROM_FILESYSTEM);
         }
     }
