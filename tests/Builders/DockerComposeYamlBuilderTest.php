@@ -212,9 +212,9 @@ class DockerComposeYamlBuilderTest extends \PHPUnit_Framework_TestCase
 
         // then
         $yaml = $this->getYamlConfigFromFile($yamlConfigFile);
-        $this->assertEquals($inputBranch, $yaml['www']['environment']['GIT_BRANCH']);
-        $this->assertEquals($inputCommit, $yaml['www']['environment']['GIT_COMMIT']);
-        $this->assertEquals($inputUrl, $yaml['www']['environment']['GIT_URL']);
+        $this->assertEquals($inputBranch, $yaml['www']['environment'][DockerComposeYamlBuilder::GIT_BRANCH]);
+        $this->assertEquals($inputCommit, $yaml['www']['environment'][DockerComposeYamlBuilder::GIT_COMMIT]);
+        $this->assertEquals($inputUrl, $yaml['www']['environment'][DockerComposeYamlBuilder::GIT_URL]);
     }
 
     /**

@@ -27,6 +27,10 @@ use Trivago\Rumi\Models\VCSInfo\VCSInfoInterface;
 class DockerComposeYamlBuilder
 {
     const DEFAULT_SHELL = 'sh';
+
+    const GIT_COMMIT = 'GIT_COMMIT';
+    const GIT_BRANCH = 'GIT_BRANCH';
+    const GIT_URL = 'GIT_URL';
     /**
      * @var VolumeInspector
      */
@@ -75,9 +79,9 @@ class DockerComposeYamlBuilder
         if (!isset($composeConfig[$ciContainerName]['environment'])) {
             $composeConfig[$ciContainerName]['environment'] = [];
         }
-        $composeConfig[$ciContainerName]['environment']['GIT_COMMIT'] = $VCSInfo->getCommitId();
-        $composeConfig[$ciContainerName]['environment']['GIT_BRANCH'] = $VCSInfo->getBranch();
-        $composeConfig[$ciContainerName]['environment']['GIT_URL'] = $VCSInfo->getUrl();
+        $composeConfig[$ciContainerName]['environment'][self::GIT_COMMIT] = $VCSInfo->getCommitId();
+        $composeConfig[$ciContainerName]['environment'][self::GIT_BRANCH] = $VCSInfo->getBranch();
+        $composeConfig[$ciContainerName]['environment'][self::GIT_URL] = $VCSInfo->getUrl();
 
         // remove all port mappings (we do not want to expose anything) and fix volumes settings
         foreach ($composeConfig as $container => $settings) {
