@@ -22,6 +22,7 @@ use Symfony\Component\Yaml\Dumper;
 use Trivago\Rumi\Commands\ReturnCodes;
 use Trivago\Rumi\Docker\VolumeInspector;
 use Trivago\Rumi\Models\JobConfig;
+use Trivago\Rumi\Models\VCSInfo\VCSInfoInterface;
 
 class DockerComposeYamlBuilder
 {
@@ -39,12 +40,13 @@ class DockerComposeYamlBuilder
     /**
      * Builds docker-compose.yml file based on JobConfig entity.
      *
-     * @param JobConfig $stageConfig
-     * @param string    $volume      docker volume or path to project files
+     * @param JobConfig        $stageConfig
+     * @param VCSInfoInterface $VCSInfo
+     * @param string           $volume      docker volume or path to project files
      *
      * @return string
      */
-    public function build(JobConfig $stageConfig, $volume)
+    public function build(JobConfig $stageConfig, VCSInfoInterface $VCSInfo, $volume)
     {
         $composeConfig = $stageConfig->getDockerCompose();
 
@@ -69,10 +71,17 @@ class DockerComposeYamlBuilder
                 ['-c', str_replace('$', '$$', $command)];
         }
 
+        // add environment variables describing commit
+        if (!isset($composeConfig[$ciContainerName]['environment'])) {
+            $composeConfig[$ciContainerName]['environment'] = [];
+        }
+        $composeConfig[$ciContainerName]['environment']['GIT_COMMIT'] = $VCSInfo->getCommitId();
+        $composeConfig[$ciContainerName]['environment']['GIT_BRANCH'] = $VCSInfo->getBranch();
+        $composeConfig[$ciContainerName]['environment']['GIT_URL'] = $VCSInfo->getUrl();
+
         // remove all port mappings (we do not want to expose anything) and fix volumes settings
         foreach ($composeConfig as $container => $settings) {
-            if (!empty($composeConfig[$container]['ports']))
-            {
+            if (!empty($composeConfig[$container]['ports'])) {
                 unset($composeConfig[$container]['ports']);
             }
 
@@ -97,17 +106,17 @@ class DockerComposeYamlBuilder
      */
     protected function dumpFile($parsedDockerCompose)
     {
-        $tempTestDirectory = tempnam(sys_get_temp_dir(), 'RUNNER') . md5(microtime()) . '_d';
+        $tempTestDirectory = tempnam(sys_get_temp_dir(), 'RUNNER').md5(microtime()).'_d';
         usleep(1);
         mkdir($tempTestDirectory);
 
         $dumper = new Dumper();
         file_put_contents(
-            $tempTestDirectory . '/docker-compose.yml',
+            $tempTestDirectory.'/docker-compose.yml',
             $dumper->dump($parsedDockerCompose, 10)
         );
 
-        return $tempTestDirectory . '/docker-compose.yml';
+        return $tempTestDirectory.'/docker-compose.yml';
     }
 
     /**
@@ -130,12 +139,12 @@ class DockerComposeYamlBuilder
     {
         // if the full volume is mounted, there is no magic needed
         if (strpos($volumeSpecification, './') !== 0) {
-            return str_replace('.:', $volumeName . ':', $volumeSpecification);
+            return str_replace('.:', $volumeName.':', $volumeSpecification);
         }
 
         // if we use systempath instead of docker volume
         if (!$this->isDockerVolume($volumeName)) {
-            return str_replace('./', rtrim($volumeName, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR, $volumeSpecification);
+            return str_replace('./', rtrim($volumeName, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR, $volumeSpecification);
         }
 
         // we need to get real docker volume path and use it

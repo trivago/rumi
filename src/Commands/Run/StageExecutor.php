@@ -28,6 +28,7 @@ use Trivago\Rumi\Events\JobStartedEvent;
 use Trivago\Rumi\Exceptions\CommandFailedException;
 use Trivago\Rumi\Models\JobConfig;
 use Trivago\Rumi\Models\RunningCommand;
+use Trivago\Rumi\Models\VCSInfo\VCSInfoInterface;
 use Trivago\Rumi\Process\RunningProcessesFactory;
 
 class StageExecutor
@@ -65,29 +66,29 @@ class StageExecutor
     /**
      * @param JobConfig[] $jobs
      * @param $volume
-     * @param OutputInterface $output
-     *
-     * @throws \Exception
+     * @param OutputInterface  $output
+     * @param VCSInfoInterface $VCSInfo
      */
-    public function executeStage($jobs, $volume, OutputInterface $output)
+    public function executeStage($jobs, $volume, OutputInterface $output, VCSInfoInterface $VCSInfo)
     {
-        $this->handleProcesses($output, $this->startStageProcesses($jobs, $volume));
+        $this->handleProcesses($output, $this->startStageProcesses($jobs, $VCSInfo, $volume));
     }
 
     /**
-     * @param JobConfig[] $jobs
+     * @param JobConfig[]      $jobs
+     * @param VCSInfoInterface $VCSInfo
      * @param $volume
      *
      * @return array
      */
-    private function startStageProcesses($jobs, $volume)
+    private function startStageProcesses($jobs, VCSInfoInterface $VCSInfo, $volume)
     {
         $processes = [];
 
         foreach ($jobs as $jobConfig) {
             $runningCommand = new RunningCommand(
                 $jobConfig,
-                $this->dockerComposeYamlBuilder->build($jobConfig, $volume),
+                $this->dockerComposeYamlBuilder->build($jobConfig, $VCSInfo, $volume),
                 $this->runningProcessesFactory
             );
 
@@ -116,7 +117,6 @@ class StageExecutor
             while (count($processes)) {
                 foreach ($processes as $id => $runningCommand) {
                     if ($runningCommand->isRunning()) {
-
                         $runningCommand->getProcess()->checkTimeout();
 
                         continue;
@@ -144,7 +144,7 @@ class StageExecutor
                 usleep(500000);
             }
         } catch (CommandFailedException $e) {
-            $output->writeln("<error>Command '" . $e->getMessage() . "' failed</error>");
+            $output->writeln("<error>Command '".$e->getMessage()."' failed</error>");
 
             $this->tearDownProcesses($output, $processes);
 
@@ -165,7 +165,7 @@ class StageExecutor
         $output->writeln('Shutting down jobs in background...', OutputInterface::VERBOSITY_VERBOSE);
 
         foreach ($processes as $runningCommand) {
-            $output->writeln('- ' . $runningCommand->getCommand(), OutputInterface::VERBOSITY_VERBOSE);
+            $output->writeln('- '.$runningCommand->getCommand(), OutputInterface::VERBOSITY_VERBOSE);
 
             $this->dispatchJobFinishedEvent($runningCommand, JobFinishedEvent::STATUS_ABORTED);
 

@@ -27,7 +27,7 @@ rumi checkout "${GIT_URL}" "${GIT_COMMIT}"
 
 login
 
-rumi run "${DOCKER_DATA_VOLUME}" "${GIT_COMMIT}"
+rumi run "${DOCKER_DATA_VOLUME}" "${GIT_COMMIT}" "${GIT_URL}" "${GIT_BRANCH}"
 
 if [ -z "${SKIP_CACHE}" ]
     then rumi cache:store /cache "${GIT_URL}" "${GIT_BRANCH}"

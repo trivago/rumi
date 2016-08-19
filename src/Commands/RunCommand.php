@@ -29,12 +29,16 @@ use Trivago\Rumi\Events\RunFinishedEvent;
 use Trivago\Rumi\Events\RunStartedEvent;
 use Trivago\Rumi\Events\StageFinishedEvent;
 use Trivago\Rumi\Events\StageStartedEvent;
+use Trivago\Rumi\Models\VCSInfo\GitInfo;
 use Trivago\Rumi\Services\ConfigReader;
 use Trivago\Rumi\Timer;
 
 class RunCommand extends CommandAbstract
 {
     const GIT_COMMIT = 'git_commit';
+    const GIT_URL = 'git_url';
+    const GIT_BRANCH = 'git_branch';
+
     const VOLUME = 'volume';
 
     /**
@@ -82,7 +86,9 @@ class RunCommand extends CommandAbstract
             ->setName('run')
             ->setDescription('Run tests')
             ->addArgument(self::VOLUME, InputArgument::OPTIONAL, 'Docker volume containing data')
-            ->addArgument(self::GIT_COMMIT, InputArgument::OPTIONAL, 'Commit id');
+            ->addArgument(self::GIT_COMMIT, InputArgument::OPTIONAL, 'Commit ID')
+            ->addArgument(self::GIT_URL, InputArgument::OPTIONAL, 'Git checkout url')
+            ->addArgument(self::GIT_BRANCH, InputArgument::OPTIONAL, 'Git checkout branch');
         $this->workingDir = getcwd();
     }
 
@@ -103,7 +109,7 @@ class RunCommand extends CommandAbstract
             return;
         }
 
-        return $this->workingDir . '/';
+        return $this->workingDir.'/';
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -114,7 +120,13 @@ class RunCommand extends CommandAbstract
             } else {
                 $this->volume = $this->getWorkingDir();
             }
-            $timeTaken = Timer::execute(function () use ($input, $output) {
+            $VCSInfo = new GitInfo(
+                $input->getArgument(self::GIT_URL),
+                $input->getArgument(self::GIT_COMMIT),
+                $input->getArgument(self::GIT_BRANCH)
+            );
+
+            $timeTaken = Timer::execute(function () use ($input, $output, $VCSInfo) {
                 $runConfig = $this->configReader->getConfig($this->getWorkingDir(), $input->getOption(self::CONFIG));
 
                 /** @var JobConfigBuilder $jobConfigBuilder */
@@ -136,15 +148,15 @@ class RunCommand extends CommandAbstract
                         $output->writeln(sprintf('<info>Stage: "%s"</info>', $stageName));
 
                         $time = Timer::execute(
-                            function () use ($jobs, $output) {
+                            function () use ($jobs, $output, $VCSInfo) {
                                 $this
                                     ->container
                                     ->get('trivago.rumi.commands.run.stage_executor')
-                                    ->executeStage($jobs, $this->volume, $output);
+                                    ->executeStage($jobs, $this->volume, $output, $VCSInfo);
                             }
                         );
 
-                        $output->writeln('<info>Stage completed: ' . $time . '</info>' . PHP_EOL);
+                        $output->writeln('<info>Stage completed: '.$time.'</info>'.PHP_EOL);
 
                         $this->eventDispatcher->dispatch(
                             Events::STAGE_FINISHED,
@@ -163,9 +175,9 @@ class RunCommand extends CommandAbstract
                 $this->eventDispatcher->dispatch(Events::RUN_FINISHED, new RunFinishedEvent(RunFinishedEvent::STATUS_SUCCESS));
             });
 
-            $output->writeln('<info>Build successful: ' . $timeTaken . '</info>');
+            $output->writeln('<info>Build successful: '.$timeTaken.'</info>');
         } catch (\Exception $e) {
-            $output->writeln('<error>' . $e->getMessage() . '</error>');
+            $output->writeln('<error>'.$e->getMessage().'</error>');
 
             $this->eventDispatcher->dispatch(Events::RUN_FINISHED, new RunFinishedEvent(RunFinishedEvent::STATUS_FAILED));
 
