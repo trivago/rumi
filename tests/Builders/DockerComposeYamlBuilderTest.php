@@ -77,7 +77,7 @@ class DockerComposeYamlBuilderTest extends \PHPUnit_Framework_TestCase
         $stageConfig = $this->prepareJobConfig(null, [], ['www' => ['volumes' => ['~/sth:/sth']]]);
 
         // when
-        $yamlConfigFile = $this->SUT->build($stageConfig, '.');
+        $yamlConfigFile = $this->SUT->build($stageConfig, $this->VCSInfo->reveal(), '.');
 
         // then
         // exception is expected
