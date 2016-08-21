@@ -24,6 +24,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Add new option to override the config path to RunCommand (#37)
 - Block using ~ in volume specification (#41)
 - Pass checkout information into the test container (#42)
+
 ### Changed
 - Directory where tests reside.
 - PHPUnit configuration file extension to use `.dist` as suffix.
@@ -31,6 +32,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - `entrypoint` files were moved to `bin` directory and renamed.
 - Handle notice on ports unset
 - Use IIFE for application invocation
+
 ### Removed
 - Special `bin` directory configuration from composer.
 - Remove obsolete metrics code
