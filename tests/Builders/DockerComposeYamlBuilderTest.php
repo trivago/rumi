@@ -18,8 +18,10 @@
 
 namespace Trivago\Rumi\Builders;
 
+use Prophecy\Exception\Prophecy\ObjectProphecyException;
 use Prophecy\Prophecy\ObjectProphecy;
 use Trivago\Rumi\Docker\VolumeInspector;
+use Trivago\Rumi\Models\VCSInfo\VCSInfoInterface;
 
 /**
  * @covers Trivago\Rumi\Builders\DockerComposeYamlBuilder
@@ -36,10 +38,15 @@ class DockerComposeYamlBuilderTest extends \PHPUnit_Framework_TestCase
      */
     private $volumeInspector;
 
+    /**
+     * @var ObjectProphecyException|VCSInfoInterface
+     */
+    private $VCSInfo;
+
     protected function setUp()
     {
         $this->volumeInspector = $this->prophesize(VolumeInspector::class);
-
+        $this->VCSInfo = $this->prophesize(VCSInfoInterface::class);
         $this->SUT = new DockerComposeYamlBuilder(
             $this->volumeInspector->reveal()
         );
@@ -55,7 +62,7 @@ class DockerComposeYamlBuilderTest extends \PHPUnit_Framework_TestCase
         $stageConfig = $this->prepareJobConfig(null, [], ['www' => ['volumes' => ['/:/sth']]]);
 
         // when
-        $yamlConfigFile = $this->SUT->build($stageConfig, '.');
+        $yamlConfigFile = $this->SUT->build($stageConfig, $this->VCSInfo->reveal(), '.');
 
         // then
         // exception is expected
@@ -70,7 +77,7 @@ class DockerComposeYamlBuilderTest extends \PHPUnit_Framework_TestCase
         $stageConfig = $this->prepareJobConfig(null, [], ['www' => ['volumes' => ['~/sth:/sth']]]);
 
         // when
-        $yamlConfigFile = $this->SUT->build($stageConfig, '.');
+        $yamlConfigFile = $this->SUT->build($stageConfig, $this->VCSInfo->reveal(), '.');
 
         // then
         // exception is expected
@@ -82,7 +89,7 @@ class DockerComposeYamlBuilderTest extends \PHPUnit_Framework_TestCase
         $stageConfig = $this->prepareJobConfig();
 
         // when
-        $yamlConfigFile = $this->SUT->build($stageConfig, '.');
+        $yamlConfigFile = $this->SUT->build($stageConfig, $this->VCSInfo->reveal(), '.');
 
         // then
         $this->assertFileExists($yamlConfigFile);
@@ -95,7 +102,7 @@ class DockerComposeYamlBuilderTest extends \PHPUnit_Framework_TestCase
         $stageConfig = $this->prepareJobConfig('test_entrypoint');
 
         // when
-        $yamlConfigFile = $this->SUT->build($stageConfig, '.');
+        $yamlConfigFile = $this->SUT->build($stageConfig, $this->VCSInfo->reveal(), '.');
         $yaml = $this->getYamlConfigFromFile($yamlConfigFile);
 
         // then
@@ -111,7 +118,7 @@ class DockerComposeYamlBuilderTest extends \PHPUnit_Framework_TestCase
         $stageConfig = $this->prepareJobConfig(null, ['echo 1']);
 
         // when
-        $yamlConfigFile = $this->SUT->build($stageConfig, '.');
+        $yamlConfigFile = $this->SUT->build($stageConfig, $this->VCSInfo->reveal(), '.');
 
         // then
         $yaml = $this->getYamlConfigFromFile($yamlConfigFile);
@@ -129,7 +136,7 @@ class DockerComposeYamlBuilderTest extends \PHPUnit_Framework_TestCase
         $stageConfig = $this->prepareJobConfig(null, null, ['www' => ['ports' => ['80:80', '443:443']]]);
 
         // when
-        $yamlConfigFile = $this->SUT->build($stageConfig, '.');
+        $yamlConfigFile = $this->SUT->build($stageConfig, $this->VCSInfo->reveal(), '.');
 
         // then
         $yaml = $this->getYamlConfigFromFile($yamlConfigFile);
@@ -145,7 +152,7 @@ class DockerComposeYamlBuilderTest extends \PHPUnit_Framework_TestCase
         $stageConfig = $this->prepareJobConfig(null, null, ['www' => ['volumes' => ['.:/var/www']]]);
 
         // when
-        $yamlConfigFile = $this->SUT->build($stageConfig, '__volume__');
+        $yamlConfigFile = $this->SUT->build($stageConfig, $this->VCSInfo->reveal(), '__volume__');
 
         // then
         $yaml = $this->getYamlConfigFromFile($yamlConfigFile);
@@ -162,7 +169,7 @@ class DockerComposeYamlBuilderTest extends \PHPUnit_Framework_TestCase
         $stageConfig = $this->prepareJobConfig(null, null, ['www' => ['volumes' => ['./some-file.abc:/var/www/some-file.abc']]]);
 
         // when
-        $yamlConfigFile = $this->SUT->build($stageConfig, '__volume__');
+        $yamlConfigFile = $this->SUT->build($stageConfig, $this->VCSInfo->reveal(), '__volume__');
 
         // then
         $yaml = $this->getYamlConfigFromFile($yamlConfigFile);
@@ -178,7 +185,7 @@ class DockerComposeYamlBuilderTest extends \PHPUnit_Framework_TestCase
         $stageConfig = $this->prepareJobConfig(null, null, ['www' => ['volumes' => ['./some-file.abc:/var/www/some-file.abc']]]);
 
         // when
-        $yamlConfigFile = $this->SUT->build($stageConfig, '/var/www/html/');
+        $yamlConfigFile = $this->SUT->build($stageConfig, $this->VCSInfo->reveal(), '/var/www/html/');
 
         // then
         $yaml = $this->getYamlConfigFromFile($yamlConfigFile);
@@ -186,6 +193,28 @@ class DockerComposeYamlBuilderTest extends \PHPUnit_Framework_TestCase
             '/var/www/html/some-file.abc:/var/www/some-file.abc',
             $yaml['www']['volumes'][0]
         );
+    }
+
+    public function testGivenVCSInformations_WhenBuildIsExecuted_ThenVCSInfoIsPassedToContainer()
+    {
+        // given
+        $inputBranch = 'branch';
+        $inputCommit = 'commit';
+        $inputUrl = 'url';
+
+        $stageConfig = $this->prepareJobConfig(null, null, ['www' => []]);
+        $this->VCSInfo->getBranch()->willReturn($inputBranch);
+        $this->VCSInfo->getCommitId()->willReturn($inputCommit);
+        $this->VCSInfo->getUrl()->wilLReturn($inputUrl);
+
+        // when
+        $yamlConfigFile = $this->SUT->build($stageConfig, $this->VCSInfo->reveal(), '.');
+
+        // then
+        $yaml = $this->getYamlConfigFromFile($yamlConfigFile);
+        $this->assertEquals($inputBranch, $yaml['www']['environment'][DockerComposeYamlBuilder::GIT_BRANCH]);
+        $this->assertEquals($inputCommit, $yaml['www']['environment'][DockerComposeYamlBuilder::GIT_COMMIT]);
+        $this->assertEquals($inputUrl, $yaml['www']['environment'][DockerComposeYamlBuilder::GIT_URL]);
     }
 
     /**
