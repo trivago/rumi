@@ -48,6 +48,7 @@ You can define an unlimited amount of stages and jobs. You should try to make st
       - command two
     entrypoint: sh // optional
     ci_image: name_of_the_container // optional
+    timeout: 100 // in seconds, default 1200
 ```
 * **docker** (required): docker-compose syntax (https://docs.docker.com/compose/compose-file/) used to start a set of the containers. Can be either `yaml` definition or path to `docker-compose` definition file.
 * **commands** (optional, default: image defined command): if defined, the command will be triggered inside the container. If empty - default docker image command will be used.

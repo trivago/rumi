@@ -74,10 +74,9 @@ class RunningCommandTest extends \PHPUnit_Framework_TestCase
         $process_prophecy->start()->shouldBeCalled();
         $process = $process_prophecy->reveal();
 
-        $this->job_config->getCommandsAsString()->willReturn('echo abc');
-        $this->job_config->getCiContainer()->willReturn('ci_image');
+        $this->setJobConfigProphecy();
 
-        $this->running_process_factory->getJobStartProcess('path', Argument::type('string'), 'ci_image')->willReturn($process);
+        $this->running_process_factory->getJobStartProcess('path', Argument::type('string'), 'ci_image', 1200)->willReturn($process);
 
         // when
         $this->SUT->start();
@@ -109,10 +108,9 @@ class RunningCommandTest extends \PHPUnit_Framework_TestCase
         $process_prophecy->isRunning()->willReturn(true);
         $process = $process_prophecy->reveal();
 
-        $this->job_config->getCommandsAsString()->willReturn('echo abc');
-        $this->job_config->getCiContainer()->willReturn('ci_image');
+        $this->setJobConfigProphecy();
 
-        $this->running_process_factory->getJobStartProcess('path', Argument::type('string'), 'ci_image')->willReturn($process);
+        $this->running_process_factory->getJobStartProcess('path', Argument::type('string'), 'ci_image', 1200)->willReturn($process);
 
         // when
         $this->SUT->start();
@@ -132,10 +130,9 @@ class RunningCommandTest extends \PHPUnit_Framework_TestCase
 
         $process = $process_prophecy->reveal();
 
-        $this->job_config->getCommandsAsString()->willReturn('echo abc');
-        $this->job_config->getCiContainer()->willReturn('ci_image');
+        $this->setJobConfigProphecy();
 
-        $this->running_process_factory->getJobStartProcess('path', Argument::type('string'), 'ci_image')->willReturn($process);
+        $this->running_process_factory->getJobStartProcess('path', Argument::type('string'), 'ci_image', 1200)->willReturn($process);
 
         // when
         $this->SUT->start();
@@ -143,5 +140,15 @@ class RunningCommandTest extends \PHPUnit_Framework_TestCase
 
         // then
         $this->assertEquals('outputerroroutput', $output);
+    }
+
+    /**
+     *
+     */
+    private function setJobConfigProphecy()
+    {
+        $this->job_config->getCommandsAsString()->willReturn('echo abc');
+        $this->job_config->getCiContainer()->willReturn('ci_image');
+        $this->job_config->getTimeout()->willReturn(1200);
     }
 }

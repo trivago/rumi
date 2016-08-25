@@ -230,7 +230,8 @@ class DockerComposeYamlBuilderTest extends \PHPUnit_Framework_TestCase
             $yamlConfig,
             'www',
             $entryPoint,
-            $commands
+            $commands,
+            1200
         );
     }
 

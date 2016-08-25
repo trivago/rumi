@@ -30,7 +30,8 @@ class JobConfigTest extends \PHPUnit_Framework_TestCase
             ['www' => [], 'second' => []],
             null,
             null,
-            null
+            null,
+            1200
         );
 
         $this->assertEquals('www', $job->getCiContainer());
@@ -43,7 +44,8 @@ class JobConfigTest extends \PHPUnit_Framework_TestCase
             ['www' => [], 'second' => []],
             'second',
             null,
-            null
+            null,
+            1200
         );
 
         $this->assertEquals('second', $job->getCiContainer());
@@ -56,7 +58,8 @@ class JobConfigTest extends \PHPUnit_Framework_TestCase
             ['www' => [], 'second' => []],
             'second',
             'third',
-            ['fourth', 'sixth']
+            ['fourth', 'sixth'],
+            1200
         );
 
         $this->assertEquals('name', $job->getName());
@@ -73,9 +76,25 @@ class JobConfigTest extends \PHPUnit_Framework_TestCase
             ['www' => [], 'second' => []],
             'second',
             'third',
-            null
+            null,
+            1200
         );
 
         $this->assertEquals('', $job->getCommandsAsString());
+    }
+
+    public function testGivenTimeout_WhenNewObjectCreated_ThenGetCTimeouTreturnsValidValue()
+    {
+        $timeout = 1200;
+        $job = new JobConfig(
+            'name',
+            ['www' => [], 'second' => []],
+            'second',
+            'third',
+            null,
+            $timeout
+        );
+
+        $this->assertEquals($timeout, $job->getTimeout());
     }
 }

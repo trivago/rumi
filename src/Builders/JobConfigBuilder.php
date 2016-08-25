@@ -28,7 +28,7 @@ class JobConfigBuilder
     private $composeHandler;
 
     /**
-     * @param ComposeParser       $compose_handler
+     * @param ComposeParser $compose_handler
      */
     public function __construct(ComposeParser $compose_handler)
     {
@@ -47,7 +47,8 @@ class JobConfigBuilder
                 $this->composeHandler->parseComposePart(!empty($jobConfig['docker']) ? $jobConfig['docker'] : null),
                 !empty($jobConfig['ci_image']) ? $jobConfig['ci_image'] : null,
                 !empty($jobConfig['entrypoint']) ? $jobConfig['entrypoint'] : null,
-                !empty($jobConfig['commands']) ? $jobConfig['commands'] : null
+                !empty($jobConfig['commands']) ? $jobConfig['commands'] : null,
+                !empty($jobConfig['timeout']) ? $jobConfig['timeout'] : JobConfig::DEFAULT_TIMEOUT
             );
 
             $jobs[] = $job;

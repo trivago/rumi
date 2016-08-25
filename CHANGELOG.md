@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
+- Add timeout setting per job
+- Fix timeout handling
 
 ### Changed
 

@@ -95,7 +95,7 @@ class RunningCommand
     private function getTmpName()
     {
         if (empty($this->tempContainerId)) {
-            $this->tempContainerId = 'cirunner-' . md5(uniqid() . time() . $this->getCommand());
+            $this->tempContainerId = 'cirunner-'.md5(uniqid().time().$this->getCommand());
         }
 
         return $this->tempContainerId;
@@ -109,7 +109,8 @@ class RunningCommand
             $this->runningProcessesFactory->getJobStartProcess(
                 $this->getYamlPath(),
                 $this->getTmpName(),
-                $this->jobConfig->getCiContainer()
+                $this->jobConfig->getCiContainer(),
+                $this->jobConfig->getTimeout()
             );
 
         $this->process->start();
@@ -139,7 +140,7 @@ class RunningCommand
      */
     public function getOutput()
     {
-        return $this->process->getOutput() . $this->process->getErrorOutput();
+        return $this->process->getOutput().$this->process->getErrorOutput();
     }
 
     /**

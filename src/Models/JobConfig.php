@@ -20,6 +20,7 @@ namespace Trivago\Rumi\Models;
 
 class JobConfig
 {
+    const DEFAULT_TIMEOUT = 1200;
     /**
      * @var string
      */
@@ -46,20 +47,27 @@ class JobConfig
     protected $entry_point;
 
     /**
+     * @var int
+     */
+    protected $timeout = self::DEFAULT_TIMEOUT;
+
+    /**
      * @param $name
      * @param $docker_compose
      * @param $ci_container
      * @param $entrypoint
      * @param $commands
+     * @param $timeout
      */
     public function __construct(
-        $name, $docker_compose, $ci_container, $entrypoint, $commands
+        $name, $docker_compose, $ci_container, $entrypoint, $commands, $timeout
     ) {
         $this->name = $name;
         $this->docker_compose = $docker_compose;
         $this->ci_container = $ci_container;
         $this->entry_point = $entrypoint;
         $this->commands = $commands;
+        $this->timeout = $timeout;
     }
 
     /**
@@ -125,5 +133,13 @@ class JobConfig
     public function getEntryPoint()
     {
         return $this->entry_point;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTimeout()
+    {
+        return $this->timeout;
     }
 }

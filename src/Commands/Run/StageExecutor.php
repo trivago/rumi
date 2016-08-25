@@ -20,6 +20,7 @@ namespace Trivago\Rumi\Commands\Run;
 
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Trivago\Rumi\Builders\DockerComposeYamlBuilder;
 use Trivago\Rumi\Commands\ReturnCodes;
 use Trivago\Rumi\Events;
@@ -116,15 +117,22 @@ class StageExecutor
         try {
             while (count($processes)) {
                 foreach ($processes as $id => $runningCommand) {
-                    if ($runningCommand->isRunning()) {
-                        $runningCommand->getProcess()->checkTimeout();
-
-                        continue;
+                    try {
+                        if ($runningCommand->isRunning()) {
+                            $runningCommand->getProcess()->checkTimeout();
+                            continue;
+                        }
+                    } catch (ProcessTimedOutException $e) {
+                        $timeout = true;
+                        // will be handled below
                     }
                     unset($processes[$id]);
 
                     $output->writeln(sprintf('<info>Executing job: %s</info>', $runningCommand->getJobName()));
                     $output->write($runningCommand->getOutput());
+                    if (!empty($timeout)) {
+                        $output->writeln(PHP_EOL.'Process timed out after '.$runningCommand->getProcess()->getTimeout().'s');
+                    }
 
                     $isSuccessful = $runningCommand->getProcess()->isSuccessful();
 
@@ -135,11 +143,9 @@ class StageExecutor
 
                     $runningCommand->tearDown();
 
-                    if ($isSuccessful) {
-                        continue;
+                    if (!$isSuccessful) {
+                        throw new CommandFailedException($runningCommand->getCommand());
                     }
-
-                    throw new CommandFailedException($runningCommand->getCommand());
                 }
                 usleep(500000);
             }

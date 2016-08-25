@@ -26,6 +26,7 @@ use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Trivago\Rumi\Events;
@@ -95,7 +96,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
     {
         // given
         $this->configReader->getConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))->willThrow(new \Exception(
-            'Required file \'' . CommandAbstract::DEFAULT_CONFIG . '\' does not exist',
+            'Required file \''.CommandAbstract::DEFAULT_CONFIG.'\' does not exist',
             ReturnCodes::RUMI_YML_DOES_NOT_EXIST
         ));
 
@@ -103,7 +104,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         $returnCode = $this->command->run(new ArrayInput([]), $this->output);
 
         // then
-        $this->assertSame("Required file '" . CommandAbstract::DEFAULT_CONFIG . "' does not exist", trim($this->output->fetch()));
+        $this->assertSame("Required file '".CommandAbstract::DEFAULT_CONFIG."' does not exist", trim($this->output->fetch()));
         $this->assertEquals(ReturnCodes::RUMI_YML_DOES_NOT_EXIST, $returnCode);
     }
 
@@ -178,6 +179,43 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         $this->assertStringStartsWith('Stage: "Stage one"', trim($commandOutput));
         $this->assertContains($errorOutput, $commandOutput);
         $this->assertNotContains($errorOutput.$errorOutput, $commandOutput);
+        $this->assertEquals(ReturnCodes::FAILED, $returnCode);
+    }
+
+    public function testGivenValidCiYamlAndBuildTimeOuts_WhenExecuted_ThenDisplaysTimeoutMessage()
+    {
+        // given
+        $startProcess = $this->getStartProcess(false);
+        $startProcess->isRunning()->willReturn(true, false);
+        $output = '##error output##';
+        $startProcess->getOutput()->willReturn($output)->shouldBeCalled();
+        $startProcess->getCommandLine()->willReturn('abc');
+        $startProcess->getTimeout()->willReturn(1);
+        $startProcess->checkTimeout()->will(function () use ($startProcess) {
+            throw new ProcessTimedOutException($startProcess->reveal(), ProcessTimedOutException::TYPE_GENERAL);
+        });
+        $tearDownProcess = $this->getTearDownProcess();
+
+        /** @var RunningProcessesFactory $processFactory */
+        $processFactory = $this->getProcessFactoryMock($startProcess, $tearDownProcess);
+
+        $this->container->set('trivago.rumi.process.running_processes_factory', $processFactory->reveal());
+
+        $this->configReader->getConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
+            ->willReturn(
+                new RunConfig(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]], [], null)
+            );
+
+        // when
+        $returnCode = $this->command->run(new ArrayInput(['volume' => '.']), $this->output);
+
+        // then
+        $commandOutput = $this->output->fetch();
+
+        $this->assertStringStartsWith('Stage: "Stage one"', trim($commandOutput));
+        $this->assertContains($output, $commandOutput);
+        $this->assertContains('Process timed out after 1s', $commandOutput);
+        $this->assertNotContains($output.$output, $commandOutput);
         $this->assertEquals(ReturnCodes::FAILED, $returnCode);
     }
 
@@ -316,8 +354,8 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
     {
         // given
         $configFile = '../rumi-dev.yml';
-        $exceptionMessage = 'Required file \'' . $configFile . '\' does not exist';
-        $input = new ArrayInput([ '--config' => $configFile ]);
+        $exceptionMessage = 'Required file \''.$configFile.'\' does not exist';
+        $input = new ArrayInput(['--config' => $configFile]);
 
         $this->configReader
             ->getConfig(Argument::any(), Argument::is($configFile))
@@ -329,7 +367,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         // then
         $this->assertNotEquals(CommandAbstract::DEFAULT_CONFIG, $configFile);
-        $this->assertSame("Required file '" . $configFile . "' does not exist", trim($this->output->fetch()));
+        $this->assertSame("Required file '".$configFile."' does not exist", trim($this->output->fetch()));
         $this->assertEquals(ReturnCodes::RUMI_YML_DOES_NOT_EXIST, $returnCode);
     }
 
@@ -372,7 +410,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         /** @var RunningProcessesFactory $processFactory */
         $processFactory = $this->prophesize(RunningProcessesFactory::class);
 
-        $processFactory->getJobStartProcess(Argument::any(), Argument::any(), Argument::any())
+        $processFactory->getJobStartProcess(Argument::any(), Argument::any(), Argument::any(), Argument::any())
             ->willReturn($startProcess->reveal());
 
         $processFactory->getTearDownProcess(Argument::any(), Argument::any())
