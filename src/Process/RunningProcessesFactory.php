@@ -29,12 +29,12 @@ class RunningProcessesFactory
      *
      * @return Process
      */
-    public function getJobStartProcess($yamlPath, $tmpName, $ciImage)
+    public function getJobStartProcess($yamlPath, $tmpName, $ciImage, $timeout)
     {
         $process = new Process(
-            'docker-compose -f ' . $yamlPath . ' run --name ' . $tmpName . ' ' . $ciImage
+            'docker-compose -f '.$yamlPath.' run --name '.$tmpName.' '.$ciImage
         );
-        $process->setTimeout(1200)->setIdleTimeout(1200);
+        $process->setTimeout($timeout)->setIdleTimeout($timeout);
 
         return $process;
     }
@@ -48,9 +48,9 @@ class RunningProcessesFactory
     public function getTearDownProcess($yamlPath, $tmpName)
     {
         $process = new Process(
-            'docker rm -f ' . $tmpName . ';
-            docker-compose -f ' . $yamlPath . ' rm -v --force;
-            docker rm -f $(docker-compose -f ' . $yamlPath . ' ps -q)'
+            'docker rm -f '.$tmpName.';
+            docker-compose -f '.$yamlPath.' rm -v --force;
+            docker rm -f $(docker-compose -f '.$yamlPath.' ps -q)'
         );
         $process->setTimeout(300)->setIdleTimeout(300);
 
