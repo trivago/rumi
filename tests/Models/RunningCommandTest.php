@@ -67,24 +67,6 @@ class RunningCommandTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('test_command', $this->SUT->getJobName());
     }
 
-    public function testGivenProcessIsStarted_WhenGetProcessCalled_ThenItReturnsValidProcess()
-    {
-        //given
-        $process_prophecy = $this->prophesize(Process::class);
-        $process_prophecy->start()->shouldBeCalled();
-        $process = $process_prophecy->reveal();
-
-        $this->setJobConfigProphecy();
-
-        $this->running_process_factory->getJobStartProcess('path', Argument::type('string'), 'ci_image', 1200)->willReturn($process);
-
-        // when
-        $this->SUT->start();
-
-        //then
-        $this->assertSame($process, $this->SUT->getProcess());
-    }
-
     public function testGivenProcessIsRunning_WhenTearDownCalled_ThenItRunsTearDown()
     {
         //given

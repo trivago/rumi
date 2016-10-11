@@ -18,6 +18,7 @@
 
 namespace Trivago\Rumi\Models;
 
+use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
 use Trivago\Rumi\Process\RunningProcessesFactory;
 
@@ -72,11 +73,27 @@ class RunningCommand
     }
 
     /**
-     * @return Process
+     * @throws ProcessTimedOutException In case the timeout was reached
      */
-    public function getProcess()
+    public function checkTimeout()
     {
-        return $this->process;
+        $this->process->checkTimeout();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSuccessful()
+    {
+        return $this->process->isSuccessful();
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getTimeout()
+    {
+        return $this->process->getTimeout();
     }
 
     /**
