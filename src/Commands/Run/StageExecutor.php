@@ -119,7 +119,7 @@ class StageExecutor
                 foreach ($processes as $id => $runningCommand) {
                     try {
                         if ($runningCommand->isRunning()) {
-                            $runningCommand->getProcess()->checkTimeout();
+                            $runningCommand->checkTimeout();
                             continue;
                         }
                     } catch (ProcessTimedOutException $e) {
@@ -131,19 +131,17 @@ class StageExecutor
                     $output->writeln(sprintf('<info>Executing job: %s</info>', $runningCommand->getJobName()));
                     $output->write($runningCommand->getOutput());
                     if (!empty($timeout)) {
-                        $output->writeln(PHP_EOL.'Process timed out after '.$runningCommand->getProcess()->getTimeout().'s');
+                        $output->writeln(PHP_EOL.'Process timed out after ' . $runningCommand->getTimeout().'s');
                     }
-
-                    $isSuccessful = $runningCommand->getProcess()->isSuccessful();
 
                     $this->dispatchJobFinishedEvent(
                         $runningCommand,
-                        $isSuccessful ? JobFinishedEvent::STATUS_SUCCESS : JobFinishedEvent::STATUS_FAILED
+                        $runningCommand->isSuccessful() ? JobFinishedEvent::STATUS_SUCCESS : JobFinishedEvent::STATUS_FAILED
                     );
 
                     $runningCommand->tearDown();
 
-                    if (!$isSuccessful) {
+                    if (!$runningCommand->isSuccessful()) {
                         throw new CommandFailedException($runningCommand->getCommand());
                     }
                 }
