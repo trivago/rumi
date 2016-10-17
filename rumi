@@ -14,6 +14,10 @@
 
 readonly CWD="//${PWD}"
 readonly SOCK=///var/run/docker.sock
+readonly DOCKER_CONFIG=`echo ~/.docker/config.json`
+
+# Always use the latest stable rumi image
+docker pull trivago/rumi:stable
 
 docker run                              \
     --interactive                       \
@@ -21,5 +25,6 @@ docker run                              \
     --tty                               \
     --volume="${CWD}":///workdir        \
     --volume="${SOCK}:${SOCK}"          \
+    --volume="${DOCKER_CONFIG}:/root/.docker/config.json"
     --entrypoint ///rumi/bin/entrypoint \
     trivago/rumi:stable "${CWD}" $*

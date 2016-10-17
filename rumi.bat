@@ -24,6 +24,10 @@ REM Add a slash to make it absolute.
 SET CWD=/%CWD%
 
 SET SOCK="/var/run/docker.sock"
+REM HOW_DO_I_GET_DOCKER_MACHINE_DIR ? docker-machine env ? DOCKER_MACHINE_NAME?
+SET DOCKER_CONFIG="##FIXME###./docker/config.json"
+
+docker pull trivago/rumi:stable
 
 docker run^
  --interactive^
@@ -31,5 +35,6 @@ docker run^
  --tty^
  --volume=%CWD%:/workdir^
  --volume=%SOCK%:%SOCK%^
+ --volume=%DOCKER_CONFIG%:/root/.docker/config.json^
  --entrypoint /rumi/bin/entrypoint^
  trivago/rumi:stable %CWD% %*
