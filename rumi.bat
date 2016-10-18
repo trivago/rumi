@@ -24,7 +24,6 @@ REM Add a slash to make it absolute.
 SET CWD=/%CWD%
 
 SET SOCK="/var/run/docker.sock"
-REM HOW_DO_I_GET_DOCKER_MACHINE_DIR ? docker-machine env ? DOCKER_MACHINE_NAME?
 SET DOCKER_CONFIG=%HOMEDRIVE%%HOMEPATH%/.docker/config.json
 
 docker pull trivago/rumi:stable
