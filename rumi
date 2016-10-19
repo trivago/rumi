@@ -25,6 +25,6 @@ docker run                              \
     --tty                               \
     --volume="${CWD}":///workdir        \
     --volume="${SOCK}:${SOCK}"          \
-    --volume="${DOCKER_CONFIG}:/root/.docker/config.json"
+    --volume="${DOCKER_CONFIG}:/root/.docker/config.json" \
     --entrypoint ///rumi/bin/entrypoint \
     trivago/rumi:stable "${CWD}" $*
