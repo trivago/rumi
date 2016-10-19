@@ -92,9 +92,13 @@ class CheckoutCommand extends CommandAbstract
 
             if (!file_exists($this->getWorkingDir() . '.git')) {
                 $output->writeln('Cloning...');
+                if($processFactory->getFullCloneProcess($input->getArgument('repository'))->getExitCode() != null) {
+                    $output->writeln('error.. Your repository could not be cloned. Please check your permissions');
+                }
                 $process =
                     $processFactory->getFullCloneProcess($input->getArgument('repository'));
-            } else {
+            }
+            else {
                 $output->writeln('Fetching changes...');
                 $process =
                     $processFactory->getFetchProcess();

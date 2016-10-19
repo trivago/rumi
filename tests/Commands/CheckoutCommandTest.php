@@ -311,4 +311,38 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
         // then
         $this->assertContains('Can not clearly merge with origin/master', $this->output->fetch());
     }
+
+    public function testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput() {
+        // given
+        /** @var GitCheckoutProcessFactory $processFactory */
+        $processFactory = $this->prophesize(GitCheckoutProcessFactory::class);
+
+        $fullCloneProcess = $this->prophesize(Process::class);
+        $fullCloneProcess->run()->shouldBeCalled();
+        $fullCloneProcess->isSuccessful()->willReturn(true)->shouldBeCalled();
+
+        $checkoutCommitProcess = $this->prophesize(Process::class);
+        $checkoutCommitProcess->run()->shouldBeCalled();
+        $checkoutCommitProcess->isSuccessful()->willReturn(false)->shouldBeCalled();
+        $checkoutCommitProcess->getErrorOutput()->willReturn('error')->shouldBeCalled();
+
+        $processFactory->getFullCloneProcess('abc')->willReturn($fullCloneProcess->reveal())->shouldBeCalled();
+        $processFactory->getCheckoutCommitProcess('sha123')->willReturn($checkoutCommitProcess->reveal())->shouldBeCalled();
+
+        $this->container->set('trivago.rumi.process.git_checkout_process_factory', $processFactory->reveal());
+
+        // when
+        $this->SUT->run(
+            new ArrayInput(
+                [
+                    'repository' => 'abc',
+                    'commit' => 'sha123',
+                ]
+            ),
+            $this->output
+        );
+
+        // then
+        $this->assertContains('error', $this->output->fetch());
+    }
 }
