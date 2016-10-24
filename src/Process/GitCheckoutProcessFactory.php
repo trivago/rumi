@@ -26,7 +26,7 @@ class GitCheckoutProcessFactory
 
     public function getFullCloneProcess($repositoryUrl)
     {
-        $process = new Process(
+        $process = new GitProcess(
             'git init && git remote add origin ' . $repositoryUrl . ' && ' . $this->fetchCommand
         );
         $process->setTimeout(600)->setIdleTimeout(600);
@@ -36,7 +36,7 @@ class GitCheckoutProcessFactory
 
     public function getFetchProcess()
     {
-        $process = new Process($this->fetchCommand);
+        $process = new GitProcess($this->fetchCommand);
         $process->setTimeout(600)->setIdleTimeout(600);
 
         return $process;

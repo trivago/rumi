@@ -315,22 +315,20 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 
     public function testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput() {
         // given
-        /** @var GitCheckoutProcessFactory $processFactory */
-        $processFactory = $this->prophesize(GitCheckoutProcessFactory::class);
+        /** @var GitCheckoutProcessFactory $factory */
+        $factory = $this->prophesize(GitCheckoutProcessFactory::class);
 
-        $fullCloneProcess = $this->prophesize(Process::class);
-        $fullCloneProcess->run()->shouldBeCalled();
-        $fullCloneProcess->isSuccessful()->willReturn(true)->shouldBeCalled();
+        /**
+         * @var GitProcess $process
+         */
+        $process = $this->prophesize(GitProcess::class);
+        $process->run()->shouldBeCalled();
+        $process->isSuccessful()->willReturn(false)->shouldBeCalled();
+        $process->checkStatus()->willReturn('error')->shouldBeCalled();
 
-        $checkoutCommitProcess = $this->prophesize(Process::class);
-        $checkoutCommitProcess->run()->shouldBeCalled();
-        $checkoutCommitProcess->isSuccessful()->willReturn(false)->shouldBeCalled();
-        $checkoutCommitProcess->getErrorOutput()->willReturn('error')->shouldBeCalled();
+        $factory->getFullCloneProcess('abc')->willReturn($process->reveal())->shouldBeCalled();
 
-        $processFactory->getFullCloneProcess('abc')->willReturn($fullCloneProcess->reveal())->shouldBeCalled();
-        $processFactory->getCheckoutCommitProcess('sha123')->willReturn($checkoutCommitProcess->reveal())->shouldBeCalled();
-
-        $this->container->set('trivago.rumi.process.git_checkout_process_factory', $processFactory->reveal());
+        $this->container->set('trivago.rumi.process.git_checkout_process_factory', $factory->reveal());
 
         // when
         $this->SUT->run(
