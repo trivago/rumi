@@ -25,6 +25,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\Process;
 use Trivago\Rumi\Process\GitCheckoutProcessFactory;
+use Trivago\Rumi\Process\GitProcess;
 use Trivago\Rumi\Timer;
 
 class CheckoutCommand extends CommandAbstract
@@ -92,9 +93,6 @@ class CheckoutCommand extends CommandAbstract
 
             if (!file_exists($this->getWorkingDir() . '.git')) {
                 $output->writeln('Cloning...');
-                if($processFactory->getFullCloneProcess($input->getArgument('repository'))->getExitCode() != null) {
-                    $output->writeln('error.. Your repository could not be cloned. Please check your permissions');
-                }
                 $process =
                     $processFactory->getFullCloneProcess($input->getArgument('repository'));
             }
@@ -142,9 +140,7 @@ class CheckoutCommand extends CommandAbstract
             function () use ($process) {
                 $process->run();
 
-                if (!$process->isSuccessful()) {
-                    throw new \Exception($process->getErrorOutput());
-                }
+                $process->checkStatus();
             }
         );
 
