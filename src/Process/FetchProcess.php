@@ -8,7 +8,6 @@
 
 namespace Trivago\Rumi\Process;
 
-use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Process\Process;
 use Trivago\Rumi\Commands\ReturnCodes;
 
