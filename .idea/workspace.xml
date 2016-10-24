@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="9e46cce7-803c-440b-9b40-5af6629b4e9a" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="rumi.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -26,18 +27,18 @@
       <file leaf-file-name="GitCheckoutProcessFactory.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Process/GitCheckoutProcessFactory.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="96">
-              <caret line="38" column="23" selection-start-line="38" selection-start-column="23" selection-end-line="38" selection-end-column="23" />
+            <state relative-caret-position="77">
+              <caret line="38" column="45" selection-start-line="38" selection-start-column="45" selection-end-line="38" selection-end-column="45" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CheckoutCommand.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Commands/CheckoutCommand.php">
+      <file leaf-file-name="Process.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/vendor/symfony/process/Process.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="240">
-              <caret line="91" column="42" selection-start-line="91" selection-start-column="42" selection-end-line="91" selection-end-column="42" />
+            <state relative-caret-position="183">
+              <caret line="631" column="13" selection-start-line="631" selection-start-column="7" selection-end-line="631" selection-end-column="13" />
               <folding />
             </state>
           </provider>
@@ -47,7 +48,17 @@
         <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="75">
-              <caret line="5" column="1" selection-start-line="5" selection-start-column="1" selection-end-line="5" selection-end-column="1" />
+              <caret line="5" column="19" selection-start-line="5" selection-start-column="19" selection-end-line="5" selection-end-column="19" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CheckoutCommand.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Commands/CheckoutCommand.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-285">
+              <caret line="27" column="25" selection-start-line="27" selection-start-column="25" selection-end-line="27" selection-end-column="25" />
               <folding />
             </state>
           </provider>
@@ -56,21 +67,21 @@
       <file leaf-file-name="CheckoutCommandTest.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests/Commands/CheckoutCommandTest.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="149">
-              <caret line="315" column="32" selection-start-line="315" selection-start-column="32" selection-end-line="315" selection-end-column="32" />
-              <folding />
+            <state relative-caret-position="-3316">
+              <caret line="73" column="46" selection-start-line="73" selection-start-column="46" selection-end-line="73" selection-end-column="46" />
+              <folding>
+                <element signature="e#637#666#0#PHP" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="FetchProcess.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Process/FetchProcess.php">
+      <file leaf-file-name="ReturnCodes.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Commands/ReturnCodes.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="300">
-              <caret line="25" column="26" selection-start-line="25" selection-start-column="26" selection-end-line="25" selection-end-column="26" />
-              <folding>
-                <element signature="e#128#188#0#PHP" expanded="true" />
-              </folding>
+            <state relative-caret-position="180">
+              <caret line="26" column="38" selection-start-line="26" selection-start-column="10" selection-end-line="26" selection-end-column="38" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -98,8 +109,8 @@
         <option value="$PROJECT_DIR$/src/Commands/ReturnCodes.php" />
         <option value="$PROJECT_DIR$/src/Commands/CheckoutCommand.php" />
         <option value="$PROJECT_DIR$/src/Process/FetchProcess.php" />
-        <option value="$PROJECT_DIR$/tests/Commands/CheckoutCommandTest.php" />
         <option value="$PROJECT_DIR$/src/Process/GitCheckoutProcessFactory.php" />
+        <option value="$PROJECT_DIR$/tests/Commands/CheckoutCommandTest.php" />
         <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
@@ -142,7 +153,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -296,6 +306,7 @@
         </subPane>
       </pane>
       <pane id="Scope" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -306,13 +317,17 @@
     <property name="js-jscs-nodeInterpreter" value="$USER_HOME$/.nvm/versions/node/v4.2.6/bin/node" />
     <property name="SearchEverywhereHistoryKey" value="checkoutCommandT&#9;FILE&#9;file:///Users/ppokalyukhina/dev/rumi/tests/Commands/CheckoutCommandTest.php&#10;checkoutC&#9;null&#9;null" />
   </component>
-  <component name="RunManager" selected="PHPUnit.CheckoutCommandTest.testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput">
+  <component name="RunManager" selected="PHPUnit.CheckoutCommandTest.testGivenWorkingDirIsEmpty_WhenCommandExecuted_ThenFullCheckoutIsDone">
     <configuration default="false" name="LockHandlerTest.testConstructWhenRepositoryIsNotWriteable" type="PHPUnitRunConfigurationType" factoryName="PHPUnit" temporary="true">
       <TestRunner class="Symfony\Component\Filesystem\Tests\LockHandlerTest" file="$PROJECT_DIR$/vendor/symfony/filesystem/Tests/LockHandlerTest.php" method="testConstructWhenRepositoryIsNotWriteable" scope="Method" />
       <method />
     </configuration>
     <configuration default="false" name="CheckoutCommandTest.testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput" type="PHPUnitRunConfigurationType" factoryName="PHPUnit" temporary="true">
       <TestRunner class="Trivago\Rumi\Commands\CheckoutCommandTest" file="$PROJECT_DIR$/tests/Commands/CheckoutCommandTest.php" method="testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput" scope="Method" />
+      <method />
+    </configuration>
+    <configuration default="false" name="CheckoutCommandTest.testGivenWorkingDirIsEmpty_WhenCommandExecuted_ThenFullCheckoutIsDone" type="PHPUnitRunConfigurationType" factoryName="PHPUnit" temporary="true">
+      <TestRunner class="Trivago\Rumi\Commands\CheckoutCommandTest" file="$PROJECT_DIR$/tests/Commands/CheckoutCommandTest.php" method="testGivenWorkingDirIsEmpty_WhenCommandExecuted_ThenFullCheckoutIsDone" scope="Method" />
       <method />
     </configuration>
     <configuration default="true" type="#com.siberika.idea.pascal.run.PascalConfigurationType" factoryName="Pascal executable">
@@ -375,14 +390,16 @@
       <recursive>false</recursive>
       <method />
     </configuration>
-    <list size="2">
+    <list size="3">
       <item index="0" class="java.lang.String" itemvalue="PHPUnit.LockHandlerTest.testConstructWhenRepositoryIsNotWriteable" />
       <item index="1" class="java.lang.String" itemvalue="PHPUnit.CheckoutCommandTest.testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput" />
+      <item index="2" class="java.lang.String" itemvalue="PHPUnit.CheckoutCommandTest.testGivenWorkingDirIsEmpty_WhenCommandExecuted_ThenFullCheckoutIsDone" />
     </list>
     <recent_temporary>
-      <list size="2">
-        <item index="0" class="java.lang.String" itemvalue="PHPUnit.CheckoutCommandTest.testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput" />
-        <item index="1" class="java.lang.String" itemvalue="PHPUnit.LockHandlerTest.testConstructWhenRepositoryIsNotWriteable" />
+      <list size="3">
+        <item index="0" class="java.lang.String" itemvalue="PHPUnit.CheckoutCommandTest.testGivenWorkingDirIsEmpty_WhenCommandExecuted_ThenFullCheckoutIsDone" />
+        <item index="1" class="java.lang.String" itemvalue="PHPUnit.CheckoutCommandTest.testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput" />
+        <item index="2" class="java.lang.String" itemvalue="PHPUnit.LockHandlerTest.testConstructWhenRepositoryIsNotWriteable" />
       </list>
     </recent_temporary>
   </component>
@@ -405,56 +422,58 @@
       <workItem from="1477229815321" duration="10000" />
       <workItem from="1477300625690" duration="7081000" />
       <workItem from="1477318059918" duration="690000" />
+      <workItem from="1477319376311" duration="2696000" />
     </task>
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="CheckoutCommandTest_testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput - 2016.10.24 at 15h 28m 37s.xml">
+    <history-entry file="CheckoutCommandTest_testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput - 2016.10.24 at 16h 55m 47s.xml">
       <configuration name="CheckoutCommandTest.testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput" configurationId="PHPUnitRunConfigurationType" />
     </history-entry>
-    <history-entry file="CheckoutCommandTest_testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput - 2016.10.24 at 15h 32m 02s.xml">
+    <history-entry file="CheckoutCommandTest_testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput - 2016.10.24 at 16h 58m 57s.xml">
       <configuration name="CheckoutCommandTest.testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput" configurationId="PHPUnitRunConfigurationType" />
     </history-entry>
-    <history-entry file="CheckoutCommandTest_testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput - 2016.10.24 at 15h 32m 13s.xml">
+    <history-entry file="CheckoutCommandTest_testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput - 2016.10.24 at 16h 59m 24s.xml">
       <configuration name="CheckoutCommandTest.testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput" configurationId="PHPUnitRunConfigurationType" />
     </history-entry>
-    <history-entry file="CheckoutCommandTest_testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput - 2016.10.24 at 15h 32m 34s.xml">
+    <history-entry file="CheckoutCommandTest_testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput - 2016.10.24 at 17h 00m 03s.xml">
       <configuration name="CheckoutCommandTest.testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput" configurationId="PHPUnitRunConfigurationType" />
     </history-entry>
-    <history-entry file="CheckoutCommandTest_testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput - 2016.10.24 at 16h 16m 24s.xml">
+    <history-entry file="CheckoutCommandTest_testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput - 2016.10.24 at 17h 01m 40s.xml">
       <configuration name="CheckoutCommandTest.testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput" configurationId="PHPUnitRunConfigurationType" />
     </history-entry>
-    <history-entry file="CheckoutCommandTest_testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput - 2016.10.24 at 16h 17m 58s.xml">
+    <history-entry file="CheckoutCommandTest_testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput - 2016.10.24 at 17h 02m 31s.xml">
       <configuration name="CheckoutCommandTest.testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput" configurationId="PHPUnitRunConfigurationType" />
     </history-entry>
-    <history-entry file="CheckoutCommandTest_testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput - 2016.10.24 at 16h 18m 22s.xml">
+    <history-entry file="CheckoutCommandTest_testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput - 2016.10.24 at 17h 02m 47s.xml">
       <configuration name="CheckoutCommandTest.testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput" configurationId="PHPUnitRunConfigurationType" />
     </history-entry>
-    <history-entry file="CheckoutCommandTest_testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput - 2016.10.24 at 16h 18m 38s.xml">
+    <history-entry file="CheckoutCommandTest_testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput - 2016.10.24 at 17h 04m 15s.xml">
       <configuration name="CheckoutCommandTest.testGivenRepositoryIsNotPublic_WhenRepoIsCloning_ThenItReturnsErrorOutput" configurationId="PHPUnitRunConfigurationType" />
     </history-entry>
-    <history-entry file="LockHandlerTest_testConstructWhenRepositoryIsNotWriteable - 2016.10.19 at 16h 42m 51s.xml">
-      <configuration name="LockHandlerTest.testConstructWhenRepositoryIsNotWriteable" configurationId="PHPUnitRunConfigurationType" />
+    <history-entry file="CheckoutCommandTest_testGivenWorkingDirIsEmpty_WhenCommandExecuted_ThenFullCheckoutIsDone - 2016.10.24 at 17h 04m 36s.xml">
+      <configuration name="CheckoutCommandTest.testGivenWorkingDirIsEmpty_WhenCommandExecuted_ThenFullCheckoutIsDone" configurationId="PHPUnitRunConfigurationType" />
     </history-entry>
-    <history-entry file="LockHandlerTest_testConstructWhenRepositoryIsNotWriteable - 2016.10.19 at 16h 43m 07s.xml">
-      <configuration name="LockHandlerTest.testConstructWhenRepositoryIsNotWriteable" configurationId="PHPUnitRunConfigurationType" />
+    <history-entry file="CheckoutCommandTest_testGivenWorkingDirIsEmpty_WhenCommandExecuted_ThenFullCheckoutIsDone - 2016.10.24 at 17h 04m 54s.xml">
+      <configuration name="CheckoutCommandTest.testGivenWorkingDirIsEmpty_WhenCommandExecuted_ThenFullCheckoutIsDone" configurationId="PHPUnitRunConfigurationType" />
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="16255000" />
+    <option name="totallyTimeSpent" value="18951000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1480" y="24" width="1809" height="1028" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21109225" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21335597" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28846154" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32905984" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34935898" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19123931" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.48290598" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -463,7 +482,6 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.28846154" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
@@ -783,14 +801,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Commands/ReturnCodes.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="23" column="14" selection-start-line="23" selection-start-column="14" selection-end-line="23" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Process/CacheProcessFactory.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="329">
@@ -833,24 +843,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/vendor/symfony/process/Process.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="350" column="20" selection-start-line="350" selection-start-column="20" selection-end-line="350" selection-end-column="20" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Process/FetchProcess.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="25" column="26" selection-start-line="25" selection-start-column="26" selection-end-line="25" selection-end-column="26" />
-          <folding>
-            <element signature="e#128#188#0#PHP" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/vendor/phpspec/prophecy/src/Prophecy/Prophecy/ObjectProphecy.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="200">
@@ -859,34 +851,60 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/Commands/CheckoutCommand.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-285">
+          <caret line="27" column="25" selection-start-line="27" selection-start-column="25" selection-end-line="27" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/Process/GitCheckoutProcessFactory.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="96">
-          <caret line="38" column="23" selection-start-line="38" selection-start-column="23" selection-end-line="38" selection-end-column="23" />
+        <state relative-caret-position="77">
+          <caret line="38" column="45" selection-start-line="38" selection-start-column="45" selection-end-line="38" selection-end-column="45" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vendor/symfony/process/Process.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="183">
+          <caret line="631" column="13" selection-start-line="631" selection-start-column="7" selection-end-line="631" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Commands/ReturnCodes.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="26" column="38" selection-start-line="26" selection-start-column="10" selection-end-line="26" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Process/FetchProcess.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="15" column="20" selection-start-line="15" selection-start-column="20" selection-end-line="15" selection-end-column="20" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/Commands/CheckoutCommandTest.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="149">
-          <caret line="315" column="32" selection-start-line="315" selection-start-column="32" selection-end-line="315" selection-end-column="32" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Commands/CheckoutCommand.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="91" column="42" selection-start-line="91" selection-start-column="42" selection-end-line="91" selection-end-column="42" />
-          <folding />
+        <state relative-caret-position="-3316">
+          <caret line="73" column="46" selection-start-line="73" selection-start-column="46" selection-end-line="73" selection-end-column="46" />
+          <folding>
+            <element signature="e#637#666#0#PHP" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="75">
-          <caret line="5" column="1" selection-start-line="5" selection-start-column="1" selection-end-line="5" selection-end-column="1" />
+          <caret line="5" column="19" selection-start-line="5" selection-start-column="19" selection-end-line="5" selection-end-column="19" />
           <folding />
         </state>
       </provider>
