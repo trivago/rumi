@@ -323,7 +323,7 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
          */
         $process = $this->prophesize(GitProcess::class);
         $process->run()->shouldBeCalled();
-        $process->checkStatus()->willReturn("3")->shouldBeCalled();
+        $process->checkStatus()->willReturn("2555555")->shouldBeCalled();
 
         $factory->getFullCloneProcess('abc')->willReturn($process->reveal())->shouldBeCalled();
 

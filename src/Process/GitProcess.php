@@ -21,18 +21,4 @@ class GitProcess extends Process
             ReturnCodes::FAILED;
         }
     }
-
-    public function run() {
-        return $this->run();
-    }
-
-    public function isSuccessful()
-    {
-        return parent::isSuccessful();
-    }
-
-    public function getErrorOutput()
-    {
-        return parent::getErrorOutput();
-    }
 }
