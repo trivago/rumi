@@ -24,6 +24,10 @@ class GitCheckoutProcessFactory
 {
     protected $fetchCommand = 'GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git fetch origin';
 
+    /**
+     * @param $repositoryUrl
+     * @return GitProcess
+     */
     public function getFullCloneProcess($repositoryUrl)
     {
         $process = new GitProcess(
@@ -44,7 +48,7 @@ class GitCheckoutProcessFactory
 
     public function getCheckoutCommitProcess($commitSha)
     {
-        $process = new Process(
+        $process = new GitProcess(
             'git reset --hard && git checkout ' . $commitSha
         );
         $process->setTimeout(600)->setIdleTimeout(600);
@@ -54,7 +58,7 @@ class GitCheckoutProcessFactory
 
     public function getMergeProcess($branch)
     {
-        $process = new Process(
+        $process = new GitProcess(
             'git merge --no-edit ' . $branch
         );
         $process->setTimeout(60)->setIdleTimeout(60);

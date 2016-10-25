@@ -15,11 +15,17 @@ class GitProcess extends Process
 {
     public function checkStatus()
     {
-        if (parent::getExitCode() == 128 && preg_match("/permission/g", parent::getErrorOutput())) {
-            throw new \Exception(ReturnCodes::VOLUME_MOUNT_FROM_FILESYSTEM);
-        } else {
-            throw new \Exception(ReturnCodes::FAILED);
+        try {
+            if (parent::isSuccessful()) {
+                ReturnCodes::SUCCESS;
+            }
         }
-
+        catch (\Exception $e){
+            if (parent::getExitCode() == 128 && preg_match("/permission/g", parent::getErrorOutput())) {
+                ReturnCodes::VOLUME_MOUNT_FROM_FILESYSTEM;
+            } else {
+                ReturnCodes::FAILED;
+            }
+        }
     }
 }
