@@ -139,8 +139,9 @@ class CheckoutCommand extends CommandAbstract
         $time = Timer::execute(
             function () use ($process) {
                 $process->run();
-
-                $process->checkStatus();
+                if (!$process->isSuccessful()) {
+                    $process->checkStatus();
+                }
             }
         );
 
