@@ -139,10 +139,10 @@ class CheckoutCommand extends CommandAbstract
         $time = Timer::execute(
             function () use ($process) {
                 $process->processFunctions()->run();
-                if($process->checkStatus() != ReturnCodes::SUCCESS ) {
-                    throw new \Exception("error occuried");
-                }
 
+                if ($process->checkStatus() != ReturnCodes::SUCCESS) {
+                    throw new \Exception($process->processFunctions()->getErrorOutput());
+                }
             }
         );
 

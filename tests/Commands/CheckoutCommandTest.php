@@ -321,18 +321,17 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
         /** @var GitCheckoutProcessFactory $processFactory */
         $processFactory = $this->prophesize(GitCheckoutProcessFactory::class);
 
+        $symfonyProcess = $this->prophesize(Process::class);
+        $symfonyProcess->run()->shouldBeCalled();
+
         $fullCloneProcess = $this->prophesize(GitProcess::class);
-//        $symfonyProcess = $this->prophesize(Process::class);
-
-//        $fullCloneProcess->processFunctions()->willReturn($symfonyProcess->reveal());
+        $fullCloneProcess->processFunctions()->willReturn($symfonyProcess->reveal());
         $fullCloneProcess->checkStatus()->willReturn(0)->shouldBeCalled();
-//        $symfonyProcess->run()->shouldBeCalled();
-//        $symfonyProcess->isSuccessful()->willReturn(true)->shouldBeCalled();
 
-        $checkoutCommitProcess = $this->prophesize(Process::class);
-//        $checkoutCommitProcess->run();
-//        $checkoutCommitProcess->isSuccessful()->willReturn(true)->shouldBeCalled();
-        $checkoutCommitProcess->checkStatus()->willReturn(ReturnCodes::SUCCESS);
+
+        $checkoutCommitProcess = $this->prophesize(GitProcess::class);
+        $checkoutCommitProcess->processFunctions()->willReturn($symfonyProcess->reveal());
+        $checkoutCommitProcess->checkStatus()->willReturn(0)->shouldBeCalled();
 
         $processFactory->getFullCloneProcess('abc')->willReturn($fullCloneProcess->reveal())->shouldBeCalled();
         $processFactory->getCheckoutCommitProcess('sha123')->willReturn($checkoutCommitProcess->reveal())->shouldBeCalled();
