@@ -18,7 +18,6 @@
 
 namespace Trivago\Rumi\Process;
 
-
 use Symfony\Component\Process\Process;
 
 class GitCheckoutProcessFactory

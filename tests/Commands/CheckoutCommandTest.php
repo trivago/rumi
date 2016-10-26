@@ -77,7 +77,6 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
         $fullCloneProcess->processFunctions()->willReturn($symfonyProcess->reveal());
         $fullCloneProcess->checkStatus()->willReturn(ReturnCodes::SUCCESS)->shouldBeCalled();
 
-
         $checkoutCommitProcess = $this->prophesize(GitProcess::class);
         $checkoutCommitProcess->processFunctions()->willReturn($symfonyProcess->reveal());
         $checkoutCommitProcess->checkStatus()->willReturn(ReturnCodes::SUCCESS)->shouldBeCalled();
@@ -139,40 +138,6 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 
         // then
         $this->assertContains('Checkout done', $this->output->fetch());
-    }
-
-    public function testGivenProcessFailing_WhenCommandExecuted_ThenErrorIsDisplayed()
-    {
-        // given
-        /** @var GitCheckoutProcessFactory $factory */
-        $factory = $this->prophesize(GitCheckoutProcessFactory::class);
-
-        $symfonyProcess = $this->prophesize(Process::class);
-        $symfonyProcess->run()->shouldBeCalled();
-
-        $gitProcess = $this->prophesize(GitProcess::class);
-        $gitProcess->processFunctions()->willReturn($symfonyProcess->reveal());
-        $gitProcess->checkStatus()->willReturn(ReturnCodes::FAILED)->shouldBeCalled();
-
-        $symfonyProcess->getErrorOutput()->willReturn('error')->shouldBeCalled();
-
-        $factory->getFullCloneProcess('abc')->willReturn($gitProcess->reveal())->shouldBeCalled();
-
-        $this->container->set('trivago.rumi.process.git_checkout_process_factory', $factory->reveal());
-
-        // when
-        $this->SUT->run(
-            new ArrayInput(
-                [
-                    'repository' => 'abc',
-                    'commit' => 'sha123',
-                ]
-            ),
-            $this->output
-        );
-
-        // then
-        $this->assertContains('error', $this->output->fetch());
     }
 
     public function testGivenMergeIsNotSpecified_WhenCommandExecuted_ThenItMergesWithMaster()

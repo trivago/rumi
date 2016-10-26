@@ -25,6 +25,5 @@ interface ReturnCodes
 
     const RUMI_YML_DOES_NOT_EXIST = 2;
     const VOLUME_MOUNT_FROM_FILESYSTEM = 3;
-
     const FAILED_DUE_TO_REPOSITORY_PERMISSIONS = 4;
 }

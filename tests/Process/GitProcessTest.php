@@ -29,6 +29,10 @@ class GitProcessTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(ReturnCodes::SUCCESS, $actualStatus);
     }
 
+    /**
+     * @expectedException Exception
+     * @expectedExceptionMessage Your repository is not public. Please check permissions
+     */
     public function testGivenProcessRuns_whenExitCodeIs128andOutputIncludesPermissions_thenReturnCodeIsNoPermissions() {
         //given
         $symfonyProcess = $this->prophesize(Process::class);
@@ -37,13 +41,12 @@ class GitProcessTest extends PHPUnit_Framework_TestCase
         $symfonyProcess->getErrorOutput()->willReturn("no permissions");
         $gitProcess = new GitProcess($symfonyProcess->reveal());
 
-        //when
-        $actualStatus = $gitProcess->checkStatus();
-
-        //then
-        $this->assertEquals(ReturnCodes::FAILED_DUE_TO_REPOSITORY_PERMISSIONS, $actualStatus);
+        $gitProcess->checkStatus();
     }
 
+    /**
+     * @expectedException Exception
+     */
     public function testGivenProcessRuns_whenStatusIsNotSuccessful_thenReturnCodeFail() {
         //given
         $symfonyProcess = $this->prophesize(Process::class);
@@ -53,9 +56,6 @@ class GitProcessTest extends PHPUnit_Framework_TestCase
         $gitProcess = new GitProcess($symfonyProcess->reveal());
 
         //when
-        $actualStatus = $gitProcess->checkStatus();
-
-        //then
-        $this->assertEquals(ReturnCodes::FAILED, $actualStatus);
+        $gitProcess->checkStatus();
     }
 }
