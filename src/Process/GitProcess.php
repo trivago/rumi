@@ -31,7 +31,7 @@ class GitProcess
     public function checkStatus()
     {
         if ($this->process->isSuccessful()) {
-            return ReturnCodes::SUCCESS;
+                ReturnCodes::SUCCESS;
         } elseif ($this->process->getExitCode() == 128 && preg_match("/permission/", $this->process->getErrorOutput())) {
             throw new \Exception(
               'Your repository is not public. Please check permissions',

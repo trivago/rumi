@@ -39,8 +39,10 @@ class GitProcessTest extends PHPUnit_Framework_TestCase
         $symfonyProcess->isSuccessful()->willReturn(false);
         $symfonyProcess->getExitCode()->willReturn(128);
         $symfonyProcess->getErrorOutput()->willReturn("no permissions");
+
         $gitProcess = new GitProcess($symfonyProcess->reveal());
 
+        //when
         $gitProcess->checkStatus();
     }
 
@@ -52,7 +54,8 @@ class GitProcessTest extends PHPUnit_Framework_TestCase
         $symfonyProcess = $this->prophesize(Process::class);
         $symfonyProcess->isSuccessful()->willReturn(false);
         $symfonyProcess->getExitCode()->willReturn(128);
-        $symfonyProcess->getErrorOutput()->willReturn("repo does not exist");
+        $symfonyProcess->getErrorOutput()->willReturn("Repository does not exist");
+
         $gitProcess = new GitProcess($symfonyProcess->reveal());
 
         //when
