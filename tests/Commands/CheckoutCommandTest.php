@@ -70,16 +70,17 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
         /** @var GitCheckoutProcessFactory $processFactory */
         $processFactory = $this->prophesize(GitCheckoutProcessFactory::class);
 
+        $symfonyProcess = $this->prophesize(Process::class);
+        $symfonyProcess->run()->shouldBeCalled();
+
         $fullCloneProcess = $this->prophesize(GitProcess::class);
-        $proces = $this->prophesize(Process::class);
+        $fullCloneProcess->processFunctions()->willReturn($symfonyProcess->reveal());
+        $fullCloneProcess->checkStatus()->willReturn(ReturnCodes::SUCCESS)->shouldBeCalled();
 
-        $fullCloneProcess->processFunctions()->willReturn($proces);
-//        $proces->run()->shouldBeCalled();
-        $fullCloneProcess->isSuccessful()->willReturn(true)->shouldBeCalled();
 
-        $checkoutCommitProcess = $this->prophesize(Process::class);
-        $checkoutCommitProcess->run();
-        $checkoutCommitProcess->isSuccessful()->willReturn(true)->shouldBeCalled();
+        $checkoutCommitProcess = $this->prophesize(GitProcess::class);
+        $checkoutCommitProcess->processFunctions()->willReturn($symfonyProcess->reveal());
+        $checkoutCommitProcess->checkStatus()->willReturn(ReturnCodes::SUCCESS)->shouldBeCalled();
 
         $processFactory->getFullCloneProcess('abc')->willReturn($fullCloneProcess->reveal())->shouldBeCalled();
         $processFactory->getCheckoutCommitProcess('sha123')->willReturn($checkoutCommitProcess->reveal())->shouldBeCalled();
@@ -108,13 +109,17 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
         $processFactory = $this->prophesize(GitCheckoutProcessFactory::class);
         touch(vfsStream::url('directory') . '/.git');
 
-        $fetchProcess = $this->prophesize(Process::class);
-        $fetchProcess->run()->shouldBeCalled();
-        $fetchProcess->isSuccessful()->willReturn(true)->shouldBeCalled();
+        $symfonyProcess = $this->prophesize(Process::class);
+        $symfonyProcess->run()->shouldBeCalled();
 
-        $checkoutCommitProcess = $this->prophesize(Process::class);
-        $checkoutCommitProcess->run()->shouldBeCalled();
-        $checkoutCommitProcess->isSuccessful()->willReturn(true)->shouldBeCalled();
+        $fetchProcess = $this->prophesize(GitProcess::class);
+        $fetchProcess->processFunctions()->willReturn($symfonyProcess->reveal());
+        $fetchProcess->checkStatus()->willReturn(ReturnCodes::SUCCESS)->shouldBeCalled();
+
+
+        $checkoutCommitProcess = $this->prophesize(GitProcess::class);
+        $checkoutCommitProcess->processFunctions()->willReturn($symfonyProcess->reveal());
+        $checkoutCommitProcess->checkStatus()->willReturn(ReturnCodes::SUCCESS)->shouldBeCalled();
 
         $processFactory->getFetchProcess()->willReturn($fetchProcess->reveal())->shouldBeCalled();
         $processFactory->getCheckoutCommitProcess('sha123')->willReturn($checkoutCommitProcess->reveal())->shouldBeCalled();
@@ -142,12 +147,16 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
         /** @var GitCheckoutProcessFactory $factory */
         $factory = $this->prophesize(GitCheckoutProcessFactory::class);
 
-        $process = $this->prophesize(Process::class);
-        $process->run()->shouldBeCalled();
-        $process->isSuccessful()->willReturn(false)->shouldBeCalled();
-        $process->getErrorOutput()->willReturn('error')->shouldBeCalled();
+        $symfonyProcess = $this->prophesize(Process::class);
+        $symfonyProcess->run()->shouldBeCalled();
 
-        $factory->getFullCloneProcess('abc')->willReturn($process->reveal())->shouldBeCalled();
+        $gitProcess = $this->prophesize(GitProcess::class);
+        $gitProcess->processFunctions()->willReturn($symfonyProcess->reveal());
+        $gitProcess->checkStatus()->willReturn(ReturnCodes::FAILED)->shouldBeCalled();
+
+        $symfonyProcess->getErrorOutput()->willReturn('error')->shouldBeCalled();
+
+        $factory->getFullCloneProcess('abc')->willReturn($gitProcess->reveal())->shouldBeCalled();
 
         $this->container->set('trivago.rumi.process.git_checkout_process_factory', $factory->reveal());
 
@@ -172,13 +181,17 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
         $processFactory = $this->prophesize(GitCheckoutProcessFactory::class);
         touch(vfsStream::url('directory') . '/.git');
 
-        $fetchProcess = $this->prophesize(Process::class);
-        $fetchProcess->run()->shouldBeCalled();
-        $fetchProcess->isSuccessful()->willReturn(true)->shouldBeCalled();
+        $symfonyProcess = $this->prophesize(Process::class);
+        $symfonyProcess->run()->shouldBeCalled();
 
-        $checkoutCommitProcess = $this->prophesize(Process::class);
-        $checkoutCommitProcess->run()->shouldBeCalled();
-        $checkoutCommitProcess->isSuccessful()->willReturn(true)->shouldBeCalled();
+        $fetchProcess = $this->prophesize(GitProcess::class);
+        $fetchProcess->processFunctions()->willReturn($symfonyProcess->reveal());
+        $fetchProcess->checkStatus()->willReturn(ReturnCodes::SUCCESS)->shouldBeCalled();
+
+
+        $checkoutCommitProcess = $this->prophesize(GitProcess::class);
+        $checkoutCommitProcess->processFunctions()->willReturn($symfonyProcess->reveal());
+        $checkoutCommitProcess->checkStatus()->willReturn(ReturnCodes::SUCCESS)->shouldBeCalled();
 
         $processFactory->getFetchProcess()->willReturn($fetchProcess->reveal())->shouldBeCalled();
         $processFactory->getCheckoutCommitProcess('sha123')->willReturn($checkoutCommitProcess->reveal())->shouldBeCalled();
@@ -207,17 +220,20 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
         touch(vfsStream::url('directory') . '/.git');
         file_put_contents(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG, 'merge_branch: abc');
 
-        $fetchProcess = $this->prophesize(Process::class);
-        $fetchProcess->run()->shouldBeCalled();
-        $fetchProcess->isSuccessful()->willReturn(true)->shouldBeCalled();
+        $symfonyProcess = $this->prophesize(Process::class);
+        $symfonyProcess->run()->shouldBeCalled();
 
-        $checkoutCommitProcess = $this->prophesize(Process::class);
-        $checkoutCommitProcess->run()->shouldBeCalled();
-        $checkoutCommitProcess->isSuccessful()->willReturn(true)->shouldBeCalled();
+        $fetchProcess = $this->prophesize(GitProcess::class);
+        $fetchProcess->processFunctions()->willReturn($symfonyProcess->reveal());
+        $fetchProcess->checkStatus()->willReturn(ReturnCodes::SUCCESS)->shouldBeCalled();
 
-        $mergeProcess = $this->prophesize(Process::class);
-        $mergeProcess->run()->shouldBeCalled();
-        $mergeProcess->isSuccessful()->willReturn(true);
+        $checkoutCommitProcess = $this->prophesize(GitProcess::class);
+        $checkoutCommitProcess->processFunctions()->willReturn($symfonyProcess->reveal());
+        $checkoutCommitProcess->checkStatus()->willReturn(ReturnCodes::SUCCESS)->shouldBeCalled();
+
+        $mergeProcess = $this->prophesize(GitProcess::class);
+        $mergeProcess->checkStatus()->willReturn(ReturnCodes::SUCCESS);
+
         $factory->getMergeProcess('abc')->willReturn($mergeProcess->reveal());
 
         $factory->getFetchProcess()->willReturn($fetchProcess->reveal())->shouldBeCalled();
@@ -247,13 +263,16 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
         touch(vfsStream::url('directory') . '/.git');
         file_put_contents(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG, '');
 
-        $fetchProcess = $this->prophesize(Process::class);
-        $fetchProcess->run()->shouldBeCalled();
-        $fetchProcess->isSuccessful()->willReturn(true)->shouldBeCalled();
+        $symfonyProcess = $this->prophesize(Process::class);
+        $symfonyProcess->run()->shouldBeCalled();
 
-        $checkoutCommitProcess = $this->prophesize(Process::class);
-        $checkoutCommitProcess->run()->shouldBeCalled();
-        $checkoutCommitProcess->isSuccessful()->willReturn(true)->shouldBeCalled();
+        $fetchProcess = $this->prophesize(GitProcess::class);
+        $fetchProcess->processFunctions()->willReturn($symfonyProcess->reveal());
+        $fetchProcess->checkStatus()->willReturn(ReturnCodes::SUCCESS)->shouldBeCalled();
+
+        $checkoutCommitProcess = $this->prophesize(GitProcess::class);
+        $checkoutCommitProcess->processFunctions()->willReturn($symfonyProcess->reveal());
+        $checkoutCommitProcess->checkStatus()->willReturn(ReturnCodes::SUCCESS)->shouldBeCalled();
 
         $factory->getFetchProcess()->willReturn($fetchProcess->reveal())->shouldBeCalled();
         $factory->getCheckoutCommitProcess('sha123')->willReturn($checkoutCommitProcess->reveal())->shouldBeCalled();
@@ -282,17 +301,20 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
         touch(vfsStream::url('directory') . '/.git');
         file_put_contents(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG, 'merge_branch: origin/master');
 
-        $fetchProcess = $this->prophesize(Process::class);
-        $fetchProcess->run()->shouldBeCalled();
-        $fetchProcess->isSuccessful()->willReturn(true)->shouldBeCalled();
+        $symfonyProcess = $this->prophesize(Process::class);
+        $symfonyProcess->run()->shouldBeCalled();
 
-        $checkoutCommitProcess = $this->prophesize(Process::class);
-        $checkoutCommitProcess->run()->shouldBeCalled();
-        $checkoutCommitProcess->isSuccessful()->willReturn(true)->shouldBeCalled();
+        $fetchProcess = $this->prophesize(GitProcess::class);
+        $fetchProcess->processFunctions()->willReturn($symfonyProcess->reveal());
+        $fetchProcess->checkStatus()->willReturn(ReturnCodes::SUCCESS)->shouldBeCalled();
 
-        $mergeProcess = $this->prophesize(Process::class);
-        $mergeProcess->run()->shouldBeCalled();
-        $mergeProcess->isSuccessful()->willReturn(false);
+        $checkoutCommitProcess = $this->prophesize(GitProcess::class);
+        $checkoutCommitProcess->processFunctions()->willReturn($symfonyProcess->reveal());
+        $checkoutCommitProcess->checkStatus()->willReturn(ReturnCodes::SUCCESS)->shouldBeCalled();
+
+        $mergeProcess = $this->prophesize(GitProcess::class);
+        $mergeProcess->checkStatus()->willReturn(ReturnCodes::FAILED);
+
         $factory->getMergeProcess('origin/master')->willReturn($mergeProcess->reveal());
 
         $factory->getFetchProcess()->willReturn($fetchProcess->reveal())->shouldBeCalled();
@@ -313,43 +335,5 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 
         // then
         $this->assertContains('Can not clearly merge with origin/master', $this->output->fetch());
-    }
-
-    public function testBla()
-    {
-        // given
-        /** @var GitCheckoutProcessFactory $processFactory */
-        $processFactory = $this->prophesize(GitCheckoutProcessFactory::class);
-
-        $symfonyProcess = $this->prophesize(Process::class);
-        $symfonyProcess->run()->shouldBeCalled();
-
-        $fullCloneProcess = $this->prophesize(GitProcess::class);
-        $fullCloneProcess->processFunctions()->willReturn($symfonyProcess->reveal());
-        $fullCloneProcess->checkStatus()->willReturn(0)->shouldBeCalled();
-
-
-        $checkoutCommitProcess = $this->prophesize(GitProcess::class);
-        $checkoutCommitProcess->processFunctions()->willReturn($symfonyProcess->reveal());
-        $checkoutCommitProcess->checkStatus()->willReturn(0)->shouldBeCalled();
-
-        $processFactory->getFullCloneProcess('abc')->willReturn($fullCloneProcess->reveal())->shouldBeCalled();
-        $processFactory->getCheckoutCommitProcess('sha123')->willReturn($checkoutCommitProcess->reveal())->shouldBeCalled();
-
-        $this->container->set('trivago.rumi.process.git_checkout_process_factory', $processFactory->reveal());
-
-        // when
-        $this->SUT->run(
-            new ArrayInput(
-                [
-                    'repository' => 'abc',
-                    'commit' => 'sha123',
-                ]
-            ),
-            $this->output
-        );
-
-        // then
-        $this->assertContains('Checkout done', $this->output->fetch());
     }
 }
