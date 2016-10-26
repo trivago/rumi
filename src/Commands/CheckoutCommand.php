@@ -18,6 +18,7 @@
 
 namespace Trivago\Rumi\Commands;
 
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -137,8 +138,11 @@ class CheckoutCommand extends CommandAbstract
     {
         $time = Timer::execute(
             function () use ($process) {
-                $process->run();
-                $process->checkStatus();
+                $process->processFunctions()->run();
+                if($process->checkStatus() != ReturnCodes::SUCCESS ) {
+                    throw new \Exception("error occuried");
+                }
+
             }
         );
 

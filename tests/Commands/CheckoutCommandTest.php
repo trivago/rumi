@@ -27,7 +27,6 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Process\Process;
 use Trivago\Rumi\Process\GitCheckoutProcessFactory;
 use Trivago\Rumi\Process\GitProcess;
-use Trivago\Rumi\Services\ConfigReader;
 
 /**
  * @covers Trivago\Rumi\Commands\CheckoutCommand
@@ -71,12 +70,15 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
         /** @var GitCheckoutProcessFactory $processFactory */
         $processFactory = $this->prophesize(GitCheckoutProcessFactory::class);
 
-        $fullCloneProcess = $this->prophesize(Process::class);
-        $fullCloneProcess->run()->shouldBeCalled();
+        $fullCloneProcess = $this->prophesize(GitProcess::class);
+        $proces = $this->prophesize(Process::class);
+
+        $fullCloneProcess->processFunctions()->willReturn($proces);
+//        $proces->run()->shouldBeCalled();
         $fullCloneProcess->isSuccessful()->willReturn(true)->shouldBeCalled();
 
         $checkoutCommitProcess = $this->prophesize(Process::class);
-        $checkoutCommitProcess->run()->shouldBeCalled();
+        $checkoutCommitProcess->run();
         $checkoutCommitProcess->isSuccessful()->willReturn(true)->shouldBeCalled();
 
         $processFactory->getFullCloneProcess('abc')->willReturn($fullCloneProcess->reveal())->shouldBeCalled();
@@ -311,5 +313,44 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 
         // then
         $this->assertContains('Can not clearly merge with origin/master', $this->output->fetch());
+    }
+
+    public function testBla()
+    {
+        // given
+        /** @var GitCheckoutProcessFactory $processFactory */
+        $processFactory = $this->prophesize(GitCheckoutProcessFactory::class);
+
+        $fullCloneProcess = $this->prophesize(GitProcess::class);
+//        $symfonyProcess = $this->prophesize(Process::class);
+
+//        $fullCloneProcess->processFunctions()->willReturn($symfonyProcess->reveal());
+        $fullCloneProcess->checkStatus()->willReturn(0)->shouldBeCalled();
+//        $symfonyProcess->run()->shouldBeCalled();
+//        $symfonyProcess->isSuccessful()->willReturn(true)->shouldBeCalled();
+
+        $checkoutCommitProcess = $this->prophesize(Process::class);
+//        $checkoutCommitProcess->run();
+//        $checkoutCommitProcess->isSuccessful()->willReturn(true)->shouldBeCalled();
+        $checkoutCommitProcess->checkStatus()->willReturn(ReturnCodes::SUCCESS);
+
+        $processFactory->getFullCloneProcess('abc')->willReturn($fullCloneProcess->reveal())->shouldBeCalled();
+        $processFactory->getCheckoutCommitProcess('sha123')->willReturn($checkoutCommitProcess->reveal())->shouldBeCalled();
+
+        $this->container->set('trivago.rumi.process.git_checkout_process_factory', $processFactory->reveal());
+
+        // when
+        $this->SUT->run(
+            new ArrayInput(
+                [
+                    'repository' => 'abc',
+                    'commit' => 'sha123',
+                ]
+            ),
+            $this->output
+        );
+
+        // then
+        $this->assertContains('Checkout done', $this->output->fetch());
     }
 }

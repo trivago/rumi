@@ -11,21 +11,31 @@ namespace Trivago\Rumi\Process;
 use Symfony\Component\Process\Process;
 use Trivago\Rumi\Commands\ReturnCodes;
 
-class GitProcess extends Process
+class GitProcess
 {
+    /**
+     * @var Process
+     */
+    private $process;
+
+    public function __construct(Process $process)
+    {
+        $this->process = $process;
+    }
+
+    public function processFunctions()
+    {
+        return $this->process;
+    }
+
     public function checkStatus()
     {
-        try {
-            if (parent::isSuccessful()) {
-                ReturnCodes::SUCCESS;
-            }
-        }
-        catch (\Exception $e){
-            if (parent::getExitCode() == 128 && preg_match("/permission/g", parent::getErrorOutput())) {
-                ReturnCodes::VOLUME_MOUNT_FROM_FILESYSTEM;
-            } else {
-                ReturnCodes::FAILED;
-            }
+        if ($this->process->isSuccessful()) {
+            return ReturnCodes::SUCCESS;
+        } elseif ($this->process->getExitCode() == 128 && preg_match("/permission/", $this->process->getErrorOutput())) {
+            return ReturnCodes::FAILED_DUE_TO_REPOSITORY_PERMISSIONS;
+        } else {
+            return ReturnCodes::FAILED;
         }
     }
 }
