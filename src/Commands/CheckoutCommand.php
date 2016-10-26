@@ -18,13 +18,12 @@
 
 namespace Trivago\Rumi\Commands;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Process\Process;
 use Trivago\Rumi\Process\GitCheckoutProcessFactory;
+use Trivago\Rumi\Process\GitProcess;
 use Trivago\Rumi\Timer;
 
 class CheckoutCommand extends CommandAbstract
@@ -94,7 +93,8 @@ class CheckoutCommand extends CommandAbstract
                 $output->writeln('Cloning...');
                 $process =
                     $processFactory->getFullCloneProcess($input->getArgument('repository'));
-            } else {
+            }
+            else {
                 $output->writeln('Fetching changes...');
                 $process =
                     $processFactory->getFetchProcess();
@@ -132,15 +132,12 @@ class CheckoutCommand extends CommandAbstract
      *
      * @return string
      */
-    protected function executeProcess(Process $process)
+    protected function executeProcess(GitProcess $process)
     {
         $time = Timer::execute(
             function () use ($process) {
-                $process->run();
-
-                if (!$process->isSuccessful()) {
-                    throw new \Exception($process->getErrorOutput());
-                }
+                $process->processFunctions()->run();
+                $process->checkStatus();
             }
         );
 
