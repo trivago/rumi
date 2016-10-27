@@ -22,8 +22,9 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Process\Process;
 use Trivago\Rumi\Process\GitCheckoutProcessFactory;
-use Trivago\Rumi\Process\GitProcess;
+use Trivago\Rumi\Process\GitCheckoutValidator;
 use Trivago\Rumi\Timer;
 
 class CheckoutCommand extends CommandAbstract
@@ -36,16 +37,21 @@ class CheckoutCommand extends CommandAbstract
      * @var string
      */
     private $workingDir;
+    /**
+     * @var GitCheckoutValidator
+     */
+    private $gitCheckoutValidator;
 
     /**
      * RunCommand constructor.
      *
      * @param ContainerInterface $container
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(ContainerInterface $container, GitCheckoutValidator $gitCheckoutValidator)
     {
         parent::__construct();
         $this->container = $container;
+        $this->gitCheckoutValidator = $gitCheckoutValidator;
     }
 
     protected function configure()
@@ -81,7 +87,7 @@ class CheckoutCommand extends CommandAbstract
         return $this->workingDir . '/';
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output)
     {
         try {
             /** @var GitCheckoutProcessFactory $processFactory */
@@ -93,14 +99,15 @@ class CheckoutCommand extends CommandAbstract
                 $output->writeln('Cloning...');
                 $process =
                     $processFactory->getFullCloneProcess($input->getArgument('repository'));
-            }
-            else {
+            } else {
                 $output->writeln('Fetching changes...');
                 $process =
                     $processFactory->getFetchProcess();
             }
 
             $output->writeln($this->executeProcess($process));
+
+            $this->gitCheckoutValidator->checkStatus($process);
 
             $output->writeln('Checking out ' . $input->getArgument('commit') . ' ');
             $process = $processFactory->getCheckoutCommitProcess($input->getArgument('commit'));
@@ -121,10 +128,10 @@ class CheckoutCommand extends CommandAbstract
         } catch (\Exception $e) {
             $output->writeln('<error>' . $e->getMessage() . '</error>');
 
-            return -1;
+            return $e->getCode();
         }
 
-        return 0;
+        return ReturnCodes::SUCCESS;
     }
 
     /**
@@ -132,12 +139,11 @@ class CheckoutCommand extends CommandAbstract
      *
      * @return string
      */
-    protected function executeProcess(GitProcess $process)
+    protected function executeProcess(Process $process)
     {
         $time = Timer::execute(
             function () use ($process) {
-                $process->processFunctions()->run();
-                $process->checkStatus();
+                $process->run();
             }
         );
 

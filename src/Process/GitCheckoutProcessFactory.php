@@ -26,47 +26,47 @@ class GitCheckoutProcessFactory
 
     /**
      * @param $repositoryUrl
-     * @return GitProcess
+     * @return Process
      */
     public function getFullCloneProcess($repositoryUrl)
     {
-        $process = new GitProcess(new Process('git init && git remote add origin ' . $repositoryUrl . ' && ' . $this->fetchCommand));
-        $process->processFunctions()->setTimeout(600)->setIdleTimeout(600);
+        $process = new Process('git init && git remote add origin ' . $repositoryUrl . ' && ' . $this->fetchCommand);
+        $process->setTimeout(600)->setIdleTimeout(600);
 
         return $process;
     }
 
     /**
-     * @return GitProcess
+     * @return Process
      */
     public function getFetchProcess()
     {
-        $process = new GitProcess(new Process($this->fetchCommand));
-        $process->processFunctions()->setTimeout(600)->setIdleTimeout(600);
+        $process = new Process($this->fetchCommand);
+        $process->setTimeout(600)->setIdleTimeout(600);
 
         return $process;
     }
 
     /**
      * @param $commitSha
-     * @return GitProcess
+     * @return Process
      */
     public function getCheckoutCommitProcess($commitSha)
     {
-        $process = new GitProcess(new Process('git reset --hard && git checkout ' . $commitSha));
-        $process->processFunctions()->setTimeout(600)->setIdleTimeout(600);
+        $process = new Process('git reset --hard && git checkout ' . $commitSha);
+        $process->setTimeout(600)->setIdleTimeout(600);
 
         return $process;
     }
 
     /**
      * @param $branch
-     * @return GitProcess
+     * @return Process
      */
     public function getMergeProcess($branch)
     {
-        $process = new GitProcess(new Process('git merge --no-edit ' . $branch));
-        $process->processFunctions()->setTimeout(60)->setIdleTimeout(60);
+        $process = new Process('git merge --no-edit ' . $branch);
+        $process->setTimeout(60)->setIdleTimeout(60);
 
         return $process;
     }

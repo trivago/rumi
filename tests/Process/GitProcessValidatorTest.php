@@ -8,30 +8,32 @@
  */
 use Symfony\Component\Process\Process;
 use Trivago\Rumi\Commands\ReturnCodes;
-use Trivago\Rumi\Process\GitProcess;
+use Trivago\Rumi\Process\GitCheckoutValidator;
 
 /**
- * @covers \Trivago\Rumi\Process\GitProcess
+ * @covers \Trivago\Rumi\Process\GitCheckoutValidator
  */
-class GitProcessTest extends PHPUnit_Framework_TestCase
+class GitProcessValidatorTest extends PHPUnit_Framework_TestCase
 {
 
-    public function testGivenProcessRuns_whenStatusIsSuccessfull_thenReturnCodeIsSuccess() {
+    public function testGivenProcessRuns_whenStatusIsSuccessfull_thenNothingHappens() {
         //given
         $symfonyProcess = $this->prophesize(Process::class);
         $symfonyProcess->isSuccessful()->willReturn(true);
-        $gitProcess = new GitProcess($symfonyProcess->reveal());
+
+        $gitProcess = new GitCheckoutValidator();
 
         //when
-        $actualStatus = $gitProcess->checkStatus();
+        $gitProcess->checkStatus($symfonyProcess->reveal());
 
         //then
-        $this->assertEquals(ReturnCodes::SUCCESS, $actualStatus);
+        $this->assertTrue(true);
     }
 
     /**
      * @expectedException Exception
      * @expectedExceptionMessage Your repository is not public. Please check permissions
+     * @expectedExceptionCode 4
      */
     public function testGivenProcessRuns_whenExitCodeIs128andOutputIncludesPermissions_thenReturnCodeIsNoPermissions() {
         //given
@@ -40,14 +42,16 @@ class GitProcessTest extends PHPUnit_Framework_TestCase
         $symfonyProcess->getExitCode()->willReturn(128);
         $symfonyProcess->getErrorOutput()->willReturn("no permissions");
 
-        $gitProcess = new GitProcess($symfonyProcess->reveal());
+        $gitProcess = new GitCheckoutValidator();
 
         //when
-        $gitProcess->checkStatus();
+        $gitProcess->checkStatus($symfonyProcess->reveal());
     }
 
     /**
      * @expectedException Exception
+     * @expectedExceptionMessage Repository does not exist
+     * @expectedExceptionCode 1
      */
     public function testGivenProcessRuns_whenStatusIsNotSuccessful_thenReturnCodeFail() {
         //given
@@ -56,9 +60,9 @@ class GitProcessTest extends PHPUnit_Framework_TestCase
         $symfonyProcess->getExitCode()->willReturn(128);
         $symfonyProcess->getErrorOutput()->willReturn("Repository does not exist");
 
-        $gitProcess = new GitProcess($symfonyProcess->reveal());
+        $gitProcess = new GitCheckoutValidator();
 
         //when
-        $gitProcess->checkStatus();
+        $gitProcess->checkStatus($symfonyProcess->reveal());
     }
 }

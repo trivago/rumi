@@ -164,7 +164,7 @@ class DockerComposeYamlBuilder
     {
         if (substr($volumeSpec, 0, 1) == '/' or substr($volumeSpec, 0, 1) == '~') {
             throw new \Exception(
-                'Volume configuration: \'' .$volumeSpec.'\' is forbidden.',
+                'Volume configuration: \''.$volumeSpec.'\' is forbidden.',
                 ReturnCodes::VOLUME_MOUNT_FROM_FILESYSTEM);
         }
     }
