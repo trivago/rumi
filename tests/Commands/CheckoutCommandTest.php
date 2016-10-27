@@ -255,18 +255,17 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 
         $fetchProcess = $this->prophesize(Process::class);
         $fetchProcess->run()->shouldBeCalled();
-        $fetchProcess->isSuccessful()->willReturn(false);
+        $fetchProcess->isSuccessful()->willReturn(true);
 
         $checkoutCommitProcess = $this->prophesize(Process::class);
         $checkoutCommitProcess->run()->shouldBeCalled();
 
-        $mergeProcess = $this->prophesize(Process::class);
-        $mergeProcess->run()->shouldBeCalled();
-        $mergeProcess->isSuccessful()->willReturn(false);
+        $mergeProcess = $this->prophesize(Process::class); 
+        $mergeProcess->run()->shouldBeCalled(); 
+        $mergeProcess->isSuccessful()->willReturn(false); 
+        $factory->getMergeProcess('origin/master')->willReturn($mergeProcess->reveal());  
 
-        $factory->getMergeProcess('origin/master')->willReturn($mergeProcess->reveal());
-
-        $factory->getFetchProcess()->willReturn($fetchProcess->reveal())->shouldBeCalled();
+        $factory->getFetchProcess()->willReturn($fetchProcess->reveal())->shouldBeCalled(); 
         $factory->getCheckoutCommitProcess('sha123')->willReturn($checkoutCommitProcess->reveal())->shouldBeCalled();
 
         $this->container->set('trivago.rumi.process.git_checkout_process_factory', $factory->reveal());
@@ -285,14 +284,14 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 //        print_r($this->output);
 
         // then
-        $this->assertContains('Can not clearly merge with origin/master', $this->output->fetch());
+        $this->assertContains('error', $this->output->fetch());
     }
 
     public function testGivenProcessFailing_WhenCommandExecuted_ThenErrorIsDisplayed()
     {
         // given
-         /** @var GitCheckoutProcessFactory $factory */
-         $factory = $this->prophesize(GitCheckoutProcessFactory::class);
+        /** @var GitCheckoutProcessFactory $factory */
+        $factory = $this->prophesize(GitCheckoutProcessFactory::class);
 
         $process = $this->prophesize(Process::class);
         $process->run()->shouldBeCalled();
