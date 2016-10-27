@@ -24,8 +24,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\Process;
 use Trivago\Rumi\Process\GitCheckoutProcessFactory;
-use Trivago\Rumi\Process\GitCheckoutValidator;
 use Trivago\Rumi\Timer;
+use Trivago\Rumi\Validators\GitCheckoutValidator;
 
 class CheckoutCommand extends CommandAbstract
 {
@@ -84,7 +84,7 @@ class CheckoutCommand extends CommandAbstract
             return;
         }
 
-        return $this->workingDir . '/';
+        return $this->workingDir.'/';
     }
 
     public function execute(InputInterface $input, OutputInterface $output)
@@ -95,7 +95,7 @@ class CheckoutCommand extends CommandAbstract
                 ->container
                 ->get('trivago.rumi.process.git_checkout_process_factory');
 
-            if (!file_exists($this->getWorkingDir() . '.git')) {
+            if (!file_exists($this->getWorkingDir().'.git')) {
                 $output->writeln('Cloning...');
                 $process =
                     $processFactory->getFullCloneProcess($input->getArgument('repository'));
@@ -109,24 +109,24 @@ class CheckoutCommand extends CommandAbstract
 
             $this->gitCheckoutValidator->checkStatus($process);
 
-            $output->writeln('Checking out ' . $input->getArgument('commit') . ' ');
+            $output->writeln('Checking out '.$input->getArgument('commit').' ');
             $process = $processFactory->getCheckoutCommitProcess($input->getArgument('commit'));
 
             $output->writeln($this->executeProcess($process));
 
             $mergeBranch = $this->getMergeBranch($input->getOption(self::CONFIG));
             if (!empty($mergeBranch)) {
-                $output->writeln('Merging with ' . $mergeBranch);
+                $output->writeln('Merging with '.$mergeBranch);
                 try {
                     $this->executeProcess($processFactory->getMergeProcess($mergeBranch));
                 } catch (\Exception $e) {
-                    throw new \Exception('Can not clearly merge with ' . $mergeBranch);
+                    throw new \Exception('Can not clearly merge with '.$mergeBranch);
                 }
             }
 
             $output->writeln('<info>Checkout done</info>');
         } catch (\Exception $e) {
-            $output->writeln('<error>' . $e->getMessage() . '</error>');
+            $output->writeln('<error>'.$e->getMessage().'</error>');
 
             return $e->getCode();
         }

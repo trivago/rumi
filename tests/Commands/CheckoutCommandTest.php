@@ -22,14 +22,12 @@ use org\bovigo\vfs\vfsStream;
 use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Process\Process;
 use Trivago\Rumi\Process\GitCheckoutProcessFactory;
-use Trivago\Rumi\Process\GitCheckoutValidator;
+use Trivago\Rumi\Validators\GitCheckoutValidator;
 
 /**
  * @covers \Trivago\Rumi\Commands\CheckoutCommand
@@ -189,8 +187,8 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
         $checkoutCommitProcess = $this->prophesize(Process::class);
         $checkoutCommitProcess->run()->shouldBeCalled();
 
-        $mergeProcess = $this->prophesize(GitCheckoutValidator::class);
-        $mergeProcess->checkStatus()->willReturn(ReturnCodes::SUCCESS);
+        $mergeProcess = $this->prophesize(Process::class);
+        $mergeProcess->run()->shouldBeCalled();
 
         $factory->getMergeProcess('abc')->willReturn($mergeProcess->reveal());
 
@@ -262,8 +260,8 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
         $checkoutCommitProcess = $this->prophesize(Process::class);
         $checkoutCommitProcess->run()->shouldBeCalled();
 
-        $mergeProcess = $this->prophesize(GitCheckoutValidator::class);
-        $mergeProcess->checkStatus()->willReturn(ReturnCodes::FAILED);
+        $mergeProcess = $this->prophesize(Process::class);
+        $mergeProcess->run()->shouldBeCalled();
 
         $factory->getMergeProcess('origin/master')->willReturn($mergeProcess->reveal());
 
@@ -282,6 +280,8 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
             ),
             $this->output
         );
+
+        print_r($this->output);
 
         // then
         $this->assertContains('Can not clearly merge with origin/master', $this->output->fetch());
@@ -332,7 +332,6 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
         $processFactory->getCheckoutCommitProcess('sha123')->willReturn($checkoutCommitProcess->reveal());
 
         $this->container->set('trivago.rumi.process.git_checkout_process_factory', $processFactory->reveal());
-
 
         $result = $this->SUT->execute(new ArrayInput(
             [

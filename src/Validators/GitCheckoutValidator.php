@@ -3,10 +3,10 @@
  * Created by PhpStorm.
  * User: ppokalyukhina
  * Date: 21/10/16
- * Time: 16:35
+ * Time: 16:35.
  */
 
-namespace Trivago\Rumi\Process;
+namespace Trivago\Rumi\Validators;
 
 use Symfony\Component\Process\Process;
 use Trivago\Rumi\Commands\ReturnCodes;
@@ -19,9 +19,9 @@ class GitCheckoutValidator
             return;
         }
 
-        if ($process->getExitCode() == 128 && preg_match("/permission/", $process->getErrorOutput())) {
+        if ($process->getExitCode() == 128 && preg_match('/permission/i', $process->getErrorOutput())) {
             throw new \Exception(
-              'Your repository is not public. Please check permissions',
+              'Rumi has no permissions to your repository',
                ReturnCodes::FAILED_DUE_TO_REPOSITORY_PERMISSIONS
             );
         }
