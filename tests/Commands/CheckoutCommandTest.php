@@ -255,13 +255,14 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 
         $fetchProcess = $this->prophesize(Process::class);
         $fetchProcess->run()->shouldBeCalled();
-        $fetchProcess->isSuccessful()->willReturn(true);
+        $fetchProcess->isSuccessful()->willReturn(false);
 
         $checkoutCommitProcess = $this->prophesize(Process::class);
         $checkoutCommitProcess->run()->shouldBeCalled();
 
         $mergeProcess = $this->prophesize(Process::class);
         $mergeProcess->run()->shouldBeCalled();
+        $mergeProcess->isSuccessful()->willReturn(false);
 
         $factory->getMergeProcess('origin/master')->willReturn($mergeProcess->reveal());
 
@@ -281,7 +282,7 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
             $this->output
         );
 
-        print_r($this->output);
+//        print_r($this->output);
 
         // then
         $this->assertContains('Can not clearly merge with origin/master', $this->output->fetch());

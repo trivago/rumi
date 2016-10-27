@@ -119,6 +119,7 @@ class CheckoutCommand extends CommandAbstract
                 $output->writeln('Merging with '.$mergeBranch);
                 try {
                     $this->executeProcess($processFactory->getMergeProcess($mergeBranch));
+                    $this->gitCheckoutValidator->checkStatus($processFactory->getMergeProcess($mergeBranch));
                 } catch (\Exception $e) {
                     throw new \Exception('Can not clearly merge with '.$mergeBranch);
                 }
