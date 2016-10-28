@@ -47,6 +47,7 @@ class CheckoutCommand extends CommandAbstract
      * RunCommand constructor.
      *
      * @param ContainerInterface $container
+     * @param GitCheckoutValidator $gitCheckoutValidator
      */
     public function __construct(ContainerInterface $container, GitCheckoutValidator $gitCheckoutValidator)
     {

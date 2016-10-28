@@ -13,6 +13,10 @@ use Trivago\Rumi\Commands\ReturnCodes;
 
 class GitCheckoutValidator
 {
+    /**
+     * @param Process $process
+     * @throws \Exception
+     */
     public function checkStatus(Process $process)
     {
         if ($process->isSuccessful()) {
