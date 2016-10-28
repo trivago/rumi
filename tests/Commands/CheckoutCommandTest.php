@@ -255,17 +255,18 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 
         $fetchProcess = $this->prophesize(Process::class);
         $fetchProcess->run()->shouldBeCalled();
-        $fetchProcess->isSuccessful()->willReturn(true);
+        $this->gitCheckoutValidator->checkStatus($fetchProcess->reveal())->shouldBeCalled();
 
         $checkoutCommitProcess = $this->prophesize(Process::class);
         $checkoutCommitProcess->run()->shouldBeCalled();
 
-        $mergeProcess = $this->prophesize(Process::class); 
-        $mergeProcess->run()->shouldBeCalled(); 
-        $mergeProcess->isSuccessful()->willReturn(false); 
-        $factory->getMergeProcess('origin/master')->willReturn($mergeProcess->reveal());  
+        $mergeProcess = $this->prophesize(Process::class);
+        $mergeProcess->run()->shouldBeCalled();
+        $mergeProcess->isSuccessful()->willReturn(false);
+        $this->gitCheckoutValidator->checkStatus($mergeProcess->reveal())->willThrow(new \Exception('Error'));
 
-        $factory->getFetchProcess()->willReturn($fetchProcess->reveal())->shouldBeCalled(); 
+        $factory->getMergeProcess('origin/master')->willReturn($mergeProcess->reveal());
+        $factory->getFetchProcess()->willReturn($fetchProcess->reveal())->shouldBeCalled();
         $factory->getCheckoutCommitProcess('sha123')->willReturn($checkoutCommitProcess->reveal())->shouldBeCalled();
 
         $this->container->set('trivago.rumi.process.git_checkout_process_factory', $factory->reveal());
@@ -281,10 +282,8 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
             $this->output
         );
 
-//        print_r($this->output);
-
         // then
-        $this->assertContains('error', $this->output->fetch());
+        $this->assertContains('Can not clearly merge with origin/master', $this->output->fetch());
     }
 
     public function testGivenProcessFailing_WhenCommandExecuted_ThenErrorIsDisplayed()
