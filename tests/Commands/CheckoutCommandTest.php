@@ -332,7 +332,7 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->container->set('trivago.rumi.process.git_checkout_process_factory', $processFactory->reveal());
 
-        $result = $this->SUT->execute(new ArrayInput(
+        $result = $this->SUT->run(new ArrayInput(
             [
                 'repository' => 'abc',
                 'commit' => 'sha123',

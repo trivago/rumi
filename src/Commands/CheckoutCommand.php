@@ -37,6 +37,7 @@ class CheckoutCommand extends CommandAbstract
      * @var string
      */
     private $workingDir;
+
     /**
      * @var GitCheckoutValidator
      */
@@ -84,10 +85,10 @@ class CheckoutCommand extends CommandAbstract
             return;
         }
 
-        return $this->workingDir.'/';
+        return $this->workingDir . '/';
     }
 
-    public function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
             /** @var GitCheckoutProcessFactory $processFactory */
@@ -95,7 +96,7 @@ class CheckoutCommand extends CommandAbstract
                 ->container
                 ->get('trivago.rumi.process.git_checkout_process_factory');
 
-            if (!file_exists($this->getWorkingDir().'.git')) {
+            if (!file_exists($this->getWorkingDir() . '.git')) {
                 $output->writeln('Cloning...');
                 $process =
                     $processFactory->getFullCloneProcess($input->getArgument('repository'));
@@ -109,25 +110,26 @@ class CheckoutCommand extends CommandAbstract
 
             $this->gitCheckoutValidator->checkStatus($process);
 
-            $output->writeln('Checking out '.$input->getArgument('commit').' ');
+            $output->writeln('Checking out ' . $input->getArgument('commit') . ' ');
             $process = $processFactory->getCheckoutCommitProcess($input->getArgument('commit'));
 
             $output->writeln($this->executeProcess($process));
 
             $mergeBranch = $this->getMergeBranch($input->getOption(self::CONFIG));
             if (!empty($mergeBranch)) {
-                $output->writeln('Merging with '.$mergeBranch);
+                $output->writeln('Merging with ' . $mergeBranch);
                 try {
-                    $this->executeProcess($processFactory->getMergeProcess($mergeBranch));
-                    $this->gitCheckoutValidator->checkStatus($processFactory->getMergeProcess($mergeBranch));
+                    $process = $processFactory->getMergeProcess($mergeBranch);
+                    $this->executeProcess($process);
+                    $this->gitCheckoutValidator->checkStatus($process);
                 } catch (\Exception $e) {
-                    throw new \Exception('Can not clearly merge with '.$mergeBranch);
+                    throw new \Exception('Can not clearly merge with ' . $mergeBranch);
                 }
             }
 
             $output->writeln('<info>Checkout done</info>');
         } catch (\Exception $e) {
-            $output->writeln('<error>'.$e->getMessage().'</error>');
+            $output->writeln('<error>' . $e->getMessage() . '</error>');
 
             return $e->getCode();
         }
@@ -145,7 +147,6 @@ class CheckoutCommand extends CommandAbstract
         $time = Timer::execute(
             function () use ($process) {
                 $process->run();
-
             }
         );
 
