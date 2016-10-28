@@ -131,7 +131,7 @@ class StageExecutor
                     $output->writeln(sprintf('<info>Executing job: %s</info>', $runningCommand->getJobName()));
                     $output->write($runningCommand->getOutput());
                     if (!empty($timeout)) {
-                        $output->writeln(PHP_EOL.'Process timed out after ' . $runningCommand->getTimeout().'s');
+                        $output->writeln(PHP_EOL . 'Process timed out after ' . $runningCommand->getTimeout() . 's');
                     }
 
                     $this->dispatchJobFinishedEvent(
@@ -148,7 +148,7 @@ class StageExecutor
                 usleep(500000);
             }
         } catch (CommandFailedException $e) {
-            $output->writeln("<error>Command '".$e->getMessage()."' failed</error>");
+            $output->writeln("<error>Command '" . $e->getMessage() . "' failed</error>");
 
             $this->tearDownProcesses($output, $processes);
 
@@ -169,7 +169,7 @@ class StageExecutor
         $output->writeln('Shutting down jobs in background...', OutputInterface::VERBOSITY_VERBOSE);
 
         foreach ($processes as $runningCommand) {
-            $output->writeln('- '.$runningCommand->getCommand(), OutputInterface::VERBOSITY_VERBOSE);
+            $output->writeln('- ' . $runningCommand->getCommand(), OutputInterface::VERBOSITY_VERBOSE);
 
             $this->dispatchJobFinishedEvent($runningCommand, JobFinishedEvent::STATUS_ABORTED);
 

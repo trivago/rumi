@@ -23,7 +23,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\Process;
+use Trivago\Rumi\Events\ExecuteProcessEvent;
 use Trivago\Rumi\Process\GitCheckoutProcessFactory;
+use Trivago\Rumi\Process\GitCloneProcessFactory;
 use Trivago\Rumi\Timer;
 use Trivago\Rumi\Validators\GitCheckoutValidator;
 
@@ -33,6 +35,7 @@ class CheckoutCommand extends CommandAbstract
      * @var ContainerInterface
      */
     private $container;
+
     /**
      * @var string
      */
@@ -92,36 +95,40 @@ class CheckoutCommand extends CommandAbstract
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
+
             /** @var GitCheckoutProcessFactory $processFactory */
             $processFactory = $this
                 ->container
                 ->get('trivago.rumi.process.git_checkout_process_factory');
+            $gitCloneRepo = new GitCloneProcessFactory($processFactory);
 
-            if (!file_exists($this->getWorkingDir() . '.git')) {
-                $output->writeln('Cloning...');
-                $process =
-                    $processFactory->getFullCloneProcess($input->getArgument('repository'));
-            } else {
-                $output->writeln('Fetching changes...');
-                $process =
-                    $processFactory->getFetchProcess();
-            }
+//            if (!file_exists($this->getWorkingDir() . '.git')) {
+//                $output->writeln('Cloning...');
+//                $process =
+//                    $processFactory->getFullCloneProcess($input->getArgument('repository'));
+//            } else {
+//                $output->writeln('Fetching changes...');
+//                $process =
+//                    $processFactory->getFetchProcess();
+//            }
 
-            $output->writeln($this->executeProcess($process));
+            $execProcess = new ExecuteProcessEvent();
 
-            $this->gitCheckoutValidator->checkStatus($process);
+            $output->writeln($execProcess->executeProcess($gitCloneRepo->GitCloneProcess($input, $output)));
+
+            $this->gitCheckoutValidator->checkStatus($gitCloneRepo->GitCloneProcess($input, $output)));
 
             $output->writeln('Checking out ' . $input->getArgument('commit') . ' ');
             $process = $processFactory->getCheckoutCommitProcess($input->getArgument('commit'));
 
-            $output->writeln($this->executeProcess($process));
+            $output->writeln($execProcess->executeProcess($process));
 
             $mergeBranch = $this->getMergeBranch($input->getOption(self::CONFIG));
             if (!empty($mergeBranch)) {
                 $output->writeln('Merging with ' . $mergeBranch);
                 try {
                     $process = $processFactory->getMergeProcess($mergeBranch);
-                    $this->executeProcess($process);
+                    $execProcess->executeProcess($process);
                     $this->gitCheckoutValidator->checkStatus($process);
                 } catch (\Exception $e) {
                     throw new \Exception('Can not clearly merge with ' . $mergeBranch);
@@ -138,21 +145,21 @@ class CheckoutCommand extends CommandAbstract
         return ReturnCodes::SUCCESS;
     }
 
-    /**
-     * @param $process
-     *
-     * @return string
-     */
-    protected function executeProcess(Process $process)
-    {
-        $time = Timer::execute(
-            function () use ($process) {
-                $process->run();
-            }
-        );
-
-        return $time;
-    }
+//    /**
+//     * @param $process
+//     *
+//     * @return string
+//     */
+//    protected function executeProcess(Process $process)
+//    {
+//        $time = Timer::execute(
+//            function () use ($process) {
+//                $process->run();
+//            }
+//        );
+//
+//        return $time;
+//    }
 
     private function getMergeBranch($configFile)
     {

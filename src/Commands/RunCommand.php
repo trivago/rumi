@@ -109,7 +109,7 @@ class RunCommand extends CommandAbstract
             return;
         }
 
-        return $this->workingDir.'/';
+        return $this->workingDir . '/';
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -156,7 +156,7 @@ class RunCommand extends CommandAbstract
                             }
                         );
 
-                        $output->writeln('<info>Stage completed: '.$time.'</info>'.PHP_EOL);
+                        $output->writeln('<info>Stage completed: ' . $time . '</info>' . PHP_EOL);
 
                         $this->eventDispatcher->dispatch(
                             Events::STAGE_FINISHED,
@@ -175,9 +175,9 @@ class RunCommand extends CommandAbstract
                 $this->eventDispatcher->dispatch(Events::RUN_FINISHED, new RunFinishedEvent(RunFinishedEvent::STATUS_SUCCESS));
             });
 
-            $output->writeln('<info>Build successful: '.$timeTaken.'</info>');
+            $output->writeln('<info>Build successful: ' . $timeTaken . '</info>');
         } catch (\Exception $e) {
-            $output->writeln('<error>'.$e->getMessage().'</error>');
+            $output->writeln('<error>' . $e->getMessage() . '</error>');
 
             $this->eventDispatcher->dispatch(Events::RUN_FINISHED, new RunFinishedEvent(RunFinishedEvent::STATUS_FAILED));
 
