@@ -5,9 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Added
 - Add config.json mount from the host to rumi container to rumi and rumi.bat binary
+- Set git.autocrlf to false (#49)
 
 ### Changed
 - Add pull of the trivago/rumi:stable image before execution in the rumi and rumi.bat binaries
+
 
 ### Removed
 
