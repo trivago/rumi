@@ -1,3 +1,6 @@
 [user]
 	email = ci@trivago.com
 	name = Continuous Integration
+
+[core]
+    autocrlf = false
