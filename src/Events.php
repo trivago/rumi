@@ -28,4 +28,6 @@ interface Events
 
     const JOB_STARTED = 'job_started';
     const JOB_FINISHED = 'job_finished';
+
+    const GIT_CLONE_STARTED = 'git_clone_process_started';
 }

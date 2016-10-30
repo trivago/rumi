@@ -32,6 +32,14 @@
             <argument id="trivago.rumi.process.cache_process_factory" type="service"/>
         </service>
 
+        <service class="Trivago\Rumi\Process\GitCloneProcessFactory" id="trivago.rumi.process.git_clone_process_factory" />
+            <argument id="trivago.rumi.process.git_checkout_process_factory" type="service" />
+
+
+        <service class="Trivago\Rumi\Events\ExecuteProcessEvent" id="trivago.rumi.events.execute_process_event">
+            <argument id="trivago.rumi.validators.git_checkout_validator" type="service" />
+        </service>
+
         <service class="Trivago\Rumi\Process\RunningProcessesFactory" id="trivago.rumi.process.running_processes_factory"/>
         <service class="Trivago\Rumi\Process\GitCheckoutProcessFactory" id="trivago.rumi.process.git_checkout_process_factory"/>
         <service class="Trivago\Rumi\Process\CacheProcessFactory" id="trivago.rumi.process.cache_process_factory"/>
