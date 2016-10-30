@@ -8,8 +8,10 @@
 
 namespace Trivago\Rumi\Validators;
 
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 use Trivago\Rumi\Commands\ReturnCodes;
+use Trivago\Rumi\Events\ExecuteProcessEvent;
 
 class GitCheckoutValidator
 {
@@ -34,5 +36,16 @@ class GitCheckoutValidator
             $process->getErrorOutput(),
             ReturnCodes::FAILED
         );
+    }
+
+    public function validateMergeBranchProcess ($mergeBranch, OutputInterface $output, Process $process) {
+        $output->writeln('Merging with '.$mergeBranch);
+
+        if($this->checkStatus($process)){
+            return;
+        }
+
+        throw new \Exception('Can not clearly merge with '.$mergeBranch);
+
     }
 }

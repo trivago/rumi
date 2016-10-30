@@ -16,15 +16,15 @@ use Trivago\Rumi\Validators\GitCheckoutValidator;
 
 class ExecuteProcessEvent extends Event
 {
-    /**
-     * @var GitCheckoutValidator
-     */
-    private $gitCheckoutValidator;
-
-    public function __construct(GitCheckoutValidator $gitCheckoutValidator)
-    {
-        $this->gitCheckoutValidator = $gitCheckoutValidator;
-    }
+//    /**
+//     * @var GitCheckoutValidator
+//     */
+//    private $gitCheckoutValidator;
+//
+//    public function __construct(GitCheckoutValidator $gitCheckoutValidator)
+//    {
+//        $this->gitCheckoutValidator = $gitCheckoutValidator;
+//    }
 
     /**
      * @param $process
@@ -42,11 +42,11 @@ class ExecuteProcessEvent extends Event
         return $time;
     }
 
-    /**
-     * @param Process $process
-     */
-    public function validateGitProcess(Process $process)
-    {
-        return $this->gitCheckoutValidator->checkStatus($process);
-    }
+//    /**
+//     * @param Process $process
+//     */
+//    public function validateGitProcess(Process $process)
+//    {
+//        return $this->gitCheckoutValidator->checkStatus($process);
+//    }
 }

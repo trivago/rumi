@@ -18,58 +18,23 @@
 
 namespace Trivago\Rumi\Process;
 
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
 class GitCheckoutProcessFactory
 {
-    protected $fetchCommand = 'GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git fetch origin';
-
     /**
-     * @param $repositoryUrl
-     *
-     * @return Process
-     */
-    public function getFullCloneProcess($repositoryUrl)
-    {
-        $process = new Process('git init && git remote add origin '.$repositoryUrl.' && '.$this->fetchCommand);
-        $process->setTimeout(600)->setIdleTimeout(600);
-
-        return $process;
-    }
-
-    /**
-     * @return Process
-     */
-    public function getFetchProcess()
-    {
-        $process = new Process($this->fetchCommand);
-        $process->setTimeout(600)->setIdleTimeout(600);
-
-        return $process;
-    }
-
-    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
      * @param $commitSha
-     *
      * @return Process
      */
-    public function getCheckoutCommitProcess($commitSha)
+    public function getCheckoutCommitProcess(InputInterface $input, OutputInterface $output, $commitSha)
     {
+        $output->writeln('Checking out '.$input->getArgument('commit').' ');
         $process = new Process('git reset --hard && git checkout '.$commitSha);
         $process->setTimeout(600)->setIdleTimeout(600);
-
-        return $process;
-    }
-
-    /**
-     * @param $branch
-     *
-     * @return Process
-     */
-    public function getMergeProcess($branch)
-    {
-        $process = new Process('git merge --no-edit '.$branch);
-        $process->setTimeout(60)->setIdleTimeout(60);
 
         return $process;
     }
