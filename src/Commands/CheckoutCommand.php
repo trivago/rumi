@@ -109,8 +109,6 @@ class CheckoutCommand extends CommandAbstract
 
             $output->writeln($this->executeProcess($process));
 
-            $this->gitCheckoutValidator->checkStatus($process);
-
             $output->writeln('Checking out ' . $input->getArgument('commit') . ' ');
             $process = $processFactory->getCheckoutCommitProcess($input->getArgument('commit'));
 
@@ -120,9 +118,7 @@ class CheckoutCommand extends CommandAbstract
             if (!empty($mergeBranch)) {
                 $output->writeln('Merging with ' . $mergeBranch);
                 try {
-                    $process = $processFactory->getMergeProcess($mergeBranch);
-                    $this->executeProcess($process);
-                    $this->gitCheckoutValidator->checkStatus($process);
+                    $this->executeProcess($processFactory->getMergeProcess($mergeBranch));
                 } catch (\Exception $e) {
                     throw new \Exception('Can not clearly merge with ' . $mergeBranch);
                 }
@@ -148,6 +144,7 @@ class CheckoutCommand extends CommandAbstract
         $time = Timer::execute(
             function () use ($process) {
                 $process->run();
+                $this->gitCheckoutValidator->checkStatus($process);
             }
         );
 

@@ -259,6 +259,7 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 
         $checkoutCommitProcess = $this->prophesize(Process::class);
         $checkoutCommitProcess->run()->shouldBeCalled();
+        $this->gitCheckoutValidator->checkStatus($checkoutCommitProcess->reveal())->shouldBeCalled();
 
         $mergeProcess = $this->prophesize(Process::class);
         $mergeProcess->run()->shouldBeCalled();
