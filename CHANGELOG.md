@@ -4,12 +4,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
+
+### Changed
+
+### Removed
+
+## [1.3.0] 2016-10-31
+### Added
 - Add config.json mount from the host to rumi container to rumi and rumi.bat binary
 - Set git.autocrlf to false (#49)
+- Return code 4 in case rumi has no access to clone repository (#50)
 
 ### Changed
 - Add pull of the trivago/rumi:stable image before execution in the rumi and rumi.bat binaries
-
 
 ### Removed
 
