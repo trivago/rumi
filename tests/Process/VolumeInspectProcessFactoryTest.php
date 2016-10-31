@@ -19,7 +19,7 @@
 namespace Trivago\Rumi\Process;
 
 /**
- * @covers Trivago\Rumi\Process\VolumeInspectProcessFactory
+ * @covers \Trivago\Rumi\Process\VolumeInspectProcessFactory
  */
 class VolumeInspectProcessFactoryTest extends \PHPUnit_Framework_TestCase
 {

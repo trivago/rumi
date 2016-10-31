@@ -18,7 +18,6 @@
 
 namespace Trivago\Rumi\Commands;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -26,6 +25,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\Process;
 use Trivago\Rumi\Process\GitCheckoutProcessFactory;
 use Trivago\Rumi\Timer;
+use Trivago\Rumi\Validators\GitCheckoutValidator;
 
 class CheckoutCommand extends CommandAbstract
 {
@@ -39,14 +39,21 @@ class CheckoutCommand extends CommandAbstract
     private $workingDir;
 
     /**
+     * @var GitCheckoutValidator
+     */
+    private $gitCheckoutValidator;
+
+    /**
      * RunCommand constructor.
      *
      * @param ContainerInterface $container
+     * @param GitCheckoutValidator $gitCheckoutValidator
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(ContainerInterface $container, GitCheckoutValidator $gitCheckoutValidator)
     {
         parent::__construct();
         $this->container = $container;
+        $this->gitCheckoutValidator = $gitCheckoutValidator;
     }
 
     protected function configure()
@@ -121,10 +128,10 @@ class CheckoutCommand extends CommandAbstract
         } catch (\Exception $e) {
             $output->writeln('<error>' . $e->getMessage() . '</error>');
 
-            return -1;
+            return $e->getCode();
         }
 
-        return 0;
+        return ReturnCodes::SUCCESS;
     }
 
     /**
@@ -137,10 +144,7 @@ class CheckoutCommand extends CommandAbstract
         $time = Timer::execute(
             function () use ($process) {
                 $process->run();
-
-                if (!$process->isSuccessful()) {
-                    throw new \Exception($process->getErrorOutput());
-                }
+                $this->gitCheckoutValidator->checkStatus($process);
             }
         );
 

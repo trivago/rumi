@@ -19,7 +19,7 @@
 namespace Trivago\Rumi\Process;
 
 /**
- * @covers Trivago\Rumi\Process\RunningProcessesFactory
+ * @covers \Trivago\Rumi\Process\RunningProcessesFactory
  */
 class RunningProcessesFactoryTest extends \PHPUnit_Framework_TestCase
 {
