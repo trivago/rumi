@@ -29,6 +29,7 @@ use Trivago\Rumi\Commands\CacheStoreCommand;
 use Trivago\Rumi\Commands\CheckoutCommand;
 use Trivago\Rumi\Commands\RunCommand;
 use Trivago\Rumi\Plugins\CouchDB\CouchDbPlugin;
+use Trivago\Rumi\Process\GitCheckoutExecuteCommands;
 
 class RumiApplication extends Application
 {
@@ -67,7 +68,7 @@ class RumiApplication extends Application
     {
         $oRunCommand = new RunCommand($this->container, $this->container->get('trivago.rumi.event_dispatcher'));
         $this->add($oRunCommand);
-        $this->add(new CheckoutCommand($this->container, $this->container->get('trivago.rumi.validators.git_checkout_validator')));
+        $this->add(new CheckoutCommand($this->container->get('trivago.rumi.process.git_checkout_execute_commands')));
         $this->add(new CacheStoreCommand($this->container));
         $this->add(new CacheRestoreCommand($this->container));
         $this->setDefaultCommand($oRunCommand->getName());

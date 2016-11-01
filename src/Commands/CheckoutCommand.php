@@ -21,39 +21,21 @@ namespace Trivago\Rumi\Commands;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Process\Process;
-use Trivago\Rumi\Process\GitCheckoutProcessFactory;
-use Trivago\Rumi\Timer;
-use Trivago\Rumi\Validators\GitCheckoutValidator;
 
 class CheckoutCommand extends CommandAbstract
 {
     /**
-     * @var ContainerInterface
+     * @var GitCheckoutExecuteCommands
      */
-    private $container;
-    /**
-     * @var string
-     */
-    private $workingDir;
+    private $gitCheckoutExecuteCommands;
 
     /**
-     * @var GitCheckoutValidator
+     * @param GitCheckoutExecuteCommands $gitCheckoutExecuteCommands
      */
-    private $gitCheckoutValidator;
-
-    /**
-     * RunCommand constructor.
-     *
-     * @param ContainerInterface $container
-     * @param GitCheckoutValidator $gitCheckoutValidator
-     */
-    public function __construct(ContainerInterface $container, GitCheckoutValidator $gitCheckoutValidator)
+    public function __construct(GitCheckoutExecuteCommands $gitCheckoutExecuteCommands)
     {
         parent::__construct();
-        $this->container = $container;
-        $this->gitCheckoutValidator = $gitCheckoutValidator;
+        $this->gitCheckoutExecuteCommands = $gitCheckoutExecuteCommands;
     }
 
     protected function configure()
@@ -65,66 +47,19 @@ class CheckoutCommand extends CommandAbstract
             ->setDescription('Checkout code')
             ->addArgument('repository', InputArgument::REQUIRED, 'Repository url')
             ->addArgument('commit', InputArgument::REQUIRED, 'Commit id/branch name to checkout');
-
-        $this->workingDir = getcwd();
-    }
-
-    /**
-     * @param $dir
-     */
-    public function setWorkingDir($dir)
-    {
-        $this->workingDir = $dir;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    private function getWorkingDir()
-    {
-        if (empty($this->workingDir)) {
-            return;
-        }
-
-        return $this->workingDir . '/';
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            /** @var GitCheckoutProcessFactory $processFactory */
-            $processFactory = $this
-                ->container
-                ->get('trivago.rumi.process.git_checkout_process_factory');
+            $this->gitCheckoutExecuteCommands->executeGitCloneBranch($input, $output);
 
-            if (!file_exists($this->getWorkingDir() . '.git')) {
-                $output->writeln('Cloning...');
-                $process =
-                    $processFactory->getFullCloneProcess($input->getArgument('repository'));
-            } else {
-                $output->writeln('Fetching changes...');
-                $process =
-                    $processFactory->getFetchProcess();
-            }
+            $this->gitCheckoutExecuteCommands->executeGitCheckoutCommitProcess($input, $output);
 
-            $output->writeln($this->executeProcess($process));
-
-            $output->writeln('Checking out ' . $input->getArgument('commit') . ' ');
-            $process = $processFactory->getCheckoutCommitProcess($input->getArgument('commit'));
-
-            $output->writeln($this->executeProcess($process));
-
-            $mergeBranch = $this->getMergeBranch($input->getOption(self::CONFIG));
-            if (!empty($mergeBranch)) {
-                $output->writeln('Merging with ' . $mergeBranch);
-                try {
-                    $this->executeProcess($processFactory->getMergeProcess($mergeBranch));
-                } catch (\Exception $e) {
-                    throw new \Exception('Can not clearly merge with ' . $mergeBranch);
-                }
-            }
+            $this->gitCheckoutExecuteCommands->executeGitMergeBranchProcess($input, $output, self::CONFIG);
 
             $output->writeln('<info>Checkout done</info>');
+
         } catch (\Exception $e) {
             $output->writeln('<error>' . $e->getMessage() . '</error>');
 
@@ -132,38 +67,5 @@ class CheckoutCommand extends CommandAbstract
         }
 
         return ReturnCodes::SUCCESS;
-    }
-
-    /**
-     * @param $process
-     *
-     * @return string
-     */
-    protected function executeProcess(Process $process)
-    {
-        $time = Timer::execute(
-            function () use ($process) {
-                $process->run();
-                $this->gitCheckoutValidator->checkStatus($process);
-            }
-        );
-
-        return $time;
-    }
-
-    private function getMergeBranch($configFile)
-    {
-        try {
-            $configReader = $this->container->get('trivago.rumi.services.config_reader');
-
-            $config = $configReader->getConfig($this->getWorkingDir(), $configFile);
-
-            if (!empty($config->getMergeBranch())) {
-                return $config->getMergeBranch();
-            }
-        } catch (\Exception $e) {
-        }
-
-        return;
     }
 }

@@ -37,6 +37,13 @@
         <service class="Trivago\Rumi\Process\CacheProcessFactory" id="trivago.rumi.process.cache_process_factory"/>
         <service class="Trivago\Rumi\Process\VolumeInspectProcessFactory" id="trivago.rumi.process.volume_inspect_process_factory"/>
         <service class="Trivago\Rumi\Validators\GitCheckoutValidator" id="trivago.rumi.validators.git_checkout_validator" />
+        <service class="Trivago\Rumi\Commands\CommandAbstract" id="trivago.rumi.commands.command_abstract" />
+
+        <service class="Trivago\Rumi\Process\GitCheckoutExecuteCommands" id="trivago.rumi.process.git_checkout_execute_commands" parent="trivago.rumi.commands.command_abstract" >
+            <argument type="service" id="trivago.rumi.validators.git_checkout_validator"/>
+            <argument type="service" id="trivago.rumi.process.git_checkout_process_factory" />
+            <argument type="service" id="trivago.rumi.services.config_reader" />
+        </service>
 
     </services>
 </container>
