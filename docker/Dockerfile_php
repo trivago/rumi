@@ -2,7 +2,7 @@ FROM    gliderlabs/alpine:edge
 
 ADD bin/.gitconfig /root/.gitconfig
 
-RUN cat /etc/apk/repositories && echo "http://mirror1.hs-esslingen.de/pub/Mirrors/alpine/edge/main" > /etc/apk/repositories && echo "http://mirror1.hs-esslingen.de/pub/Mirrors/alpine/edge/community" >> /etc/apk/repositories && apk add --update php5 php5-ctype php5-json php5-phar php5-dom php5-openssl curl bash wget rsync git ca-certificates openssh && rm /var/cache/apk/*
+RUN apk add --update php5 php5-ctype php5-json php5-phar php5-dom php5-openssl curl bash wget rsync git ca-certificates openssh && rm /var/cache/apk/*
 
 WORKDIR /tmp
 
