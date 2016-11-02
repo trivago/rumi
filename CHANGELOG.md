@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 ### Changed
+- Fix stderr and stdout ordering in the docker-compose logs output
 
 ### Removed
 
