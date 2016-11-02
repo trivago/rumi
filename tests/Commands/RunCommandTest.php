@@ -157,7 +157,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         $startProcess->checkTimeout()->willReturn(null);
         $errorOutput = '##error output##';
 
-        $startProcess->getErrorOutput()->willReturn($errorOutput)->shouldBeCalled();
+        $startProcess->getOutput()->willReturn($errorOutput)->shouldBeCalled();
         $tearDownProcess = $this->getTearDownProcess();
 
         /** @var RunningProcessesFactory $processFactory */
@@ -383,7 +383,6 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         $startProcess->isRunning()->shouldBeCalled();
         $startProcess->isSuccessful()->willReturn($isSuccessful)->shouldBeCalled();
         $startProcess->getOutput()->shouldBeCalled();
-        $startProcess->getErrorOutput()->shouldBeCalled();
 
         return $startProcess;
     }

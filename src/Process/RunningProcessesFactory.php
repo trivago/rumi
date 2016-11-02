@@ -32,7 +32,7 @@ class RunningProcessesFactory
     public function getJobStartProcess($yamlPath, $tmpName, $ciImage, $timeout)
     {
         $process = new Process(
-            'docker-compose -f '.$yamlPath.' run --name '.$tmpName.' '.$ciImage
+            'docker-compose -f '.$yamlPath.' run --name '.$tmpName.' '.$ciImage.' 2>&1'
         );
         $process->setTimeout($timeout)->setIdleTimeout($timeout);
 

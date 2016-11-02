@@ -157,7 +157,7 @@ class RunningCommand
      */
     public function getOutput()
     {
-        return $this->process->getOutput().$this->process->getErrorOutput();
+        return $this->process->getOutput();
     }
 
     /**
