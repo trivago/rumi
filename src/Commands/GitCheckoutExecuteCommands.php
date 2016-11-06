@@ -112,6 +112,7 @@ class GitCheckoutExecuteCommands
             try {
                 $process = $this->gitCheckoutProcessFactory->getMergeProcess($mergeBranch);
                 $process->run();
+                $this->gitCheckoutValidator->checkStatus($process);
             } catch (\Exception $e) {
                 throw new \Exception('Can not clearly merge with ' . $mergeBranch);
             }

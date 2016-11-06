@@ -41,7 +41,7 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
      * @var InputInterface
      */
     private $input;
-//
+
     /**
      * @var CheckoutCommand
      */
@@ -52,7 +52,7 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
      */
     private $output;
 
-//
+
     public function setUp()
     {
 //        vfsStream::setup('directory');
@@ -62,6 +62,7 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 ////        $this->gitCheckoutValidator = $this->prophesize(GitCheckoutValidator::class);
         $this->gitCheckoutExecuteCommands = $this->prophesize(GitCheckoutExecuteCommands::class);
         $this->input = $this->prophesize(InputInterface::class);
+
 //        $loader = new XmlFileLoader($this->container, new FileLocator(__DIR__));
 //        $loader->load('../../src/Resources/config/services.xml');
 //
@@ -234,7 +235,6 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 //        // then
 //        $this->assertContains('Checkout done', $this->output->fetch());
 //    }
-
 //    public function testGivenWorkingDirContainsDotGit_WhenCommandExecuted_ThenFetchIsDone()
 //    {
 //        // given
@@ -268,7 +268,6 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 //        // then
 //        $this->assertContains('Checkout done', $this->output->fetch());
 //    }
-//
 //    public function testGivenMergeIsNotSpecified_WhenCommandExecuted_ThenItMergesWithMaster()
 //    {
 //        /** @var GitCheckoutProcessFactory $processFactory */
@@ -340,6 +339,10 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 //        // then
 //        $this->assertContains('Merging with abc', $this->output->fetch());
 //    }
+
+
+
+
 //
 //    public function testGivenMergeBranchIsNotSpecified_WhenCommandExecuted_ThenItDoesNothing()
 //    {
