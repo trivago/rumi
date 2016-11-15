@@ -68,15 +68,15 @@ class GitCheckoutExecuteCommands
     }
 
     /**
-     * @param InputInterface $input
+     * @param $repositoryUrl
      * @param OutputInterface $output
      */
-    public function executeGitCloneBranch(InputInterface $input, OutputInterface $output) {
+    public function executeGitCloneBranch($repositoryUrl, OutputInterface $output) {
         if (!file_exists($this->getWorkingDir() . '.git'))
         {
             $output->writeln('Cloning...');
             $process =
-                $this->gitCheckoutProcessFactory->getFullCloneProcess($input->getArgument('repository'));
+                $this->gitCheckoutProcessFactory->getFullCloneProcess($repositoryUrl);
         } else {
             $output->writeln('Fetching changes...');
             $process =
@@ -104,8 +104,8 @@ class GitCheckoutExecuteCommands
         return;
     }
 
-    public function executeGitMergeBranchProcess(InputInterface $input, OutputInterface $output, $config) {
-        $mergeBranch = $this->getMergeBranch($input->getOption($config));
+    public function executeGitMergeBranchProcess($configFile, OutputInterface $output) {
+        $mergeBranch = $this->getMergeBranch($configFile);
 
         if (!empty($mergeBranch)) {
             $output->writeln('Merging with ' . $mergeBranch);
@@ -119,10 +119,10 @@ class GitCheckoutExecuteCommands
         }
     }
 
-    public function executeGitCheckoutCommitProcess (InputInterface $input, OutputInterface $output)
+    public function executeGitCheckoutCommitProcess ($commitSha, OutputInterface $output)
     {
-        $output->writeln('Checking out ' . $input->getArgument('commit') . ' ');
-        $process = $this->gitCheckoutProcessFactory->getCheckoutCommitProcess($input->getArgument('commit'));
+        $output->writeln('Checking out ' . $commitSha . ' ');
+        $process = $this->gitCheckoutProcessFactory->getCheckoutCommitProcess($commitSha);
 
         $process->run();
         $this->gitCheckoutValidator->checkStatus($process);

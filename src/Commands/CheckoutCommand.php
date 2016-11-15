@@ -52,11 +52,11 @@ class CheckoutCommand extends CommandAbstract
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $this->gitCheckoutExecuteCommands->executeGitCloneBranch($input, $output);
+            $this->gitCheckoutExecuteCommands->executeGitCloneBranch($input->getArgument('repository'), $output);
 
-            $this->gitCheckoutExecuteCommands->executeGitCheckoutCommitProcess($input, $output);
+            $this->gitCheckoutExecuteCommands->executeGitCheckoutCommitProcess($input->getArgument('commit'), $output);
 
-            $this->gitCheckoutExecuteCommands->executeGitMergeBranchProcess($input, $output, self::CONFIG);
+            $this->gitCheckoutExecuteCommands->executeGitMergeBranchProcess($input->getOption(self::CONFIG), $output);
 
             $output->writeln('<info>Checkout done</info>');
 

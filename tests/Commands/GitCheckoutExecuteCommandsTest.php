@@ -125,17 +125,21 @@ class GitCheckoutExecuteCommandsTest extends \PHPUnit_Framework_TestCase
 //     * @expectedException \Exception
 //     */
     public function testGivenMergeFails_WhenCommandExecuted_ThenItReturnsValidOutput() {
+        touch(vfsStream::url('directory').'/.git');
+        file_put_contents(vfsStream::url('directory').'/'.CommandAbstract::DEFAULT_CONFIG, 'merge_branch: origin/master');
+
         $mergeProcess = $this->prophesize(Process::class);
         $mergeProcess->isSuccessful()->willReturn(false);
-//        $mergeProcess->run();
+        $mergeProcess->run();
 
-        $this->gitCheckoutValidator->checkStatus($mergeProcess->reveal())->willThrow(new \Exception('Error'));
-
+        $this->gitCheckoutValidator->checkStatus($mergeProcess->reveal())->willThrow(new \Exception());
         $this->processFactory->getMergeProcess('origin/master')->willReturn($mergeProcess->reveal());
+        $this->configReader->getConfig(...);
 
 //        $this->input->getOption('config')->willReturn('origin/master')->reveal();
-        print_r($this->input);
+//        print_r($this->input);
 
-//        $this->gitCheckoutExecuteCommands->executeGitMergeBranchProcess($this->input->getOption('config'), $this->output, 'config');
+        $this->gitCheckoutExecuteCommands->executeGitMergeBranchProcess(null, $this->output);
+
     }
 }
