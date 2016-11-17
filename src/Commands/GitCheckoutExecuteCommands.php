@@ -88,7 +88,7 @@ class GitCheckoutExecuteCommands
 
     }
 
-    private function getMergeBranch($configFile)
+    public function getMergeBranch($configFile)
     {
         try {
             $configReader = $this->configReader;
