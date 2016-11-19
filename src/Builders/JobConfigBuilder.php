@@ -19,6 +19,7 @@
 namespace Trivago\Rumi\Builders;
 
 use Trivago\Rumi\Models\JobConfig;
+use Trivago\Rumi\Models\JobConfigCollection;
 
 class JobConfigBuilder
 {
@@ -35,12 +36,18 @@ class JobConfigBuilder
         $this->composeHandler = $compose_handler;
     }
 
+    /**
+     * @param $stageConfig
+     *
+     * @return JobConfigCollection
+     */
     public function build($stageConfig)
     {
+        $jobConfigCollection = new JobConfigCollection();
         if (empty($stageConfig)) {
-            return [];
+            return $jobConfigCollection;
         }
-        $jobs = [];
+
         foreach ($stageConfig as $jobName => $jobConfig) {
             $job = new JobConfig(
                 $jobName,
@@ -51,9 +58,9 @@ class JobConfigBuilder
                 !empty($jobConfig['timeout']) ? $jobConfig['timeout'] : JobConfig::DEFAULT_TIMEOUT
             );
 
-            $jobs[] = $job;
+            $jobConfigCollection->add($job);
         }
 
-        return $jobs;
+        return $jobConfigCollection;
     }
 }

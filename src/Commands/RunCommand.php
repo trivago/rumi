@@ -21,9 +21,9 @@ namespace Trivago\Rumi\Commands;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Trivago\Rumi\Builders\JobConfigBuilder;
+use Trivago\Rumi\Commands\Run\StageExecutor;
 use Trivago\Rumi\Events;
 use Trivago\Rumi\Events\RunFinishedEvent;
 use Trivago\Rumi\Events\RunStartedEvent;
@@ -52,11 +52,6 @@ class RunCommand extends CommandAbstract
     private $workingDir;
 
     /**
-     * @var ContainerInterface
-     */
-    private $container;
-
-    /**
      * @var EventDispatcherInterface
      */
     private $eventDispatcher;
@@ -67,15 +62,32 @@ class RunCommand extends CommandAbstract
     private $configReader;
 
     /**
-     * @param ContainerInterface       $container
-     * @param EventDispatcherInterface $eventDispatcher
+     * @var StageExecutor
      */
-    public function __construct(ContainerInterface $container, EventDispatcherInterface $eventDispatcher)
-    {
+    private $stageExecutor;
+
+    /**
+     * @var JobConfigBuilder
+     */
+    private $jobConfigBuilder;
+
+    /**
+     * @param EventDispatcherInterface $eventDispatcher
+     * @param ConfigReader             $configReader
+     * @param StageExecutor            $stageExecutor
+     * @param JobConfigBuilder         $jobConfigBuilder
+     */
+    public function __construct(
+        EventDispatcherInterface $eventDispatcher,
+        ConfigReader $configReader,
+        StageExecutor $stageExecutor,
+        JobConfigBuilder $jobConfigBuilder
+) {
         parent::__construct();
-        $this->container = $container;
         $this->eventDispatcher = $eventDispatcher;
-        $this->configReader = $container->get('trivago.rumi.services.config_reader');
+        $this->configReader = $configReader;
+        $this->stageExecutor = $stageExecutor;
+        $this->jobConfigBuilder = $jobConfigBuilder;
     }
 
     protected function configure()
@@ -129,16 +141,13 @@ class RunCommand extends CommandAbstract
             $timeTaken = Timer::execute(function () use ($input, $output, $VCSInfo) {
                 $runConfig = $this->configReader->getConfig($this->getWorkingDir(), $input->getOption(self::CONFIG));
 
-                /** @var JobConfigBuilder $jobConfigBuilder */
-                $jobConfigBuilder = $this->container->get('trivago.rumi.job_config_builder');
-
                 $this->eventDispatcher->dispatch(
                     Events::RUN_STARTED, new RunStartedEvent($runConfig)
                 );
 
                 foreach ($runConfig->getStages() as $stageName => $stageConfig) {
                     try {
-                        $jobs = $jobConfigBuilder->build($stageConfig);
+                        $jobs = $this->jobConfigBuilder->build($stageConfig);
 
                         $this->eventDispatcher->dispatch(
                             Events::STAGE_STARTED,
@@ -149,10 +158,7 @@ class RunCommand extends CommandAbstract
 
                         $time = Timer::execute(
                             function () use ($jobs, $output, $VCSInfo) {
-                                $this
-                                    ->container
-                                    ->get('trivago.rumi.commands.run.stage_executor')
-                                    ->executeStage($jobs, $this->volume, $output, $VCSInfo);
+                                $this->stageExecutor->executeStage($jobs, $this->volume, $output, $VCSInfo);
                             }
                         );
 
