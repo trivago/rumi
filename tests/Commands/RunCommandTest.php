@@ -71,6 +71,11 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
      */
     private $configReader;
 
+    /**
+     * @var RunningProcessesFactory
+     */
+    private $processFactory;
+
     public function setUp()
     {
         $this->output = new BufferedOutput();
@@ -82,13 +87,19 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         $loader->load('../../src/Resources/config/services.xml');
 
         $this->eventDispatcher = $this->prophesize(EventDispatcherInterface::class);
-        $eventDispatcher = $this->eventDispatcher->reveal();
+        $this->container->set('trivago.rumi.event_dispatcher', $this->eventDispatcher->reveal());
+
+        /* @var RunningProcessesFactory $processFactory */
+        $this->processFactory = $this->prophesize(RunningProcessesFactory::class);
+        $this->container->set('trivago.rumi.process.running_processes_factory', $this->processFactory->reveal());
 
         $this->configReader = $this->prophesize(ConfigReader::class);
-        $this->container->set('trivago.rumi.services.config_reader', $this->configReader->reveal());
-
-        $this->container->set('trivago.rumi.event_dispatcher', $eventDispatcher);
-        $this->command = new RunCommand($this->container, $eventDispatcher);
+        $this->command = new RunCommand(
+            $this->eventDispatcher->reveal(),
+            $this->configReader->reveal(),
+            $this->container->get('trivago.rumi.commands.run.stage_executor'),
+            $this->container->get('trivago.rumi.job_config_builder')
+        );
         $this->command->setWorkingDir(vfsStream::url('directory'));
     }
 
@@ -126,12 +137,10 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenValidCiYamlAndBuildIsOk_WhenExecuted_ThenDisplaysConfirmationMessage()
     {
         // given
-        $startProcess = $this->getStartProcess(true);
-        $tearDownProcess = $this->getTearDownProcess();
-
-        $processFactory = $this->getProcessFactoryMock($startProcess, $tearDownProcess);
-
-        $this->container->set('trivago.rumi.process.running_processes_factory', $processFactory->reveal());
+        $this->setProcessFactoryMock(
+            $this->getStartProcess(true),
+            $this->getTearDownProcess()
+        );
 
         $this->configReader->getConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
@@ -160,10 +169,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         $startProcess->getOutput()->willReturn($errorOutput)->shouldBeCalled();
         $tearDownProcess = $this->getTearDownProcess();
 
-        /** @var RunningProcessesFactory $processFactory */
-        $processFactory = $this->getProcessFactoryMock($startProcess, $tearDownProcess);
-
-        $this->container->set('trivago.rumi.process.running_processes_factory', $processFactory->reveal());
+        $this->setProcessFactoryMock($startProcess, $tearDownProcess);
 
         $this->configReader->getConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
@@ -196,10 +202,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         });
         $tearDownProcess = $this->getTearDownProcess();
 
-        /** @var RunningProcessesFactory $processFactory */
-        $processFactory = $this->getProcessFactoryMock($startProcess, $tearDownProcess);
-
-        $this->container->set('trivago.rumi.process.running_processes_factory', $processFactory->reveal());
+        $this->setProcessFactoryMock($startProcess, $tearDownProcess);
 
         $this->configReader->getConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
@@ -225,12 +228,10 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenJobsAreSuccessful_WhenRunIsStarted_ThenEventsAreTriggeredWithProperStatuses()
     {
         // given
-        $oStartProcess = $this->getStartProcess(true);
-        $oTearDownProcess = $this->getTearDownProcess();
+        $startProcess = $this->getStartProcess(true);
+        $tearDownProcess = $this->getTearDownProcess();
 
-        $oProcessFactory = $this->getProcessFactoryMock($oStartProcess, $oTearDownProcess);
-
-        $this->container->set('trivago.rumi.process.running_processes_factory', $oProcessFactory->reveal());
+        $this->setProcessFactoryMock($startProcess, $tearDownProcess);
 
         $this->configReader->getConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
@@ -295,12 +296,10 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenJobFails_WhenRunIsStarted_ThenEventsAreTriggeredWithProperStatuses()
     {
         // given
-        $oStartProcess = $this->getStartProcess(false);
-        $oTearDownProcess = $this->getTearDownProcess();
+        $startProcess = $this->getStartProcess(false);
+        $tearDownProcess = $this->getTearDownProcess();
 
-        $oProcessFactory = $this->getProcessFactoryMock($oStartProcess, $oTearDownProcess);
-
-        $this->container->set('trivago.rumi.process.running_processes_factory', $oProcessFactory->reveal());
+        $this->setProcessFactoryMock($startProcess, $tearDownProcess);
 
         $this->configReader->getConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
@@ -404,17 +403,12 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
      *
      * @return RunningProcessesFactory
      */
-    protected function getProcessFactoryMock($startProcess, $tearDownProcess)
+    protected function setProcessFactoryMock($startProcess, $tearDownProcess)
     {
-        /** @var RunningProcessesFactory $processFactory */
-        $processFactory = $this->prophesize(RunningProcessesFactory::class);
-
-        $processFactory->getJobStartProcess(Argument::any(), Argument::any(), Argument::any(), Argument::any())
+        $this->processFactory->getJobStartProcess(Argument::any(), Argument::any(), Argument::any(), Argument::any())
             ->willReturn($startProcess->reveal());
 
-        $processFactory->getTearDownProcess(Argument::any(), Argument::any())
+        $this->processFactory->getTearDownProcess(Argument::any(), Argument::any())
             ->willReturn($tearDownProcess->reveal());
-
-        return $processFactory;
     }
 }

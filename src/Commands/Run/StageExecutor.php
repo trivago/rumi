@@ -27,7 +27,7 @@ use Trivago\Rumi\Events;
 use Trivago\Rumi\Events\JobFinishedEvent;
 use Trivago\Rumi\Events\JobStartedEvent;
 use Trivago\Rumi\Exceptions\CommandFailedException;
-use Trivago\Rumi\Models\JobConfig;
+use Trivago\Rumi\Models\JobConfigCollection;
 use Trivago\Rumi\Models\RunningCommand;
 use Trivago\Rumi\Models\VCSInfo\VCSInfoInterface;
 use Trivago\Rumi\Process\RunningProcessesFactory;
@@ -65,28 +65,28 @@ class StageExecutor
     }
 
     /**
-     * @param JobConfig[] $jobs
+     * @param JobConfigCollection $jobs
      * @param $volume
      * @param OutputInterface  $output
      * @param VCSInfoInterface $VCSInfo
      */
-    public function executeStage($jobs, $volume, OutputInterface $output, VCSInfoInterface $VCSInfo)
+    public function executeStage(JobConfigCollection $jobs, $volume, OutputInterface $output, VCSInfoInterface $VCSInfo)
     {
         $this->handleProcesses($output, $this->startStageProcesses($jobs, $VCSInfo, $volume));
     }
 
     /**
-     * @param JobConfig[]      $jobs
-     * @param VCSInfoInterface $VCSInfo
+     * @param JobConfigCollection $jobs
+     * @param VCSInfoInterface    $VCSInfo
      * @param $volume
      *
      * @return array
      */
-    private function startStageProcesses($jobs, VCSInfoInterface $VCSInfo, $volume)
+    private function startStageProcesses(JobConfigCollection $jobs, VCSInfoInterface $VCSInfo, $volume)
     {
         $processes = [];
 
-        foreach ($jobs as $jobConfig) {
+        foreach ($jobs->getJobs() as $jobConfig) {
             $runningCommand = new RunningCommand(
                 $jobConfig,
                 $this->dockerComposeYamlBuilder->build($jobConfig, $VCSInfo, $volume),
@@ -131,7 +131,7 @@ class StageExecutor
                     $output->writeln(sprintf('<info>Executing job: %s</info>', $runningCommand->getJobName()));
                     $output->write($runningCommand->getOutput());
                     if (!empty($timeout)) {
-                        $output->writeln(PHP_EOL.'Process timed out after ' . $runningCommand->getTimeout().'s');
+                        $output->writeln(PHP_EOL.'Process timed out after '.$runningCommand->getTimeout().'s');
                     }
 
                     $this->dispatchJobFinishedEvent(

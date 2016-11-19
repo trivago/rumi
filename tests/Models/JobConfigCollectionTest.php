@@ -16,24 +16,32 @@
  * limitations under the License.
  */
 
-namespace Trivago\Rumi\Events;
+namespace Trivago\Rumi\Models;
 
-use Trivago\Rumi\Models\JobConfigCollection;
-
-class StageStartedEventTest extends \PHPUnit_Framework_TestCase
+/**
+ * @covers \Trivago\Rumi\Models\JobConfigCollection
+ */
+class JobConfigCollectionTest extends \PHPUnit_Framework_TestCase
 {
-    public function testGivenNameAndJobs_WhenNewInstanceCreated_ThenGettersAreFine()
+    /**
+     * @var JobConfigCollection
+     */
+    private $SUT;
+
+    protected function setUp()
+    {
+        $this->SUT = new JobConfigCollection();
+    }
+
+    public function testGivenJob_WhenAddedToCollection_ThenItsPartOfCollection()
     {
         // given
-        $name = 'abc';
-        $jobs = new JobConfigCollection();
+        $job = $this->prophesize(JobConfig::class)->reveal();
 
         // when
-        $event = new StageStartedEvent($name, $jobs);
+        $this->SUT->add($job);
 
         // then
-
-        $this->assertEquals($name, $event->getName());
-        $this->assertEquals($jobs, $event->getJobs());
+        $this->assertEquals($job, $this->SUT->getJobs()[0]);
     }
 }

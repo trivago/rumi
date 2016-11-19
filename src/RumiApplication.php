@@ -65,7 +65,12 @@ class RumiApplication extends Application
 
     private function setUpCommands()
     {
-        $oRunCommand = new RunCommand($this->container, $this->container->get('trivago.rumi.event_dispatcher'));
+        $oRunCommand = new RunCommand(
+            $this->container->get('trivago.rumi.event_dispatcher'),
+            $this->container->get('trivago.rumi.services.config_reader'),
+            $this->container->get('trivago.rumi.commands.run.stage_executor'),
+            $this->container->get('trivago.rumi.job_config_builder')
+        );
         $this->add($oRunCommand);
         $this->add(new CheckoutCommand($this->container, $this->container->get('trivago.rumi.validators.git_checkout_validator')));
         $this->add(new CacheStoreCommand($this->container));
