@@ -13,13 +13,14 @@ use Prophecy\Exception\Exception;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Process\Process;
+use Trivago\Rumi\Models\RunConfig;
 use Trivago\Rumi\Process\GitCheckoutProcessFactory;
 use Trivago\Rumi\Services\ConfigReader;
 use Trivago\Rumi\Validators\GitCheckoutValidator;
 
 
 /**
- * @covers GitCheckoutExecuteCommands
+ * @covers \Trivago\Rumi\Commands\GitCheckoutExecuteCommands
  */
 class GitCheckoutExecuteCommandsTest extends \PHPUnit_Framework_TestCase
 {
@@ -104,6 +105,7 @@ class GitCheckoutExecuteCommandsTest extends \PHPUnit_Framework_TestCase
 
         $this->processFactory->getCheckoutCommitProcess('commmit')->willReturn($checkoutCommitProcess->reveal());
 
+
         $this->assertTrue(true);
     }
 
@@ -125,20 +127,22 @@ class GitCheckoutExecuteCommandsTest extends \PHPUnit_Framework_TestCase
 //     * @expectedException \Exception
 //     */
     public function testGivenMergeFails_WhenCommandExecuted_ThenItReturnsValidOutput() {
-        touch(vfsStream::url('directory').'/.git');
-        file_put_contents(vfsStream::url('directory').'/'.CommandAbstract::DEFAULT_CONFIG, 'merge_branch: origin/master');
 
-        $this->configReader->getConfig(vfsStream::url('directory'), "config_file");
+        $runConfig = $this->prophesize(RunConfig::class);
+        $this->configReader->getConfig(vfsStream::url('directory').'/', "config_file")->willReturn(
+            $runConfig->reveal()
+        );
 
         $mergeProcess = $this->prophesize(Process::class);
         $mergeProcess->isSuccessful()->willReturn(false);
         $mergeProcess->run();
 
-//        $this->gitCheckoutValidator->checkStatus($mergeProcess->reveal())->willThrow(new \Exception());
+        $this->gitCheckoutValidator->checkStatus($mergeProcess->reveal());
 
 //        $this->processFactory->getMergeProcess('origin/master')->willReturn($mergeProcess->reveal());
 
-        $this->gitCheckoutExecuteCommands->executeGitMergeBranchProcess(null, $this->output);
+        $this->gitCheckoutExecuteCommands->executeGitMergeBranchProcess("config_file", $this->output);
+        $this->assertTrue(true);
 
     }
 }
