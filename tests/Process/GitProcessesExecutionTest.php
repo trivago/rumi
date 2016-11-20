@@ -84,17 +84,6 @@ class GitProcessesExecutionTest extends \PHPUnit_Framework_TestCase
         $this->gitProcessesExecution->setWorkingDir(vfsStream::url('directory'));
     }
 
-    /**
-     * @expectedException Error
-     */
-    public function testGivenConfigGetMergeBranchIsNull_WhenGetMergeBranchIsCalled_ItThrowsException()
-    {
-        $runConfig = $this->prophesize(RunConfig::class);
-        $runConfig->getMergeBranch()->willReturn('');
-
-        $this->gitProcessesExecution->getMergeBranch('config_file');
-    }
-
     public function testGivenWorkingDirContainsDotGit_WhenCommandExecuted_ThenFetchIsDone()
     {
         touch(vfsStream::url('directory').'/.git');
