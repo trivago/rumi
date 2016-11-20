@@ -16,25 +16,44 @@
  * limitations under the License.
  */
 
-namespace Trivago\Rumi\Commands;
+namespace Trivago\Rumi\Models;
 
 
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputOption;
-
-abstract class CommandAbstract extends Command
+class StageConfig
 {
-    const CONFIG = 'config';
-    const CONFIG_SHORT = 'c';
+    /**
+     * @var string
+     */
+    private $name;
+    /**
+     * @var array
+     */
+    private $jobs;
 
-    const DEFAULT_CONFIG = '.rumi.yml';
+    /**
+     * StageConfig constructor.
+     * @param string $name
+     * @param array $jobs
+     */
+    public function __construct(string $name, array $jobs)
+    {
+        $this->name = $name;
+        $this->jobs = $jobs;
+    }
 
-    protected function configure(){
-        $this->addOption(
-            self::CONFIG,
-            self::CONFIG_SHORT,
-            InputOption::VALUE_REQUIRED,
-            'Configuration file to read',
-            self::DEFAULT_CONFIG);
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return array
+     */
+    public function getJobs(): array
+    {
+        return $this->jobs;
     }
 }

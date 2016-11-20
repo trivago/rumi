@@ -30,6 +30,7 @@ use Trivago\Rumi\Events\RunStartedEvent;
 use Trivago\Rumi\Events\StageFinishedEvent;
 use Trivago\Rumi\Events\StageStartedEvent;
 use Trivago\Rumi\Models\RunConfig;
+use Trivago\Rumi\Models\StageConfig;
 use Trivago\Rumi\Models\VCSInfo\GitInfo;
 use Trivago\Rumi\Models\VCSInfo\VCSInfoInterface;
 use Trivago\Rumi\Services\ConfigReader;
@@ -170,16 +171,17 @@ class RunCommand extends CommandAbstract
      * My intention is to move it to RunExecutor class
      */
     private function startRun(RunConfig $runConfig, OutputInterface $output, VCSInfoInterface $VCSInfo, string $volume){
-        foreach ($runConfig->getStagesCollection() as $stageName => $stageConfig) {
+        /** @var StageConfig $stage */
+        foreach ($runConfig->getStagesCollection() as $stage) {
             try {
-                $jobs = $this->jobConfigBuilder->build($stageConfig);
+                $jobs = $this->jobConfigBuilder->build($stage->getJobs());
 
                 $this->eventDispatcher->dispatch(
                     Events::STAGE_STARTED,
-                    new StageStartedEvent($stageName, $jobs)
+                    new StageStartedEvent($stage->getName(), $jobs)
                 );
 
-                $output->writeln(sprintf('<info>Stage: "%s"</info>', $stageName));
+                $output->writeln(sprintf('<info>Stage: "%s"</info>', $stage->getName()));
 
                 $time = Timer::execute(
                     function () use ($jobs, $output, $VCSInfo, $volume) {
@@ -191,12 +193,12 @@ class RunCommand extends CommandAbstract
 
                 $this->eventDispatcher->dispatch(
                     Events::STAGE_FINISHED,
-                    new StageFinishedEvent(StageFinishedEvent::STATUS_SUCCESS, $stageName)
+                    new StageFinishedEvent(StageFinishedEvent::STATUS_SUCCESS, $stage->getName())
                 );
             } catch (\Exception $e) {
                 $this->eventDispatcher->dispatch(
                     Events::STAGE_FINISHED,
-                    new StageFinishedEvent(StageFinishedEvent::STATUS_FAILED, $stageName)
+                    new StageFinishedEvent(StageFinishedEvent::STATUS_FAILED, $stage->getName())
                 );
 
                 throw $e;

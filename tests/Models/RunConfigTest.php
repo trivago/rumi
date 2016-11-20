@@ -26,7 +26,7 @@ class RunConfigTest extends \PHPUnit_Framework_TestCase
     public function testGivenNewInstanceIsCreated_WhenGetterAccessed_ThenItReturnsValidData()
     {
         //given
-        $stages = ['abc'];
+        $stages = ['abc'=>[]];
         $caches = ['cache', 'cache2'];
         $mergeBranch = 'merge_branch';
 
@@ -34,7 +34,7 @@ class RunConfigTest extends \PHPUnit_Framework_TestCase
         $SUT = new RunConfig(new StagesCollection($stages), new CacheConfig($caches), $mergeBranch);
 
         // then
-        $this->assertEquals($stages, iterator_to_array($SUT->getStagesCollection(), true));
+        $this->assertContainsOnlyInstancesOf(StageConfig::class, iterator_to_array($SUT->getStagesCollection(), true));
         $this->assertEquals($caches, iterator_to_array($SUT->getCache(), true));
         $this->assertEquals($mergeBranch, $SUT->getMergeBranch());
     }

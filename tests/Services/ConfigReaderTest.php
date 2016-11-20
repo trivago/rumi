@@ -21,6 +21,7 @@ namespace Trivago\Rumi\Services;
 use org\bovigo\vfs\vfsStream;
 use Symfony\Component\Yaml\Dumper;
 use Trivago\Rumi\Commands\CommandAbstract;
+use Trivago\Rumi\Models\StageConfig;
 
 /**
  * @covers \Trivago\Rumi\Services\ConfigReader
@@ -57,7 +58,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
     {
         //given
         $cache = ['a', 'b', 'c'];
-        $stages = [1, 2, 3];
+        $stages = ['stage1'=>[], 'stage2'=>[], 'stage3'=>[]];
         $merge_branch = 'origin/feature_1';
 
         $config = [
@@ -74,28 +75,24 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
 
         //then
         $this->assertEquals($cache, iterator_to_array($runConfig->getCache()));
-        $this->assertEquals($stages, iterator_to_array($runConfig->getStagesCollection(), true));
+        $this->assertContainsOnlyInstancesOf(StageConfig::class, $runConfig->getStagesCollection());
         $this->assertEquals($merge_branch, $runConfig->getMergeBranch());
     }
 
     public function testGivenOnlyStageIsDefined_WhenGetConfigCalled_ThenRunConfigIsReturned()
     {
         //given
-        $stages = [1, 2, 3];
-
         $config = [
-            'stages' => $stages
+            'stages' => ['1'=>[], '2'=>[], '3'=>[]]
         ];
-        $dumper = new Dumper();
-
-        file_put_contents(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG, $dumper->dump($config));
+        file_put_contents(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG, (new Dumper())->dump($config));
 
         //when
         $runConfig = $this->SUT->getRunConfig(vfsStream::url('directory') . '/', CommandAbstract::DEFAULT_CONFIG);
 
         //then
         $this->assertEmpty(iterator_to_array($runConfig->getCache()));
-        $this->assertEquals($stages, iterator_to_array($runConfig->getStagesCollection(), true));
+        $this->assertContainsOnlyInstancesOf(StageConfig::class, $runConfig->getStagesCollection());
         $this->assertEmpty($runConfig->getMergeBranch());
     }
 

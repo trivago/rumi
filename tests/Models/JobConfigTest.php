@@ -19,7 +19,7 @@
 namespace Trivago\Rumi\Models;
 
 /**
- * @covers Trivago\Rumi\Models\JobConfig
+ * @covers \Trivago\Rumi\Models\JobConfig
  */
 class JobConfigTest extends \PHPUnit_Framework_TestCase
 {

@@ -16,30 +16,26 @@
  * limitations under the License.
  */
 
-namespace Trivago\Rumi\Events;
-
-use Trivago\Rumi\Models\CacheConfig;
-use Trivago\Rumi\Models\RunConfig;
-use Trivago\Rumi\Models\StagesCollection;
+namespace Trivago\Rumi\Models;
 
 /**
- * @covers \Trivago\Rumi\Events\RunStartedEvent
+ * @covers \Trivago\Rumi\Models\StageConfig
  */
-class RunStartedEventTest extends \PHPUnit_Framework_TestCase
+class StageConfigTest extends \PHPUnit_Framework_TestCase
 {
-    public function testGivenConfig_WhenNewInstanceCreated_ThenGetterWorks()
+
+    public function test()
     {
-        //given
-        $runConfig = new RunConfig(
-            new StagesCollection(['abc'=>[]]),
-            new CacheConfig(['cache']),
-            'merge_branch'
-        );
+        // given
+        $name = 'stageName';
+        $jobs = [1, 2];
+
 
         // when
-        $event = new RunStartedEvent($runConfig);
+        $stageConfig = new StageConfig($name, $jobs);
 
         // then
-        $this->assertEquals($runConfig, $event->getRunConfig());
+        $this->assertEquals($name, $stageConfig->getName());
+        $this->assertEquals($jobs, $stageConfig->getJobs());
     }
 }
