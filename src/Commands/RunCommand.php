@@ -29,7 +29,9 @@ use Trivago\Rumi\Events\RunFinishedEvent;
 use Trivago\Rumi\Events\RunStartedEvent;
 use Trivago\Rumi\Events\StageFinishedEvent;
 use Trivago\Rumi\Events\StageStartedEvent;
+use Trivago\Rumi\Models\RunConfig;
 use Trivago\Rumi\Models\VCSInfo\GitInfo;
+use Trivago\Rumi\Models\VCSInfo\VCSInfoInterface;
 use Trivago\Rumi\Services\ConfigReader;
 use Trivago\Rumi\Timer;
 
@@ -40,11 +42,6 @@ class RunCommand extends CommandAbstract
     const GIT_BRANCH = 'git_branch';
 
     const VOLUME = 'volume';
-
-    /**
-     * @var string|null
-     */
-    private $volume;
 
     /**
      * @var string
@@ -128,58 +125,28 @@ class RunCommand extends CommandAbstract
     {
         try {
             if (trim($input->getArgument('volume')) != '') {
-                $this->volume = $input->getArgument(self::VOLUME);
+                $volume = $input->getArgument(self::VOLUME);
             } else {
-                $this->volume = $this->getWorkingDir();
+                $volume = $this->getWorkingDir();
             }
+
             $VCSInfo = new GitInfo(
                 $input->getArgument(self::GIT_URL),
                 $input->getArgument(self::GIT_COMMIT),
                 $input->getArgument(self::GIT_BRANCH)
             );
 
-            $timeTaken = Timer::execute(function () use ($input, $output, $VCSInfo) {
-                $runConfig = $this->configReader->getConfig($this->getWorkingDir(), $input->getOption(self::CONFIG));
+            $configFilePath = $input->getOption(self::CONFIG);
 
-                $this->eventDispatcher->dispatch(
-                    Events::RUN_STARTED, new RunStartedEvent($runConfig)
-                );
+            $runConfig = $this->configReader->getRunConfig($this->getWorkingDir(), $configFilePath);
 
-                foreach ($runConfig->getStages() as $stageName => $stageConfig) {
-                    try {
-                        $jobs = $this->jobConfigBuilder->build($stageConfig);
+            $this->eventDispatcher->dispatch(Events::RUN_STARTED, new RunStartedEvent($runConfig));
 
-                        $this->eventDispatcher->dispatch(
-                            Events::STAGE_STARTED,
-                            new StageStartedEvent($stageName, $jobs)
-                        );
-
-                        $output->writeln(sprintf('<info>Stage: "%s"</info>', $stageName));
-
-                        $time = Timer::execute(
-                            function () use ($jobs, $output, $VCSInfo) {
-                                $this->stageExecutor->executeStage($jobs, $this->volume, $output, $VCSInfo);
-                            }
-                        );
-
-                        $output->writeln('<info>Stage completed: '.$time.'</info>'.PHP_EOL);
-
-                        $this->eventDispatcher->dispatch(
-                            Events::STAGE_FINISHED,
-                            new StageFinishedEvent(StageFinishedEvent::STATUS_SUCCESS, $stageName)
-                        );
-                    } catch (\Exception $e) {
-                        $this->eventDispatcher->dispatch(
-                            Events::STAGE_FINISHED,
-                            new StageFinishedEvent(StageFinishedEvent::STATUS_FAILED, $stageName)
-                        );
-
-                        throw $e;
-                    }
-                }
-
-                $this->eventDispatcher->dispatch(Events::RUN_FINISHED, new RunFinishedEvent(RunFinishedEvent::STATUS_SUCCESS));
+            $timeTaken = Timer::execute(function () use ($runConfig, $output, $VCSInfo, $volume) {
+                $this->startRun($runConfig, $output, $VCSInfo, $volume);
             });
+
+            $this->eventDispatcher->dispatch(Events::RUN_FINISHED, new RunFinishedEvent(RunFinishedEvent::STATUS_SUCCESS));
 
             $output->writeln('<info>Build successful: '.$timeTaken.'</info>');
         } catch (\Exception $e) {
@@ -191,5 +158,51 @@ class RunCommand extends CommandAbstract
         }
 
         return 0;
+    }
+
+    /**
+     * @param RunConfig $runConfig
+     * @param OutputInterface $output
+     * @param VCSInfoInterface $VCSInfo
+     * @param string $volume
+     * @throws \Exception
+     *
+     * My intention is to move it to RunExecutor class
+     */
+    private function startRun(RunConfig $runConfig, OutputInterface $output, VCSInfoInterface $VCSInfo, string $volume){
+        foreach ($runConfig->getStages() as $stageName => $stageConfig) {
+            try {
+                $jobs = $this->jobConfigBuilder->build($stageConfig);
+
+                $this->eventDispatcher->dispatch(
+                    Events::STAGE_STARTED,
+                    new StageStartedEvent($stageName, $jobs)
+                );
+
+                $output->writeln(sprintf('<info>Stage: "%s"</info>', $stageName));
+
+                $time = Timer::execute(
+                    function () use ($jobs, $output, $VCSInfo, $volume) {
+                        $this->stageExecutor->executeStage($jobs, $volume, $output, $VCSInfo);
+                    }
+                );
+
+                $output->writeln('<info>Stage completed: '.$time.'</info>'.PHP_EOL);
+
+                $this->eventDispatcher->dispatch(
+                    Events::STAGE_FINISHED,
+                    new StageFinishedEvent(StageFinishedEvent::STATUS_SUCCESS, $stageName)
+                );
+            } catch (\Exception $e) {
+                $this->eventDispatcher->dispatch(
+                    Events::STAGE_FINISHED,
+                    new StageFinishedEvent(StageFinishedEvent::STATUS_FAILED, $stageName)
+                );
+
+                throw $e;
+            }
+        }
+
+
     }
 }

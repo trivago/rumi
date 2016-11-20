@@ -183,7 +183,7 @@ class CacheStoreCommand extends CommandAbstract
             /** @var ConfigReader $configReader */
             $configReader = $this->container->get('trivago.rumi.services.config_reader');
 
-            return $configReader->getConfig($this->getWorkingDir(), $configFile);
+            return $configReader->getRunConfig($this->getWorkingDir(), $configFile);
         } catch (\Exception $e) {
             throw new \Exception('Required file \'' . $configFile . '\' does not exist');
         }

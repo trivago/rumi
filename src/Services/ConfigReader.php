@@ -34,7 +34,7 @@ class ConfigReader
      *
      * @return RunConfig
      */
-    public function getConfig($workingDir, $configFile)
+    public function getRunConfig($workingDir, $configFile)
     {
         $configFilePath = $workingDir . $configFile;
 

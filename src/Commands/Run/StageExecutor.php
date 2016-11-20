@@ -67,12 +67,13 @@ class StageExecutor
     /**
      * @param JobConfigCollection $jobs
      * @param $volume
-     * @param OutputInterface  $output
+     * @param OutputInterface $output
      * @param VCSInfoInterface $VCSInfo
      */
     public function executeStage(JobConfigCollection $jobs, $volume, OutputInterface $output, VCSInfoInterface $VCSInfo)
     {
-        $this->handleProcesses($output, $this->startStageProcesses($jobs, $VCSInfo, $volume));
+        $processes = $this->startStageProcesses($jobs, $VCSInfo, $volume);
+        $this->handleProcesses($output, $processes);
     }
 
     /**

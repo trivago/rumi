@@ -48,7 +48,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
         //given
 
         //when
-        $this->SUT->getConfig(vfsStream::url('directory'), 'not_existing');
+        $this->SUT->getRunConfig(vfsStream::url('directory'), 'not_existing');
 
         //then
     }
@@ -70,7 +70,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
         file_put_contents(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG, $dumper->dump($config));
 
         //when
-        $runConfig = $this->SUT->getConfig(vfsStream::url('directory') . '/', CommandAbstract::DEFAULT_CONFIG);
+        $runConfig = $this->SUT->getRunConfig(vfsStream::url('directory') . '/', CommandAbstract::DEFAULT_CONFIG);
 
         //then
         $this->assertEquals($cache, $runConfig->getCache());
@@ -88,7 +88,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
         file_put_contents(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG, 'wrong::' . PHP_EOL . '::yaml_file');
 
         // when
-        $this->SUT->getConfig(vfsStream::url('directory') . '/', CommandAbstract::DEFAULT_CONFIG);
+        $this->SUT->getRunConfig(vfsStream::url('directory') . '/', CommandAbstract::DEFAULT_CONFIG);
 
         // then
     }

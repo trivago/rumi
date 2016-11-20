@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /*
  * Copyright 2016 trivago GmbH
@@ -33,7 +34,7 @@ class JobConfigCollection
     /**
      * @return JobConfig[]
      */
-    public function getJobs()
+    public function getJobs(): array
     {
         return $this->jobs;
     }
