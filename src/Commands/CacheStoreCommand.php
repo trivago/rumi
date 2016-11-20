@@ -141,7 +141,7 @@ class CacheStoreCommand extends CommandAbstract
      */
     protected function SkipIfCacheConfigIsEmpty(RunConfig $ciConfig)
     {
-        if (!$ciConfig->getCache()) {
+        if (!$ciConfig->getCache()->count()) {
             throw new SkipException('Cache config is empty. Skipping.');
         }
     }

@@ -18,7 +18,9 @@
 
 namespace Trivago\Rumi\Events;
 
+use Trivago\Rumi\Models\CacheConfig;
 use Trivago\Rumi\Models\RunConfig;
+use Trivago\Rumi\Models\StagesCollection;
 
 /**
  * @covers \Trivago\Rumi\Events\RunStartedEvent
@@ -28,7 +30,11 @@ class RunStartedEventTest extends \PHPUnit_Framework_TestCase
     public function testGivenConfig_WhenNewInstanceCreated_ThenGetterWorks()
     {
         //given
-        $runConfig = new RunConfig(['abc'], ['cache'], 'merge_branch');
+        $runConfig = new RunConfig(
+            new StagesCollection(['abc']),
+            new CacheConfig(['cache']),
+            'merge_branch'
+        );
 
         // when
         $event = new RunStartedEvent($runConfig);

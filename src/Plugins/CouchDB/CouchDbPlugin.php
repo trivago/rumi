@@ -71,7 +71,7 @@ class CouchDbPlugin implements PluginInterface
             }
             $this->run = new Run($input->getArgument(RunCommand::GIT_COMMIT));
 
-            foreach ($e->getRunConfig()->getStages() as $stageName => $jobs) {
+            foreach ($e->getRunConfig()->getStagesCollection() as $stageName => $jobs) {
                 $stage = new Stage($stageName);
                 foreach ($jobs as $jobName => $options) {
                     $stage->addJob(new Job($jobName, 'SHEDULED'));

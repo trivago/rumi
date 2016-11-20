@@ -31,11 +31,11 @@ class RunConfigTest extends \PHPUnit_Framework_TestCase
         $mergeBranch = 'merge_branch';
 
         // when
-        $SUT = new RunConfig($stages, $caches, $mergeBranch);
+        $SUT = new RunConfig(new StagesCollection($stages), new CacheConfig($caches), $mergeBranch);
 
         // then
-        $this->assertEquals($stages, $SUT->getStages());
-        $this->assertEquals($caches, $SUT->getCache());
+        $this->assertEquals($stages, iterator_to_array($SUT->getStagesCollection(), true));
+        $this->assertEquals($caches, iterator_to_array($SUT->getCache(), true));
         $this->assertEquals($mergeBranch, $SUT->getMergeBranch());
     }
 }

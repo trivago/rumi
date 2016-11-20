@@ -31,7 +31,7 @@ use Trivago\Rumi\Process\CacheProcessFactory;
 use Trivago\Rumi\Services\ConfigReader;
 
 /**
- * @covers Trivago\Rumi\Commands\CacheStoreCommand
+ * @covers \Trivago\Rumi\Commands\CacheStoreCommand
  */
 class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
 {

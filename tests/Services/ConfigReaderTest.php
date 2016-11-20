@@ -73,9 +73,30 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
         $runConfig = $this->SUT->getRunConfig(vfsStream::url('directory') . '/', CommandAbstract::DEFAULT_CONFIG);
 
         //then
-        $this->assertEquals($cache, $runConfig->getCache());
-        $this->assertEquals($stages, $runConfig->getStages());
+        $this->assertEquals($cache, iterator_to_array($runConfig->getCache()));
+        $this->assertEquals($stages, iterator_to_array($runConfig->getStagesCollection(), true));
         $this->assertEquals($merge_branch, $runConfig->getMergeBranch());
+    }
+
+    public function testGivenOnlyStageIsDefined_WhenGetConfigCalled_ThenRunConfigIsReturned()
+    {
+        //given
+        $stages = [1, 2, 3];
+
+        $config = [
+            'stages' => $stages
+        ];
+        $dumper = new Dumper();
+
+        file_put_contents(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG, $dumper->dump($config));
+
+        //when
+        $runConfig = $this->SUT->getRunConfig(vfsStream::url('directory') . '/', CommandAbstract::DEFAULT_CONFIG);
+
+        //then
+        $this->assertEmpty(iterator_to_array($runConfig->getCache()));
+        $this->assertEquals($stages, iterator_to_array($runConfig->getStagesCollection(), true));
+        $this->assertEmpty($runConfig->getMergeBranch());
     }
 
     /**

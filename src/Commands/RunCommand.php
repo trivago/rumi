@@ -170,7 +170,7 @@ class RunCommand extends CommandAbstract
      * My intention is to move it to RunExecutor class
      */
     private function startRun(RunConfig $runConfig, OutputInterface $output, VCSInfoInterface $VCSInfo, string $volume){
-        foreach ($runConfig->getStages() as $stageName => $stageConfig) {
+        foreach ($runConfig->getStagesCollection() as $stageName => $stageConfig) {
             try {
                 $jobs = $this->jobConfigBuilder->build($stageConfig);
 

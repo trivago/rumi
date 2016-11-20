@@ -36,7 +36,9 @@ use Trivago\Rumi\Events\RunFinishedEvent;
 use Trivago\Rumi\Events\RunStartedEvent;
 use Trivago\Rumi\Events\StageFinishedEvent;
 use Trivago\Rumi\Events\StageStartedEvent;
+use Trivago\Rumi\Models\CacheConfig;
 use Trivago\Rumi\Models\RunConfig;
+use Trivago\Rumi\Models\StagesCollection;
 use Trivago\Rumi\Process\RunningProcessesFactory;
 use Trivago\Rumi\Services\ConfigReader;
 
@@ -144,7 +146,10 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
-                new RunConfig(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]], [], null)
+                new RunConfig(
+                    new StagesCollection(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]]),
+                    new CacheConfig([]),
+                    "")
             );
 
         // when
@@ -173,7 +178,10 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
-                new RunConfig(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]], [], null)
+                new RunConfig(
+                    new StagesCollection(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]]),
+                    new CacheConfig([]),
+                    "")
             );
 
         // when
@@ -206,7 +214,10 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
-                new RunConfig(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]], [], null)
+                new RunConfig(
+                    new StagesCollection(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]]),
+                    new CacheConfig([]),
+                    "")
             );
 
         // when
@@ -235,16 +246,20 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
-                new RunConfig([
-                    'Stage one' => [
-                        'Job one' => ['docker' => ['www' => ['image' => 'abc']]],
-                        'Job two' => ['docker' => ['www' => ['image' => 'abc']]],
-                    ],
-                    'Stage two' => [
-                        'Job one' => ['docker' => ['www' => ['image' => 'abc']]],
-                        'Job two' => ['docker' => ['www' => ['image' => 'abc']]],
-                    ],
-                ], [], null)
+                new RunConfig(
+                    new StagesCollection([
+                        'Stage one' => [
+                            'Job one' => ['docker' => ['www' => ['image' => 'abc']]],
+                            'Job two' => ['docker' => ['www' => ['image' => 'abc']]],
+                        ],
+                        'Stage two' => [
+                            'Job one' => ['docker' => ['www' => ['image' => 'abc']]],
+                            'Job two' => ['docker' => ['www' => ['image' => 'abc']]],
+                        ],
+                    ]),
+                    new CacheConfig([]),
+                    ""
+                )
             );
 
         // when
@@ -303,7 +318,11 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
-                new RunConfig(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]], [], null)
+                new RunConfig(
+                    new StagesCollection(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]]),
+                    new CacheConfig([]),
+                    ""
+                )
             );
 
         // when
