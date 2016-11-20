@@ -19,6 +19,7 @@
 namespace Trivago\Rumi\Services;
 
 use Symfony\Component\Yaml\Parser;
+use Trivago\Rumi\Builders\JobConfigBuilder;
 use Trivago\Rumi\Commands\ReturnCodes;
 use Trivago\Rumi\Models\CacheConfig;
 use Trivago\Rumi\Models\RunConfig;
@@ -27,6 +28,19 @@ use Trivago\Rumi\Models\StagesCollection;
 class ConfigReader
 {
     const CONFIG_FILE = '.rumi.yml';
+    /**
+     * @var JobConfigBuilder
+     */
+    private $jobConfigBuilder;
+
+    /**
+     * ConfigReader constructor.
+     * @param JobConfigBuilder $jobConfigBuilder
+     */
+    public function __construct(JobConfigBuilder $jobConfigBuilder)
+    {
+        $this->jobConfigBuilder = $jobConfigBuilder;
+    }
 
     /**
      * @param $workingDir
@@ -51,7 +65,10 @@ class ConfigReader
         $ciConfig = $parser->parse(file_get_contents($configFilePath));
 
         return new RunConfig(
-            new StagesCollection($ciConfig['stages'] ?? []),
+            new StagesCollection(
+                $this->jobConfigBuilder,
+                $ciConfig['stages'] ?? []
+            ),
             new CacheConfig($ciConfig['cache'] ?? []),
             $ciConfig['merge_branch'] ?? ""
         );

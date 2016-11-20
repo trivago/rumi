@@ -20,8 +20,11 @@ namespace Trivago\Rumi\Services;
 
 use org\bovigo\vfs\vfsStream;
 use Symfony\Component\Yaml\Dumper;
+use Trivago\Rumi\Builders\JobConfigBuilder;
 use Trivago\Rumi\Commands\CommandAbstract;
+use Trivago\Rumi\Models\JobConfigCollection;
 use Trivago\Rumi\Models\StageConfig;
+use Trivago\Rumi\Models\StagesCollection;
 
 /**
  * @covers \Trivago\Rumi\Services\ConfigReader
@@ -33,9 +36,16 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
      */
     private $SUT;
 
+    /**
+     * @var JobConfigBuilder
+     */
+    private $jobConfigBuilder;
+
     public function setUp()
     {
-        $this->SUT = new ConfigReader();
+        $this->jobConfigBuilder = $this->prophesize(JobConfigBuilder::class);
+
+        $this->SUT = new ConfigReader($this->jobConfigBuilder->reveal());
         vfsStream::setup('directory');
     }
 
@@ -61,6 +71,8 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
         $stages = ['stage1'=>[], 'stage2'=>[], 'stage3'=>[]];
         $merge_branch = 'origin/feature_1';
 
+        $this->jobConfigBuilder->build([])->willReturn(new JobConfigCollection());
+
         $config = [
             'cache' => $cache,
             'stages' => $stages,
@@ -75,7 +87,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
 
         //then
         $this->assertEquals($cache, iterator_to_array($runConfig->getCache()));
-        $this->assertContainsOnlyInstancesOf(StageConfig::class, $runConfig->getStagesCollection());
+        $this->assertInstanceOf(StagesCollection::class, $runConfig->getStagesCollection());
         $this->assertEquals($merge_branch, $runConfig->getMergeBranch());
     }
 
@@ -86,13 +98,14 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
             'stages' => ['1'=>[], '2'=>[], '3'=>[]]
         ];
         file_put_contents(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG, (new Dumper())->dump($config));
+        $this->jobConfigBuilder->build([])->willReturn(new JobConfigCollection());
 
         //when
         $runConfig = $this->SUT->getRunConfig(vfsStream::url('directory') . '/', CommandAbstract::DEFAULT_CONFIG);
 
         //then
         $this->assertEmpty(iterator_to_array($runConfig->getCache()));
-        $this->assertContainsOnlyInstancesOf(StageConfig::class, $runConfig->getStagesCollection());
+        $this->assertInstanceOf(StagesCollection::class, $runConfig->getStagesCollection());
         $this->assertEmpty($runConfig->getMergeBranch());
     }
 

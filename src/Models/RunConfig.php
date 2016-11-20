@@ -53,7 +53,7 @@ class RunConfig
     }
 
     /**
-     * @return StagesCollection
+     * @return StagesCollection|StageConfig[]
      */
     public function getStagesCollection(): StagesCollection
     {

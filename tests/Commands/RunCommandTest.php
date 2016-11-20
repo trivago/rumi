@@ -147,7 +147,10 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
                 new RunConfig(
-                    new StagesCollection(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]]),
+                    new StagesCollection(
+                        $this->container->get('trivago.rumi.job_config_builder'),
+                        ['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]]
+                    ),
                     new CacheConfig([]),
                     "")
             );
@@ -179,7 +182,10 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
                 new RunConfig(
-                    new StagesCollection(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]]),
+                    new StagesCollection(
+                        $this->container->get('trivago.rumi.job_config_builder'),
+                        ['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]]
+                    ),
                     new CacheConfig([]),
                     "")
             );
@@ -215,7 +221,10 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
                 new RunConfig(
-                    new StagesCollection(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]]),
+                    new StagesCollection(
+                        $this->container->get('trivago.rumi.job_config_builder'),
+                        ['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]]
+                    ),
                     new CacheConfig([]),
                     "")
             );
@@ -247,16 +256,19 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
                 new RunConfig(
-                    new StagesCollection([
-                        'Stage one' => [
-                            'Job one' => ['docker' => ['www' => ['image' => 'abc']]],
-                            'Job two' => ['docker' => ['www' => ['image' => 'abc']]],
-                        ],
-                        'Stage two' => [
-                            'Job one' => ['docker' => ['www' => ['image' => 'abc']]],
-                            'Job two' => ['docker' => ['www' => ['image' => 'abc']]],
-                        ],
-                    ]),
+                    new StagesCollection(
+                        $this->container->get('trivago.rumi.job_config_builder'),
+                        [
+                            'Stage one' => [
+                                'Job one' => ['docker' => ['www' => ['image' => 'abc']]],
+                                'Job two' => ['docker' => ['www' => ['image' => 'abc']]],
+                            ],
+                            'Stage two' => [
+                                'Job one' => ['docker' => ['www' => ['image' => 'abc']]],
+                                'Job two' => ['docker' => ['www' => ['image' => 'abc']]],
+                            ],
+                        ]
+                    ),
                     new CacheConfig([]),
                     ""
                 )
@@ -319,7 +331,10 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
                 new RunConfig(
-                    new StagesCollection(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]]),
+                    new StagesCollection(
+                        $this->container->get('trivago.rumi.job_config_builder'),
+                        ['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]]
+                    ),
                     new CacheConfig([]),
                     ""
                 )

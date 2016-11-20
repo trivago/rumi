@@ -24,11 +24,11 @@ namespace Trivago\Rumi\Models;
 class StageConfigTest extends \PHPUnit_Framework_TestCase
 {
 
-    public function test()
+    public function testGivenNameAndJobConfigCollection_WhenStageConfigCreated_ThenGettersAreFine()
     {
         // given
         $name = 'stageName';
-        $jobs = [1, 2];
+        $jobs = $this->prophesize(JobConfigCollection::class)->reveal();
 
 
         // when

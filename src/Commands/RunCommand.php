@@ -22,7 +22,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Trivago\Rumi\Builders\JobConfigBuilder;
 use Trivago\Rumi\Commands\Run\StageExecutor;
 use Trivago\Rumi\Events;
 use Trivago\Rumi\Events\RunFinishedEvent;
@@ -65,27 +64,19 @@ class RunCommand extends CommandAbstract
     private $stageExecutor;
 
     /**
-     * @var JobConfigBuilder
-     */
-    private $jobConfigBuilder;
-
-    /**
      * @param EventDispatcherInterface $eventDispatcher
      * @param ConfigReader             $configReader
      * @param StageExecutor            $stageExecutor
-     * @param JobConfigBuilder         $jobConfigBuilder
      */
     public function __construct(
         EventDispatcherInterface $eventDispatcher,
         ConfigReader $configReader,
-        StageExecutor $stageExecutor,
-        JobConfigBuilder $jobConfigBuilder
+        StageExecutor $stageExecutor
 ) {
         parent::__construct();
         $this->eventDispatcher = $eventDispatcher;
         $this->configReader = $configReader;
         $this->stageExecutor = $stageExecutor;
-        $this->jobConfigBuilder = $jobConfigBuilder;
     }
 
     protected function configure()
@@ -171,21 +162,18 @@ class RunCommand extends CommandAbstract
      * My intention is to move it to RunExecutor class
      */
     private function startRun(RunConfig $runConfig, OutputInterface $output, VCSInfoInterface $VCSInfo, string $volume){
-        /** @var StageConfig $stage */
         foreach ($runConfig->getStagesCollection() as $stage) {
             try {
-                $jobs = $this->jobConfigBuilder->build($stage->getJobs());
-
                 $this->eventDispatcher->dispatch(
                     Events::STAGE_STARTED,
-                    new StageStartedEvent($stage->getName(), $jobs)
+                    new StageStartedEvent($stage)
                 );
 
                 $output->writeln(sprintf('<info>Stage: "%s"</info>', $stage->getName()));
 
                 $time = Timer::execute(
-                    function () use ($jobs, $output, $VCSInfo, $volume) {
-                        $this->stageExecutor->executeStage($jobs, $volume, $output, $VCSInfo);
+                    function () use ($stage, $output, $VCSInfo, $volume) {
+                        $this->stageExecutor->executeStage($stage, $volume, $output, $VCSInfo);
                     }
                 );
 
@@ -193,12 +181,12 @@ class RunCommand extends CommandAbstract
 
                 $this->eventDispatcher->dispatch(
                     Events::STAGE_FINISHED,
-                    new StageFinishedEvent(StageFinishedEvent::STATUS_SUCCESS, $stage->getName())
+                    new StageFinishedEvent(StageFinishedEvent::STATUS_SUCCESS, $stage)
                 );
             } catch (\Exception $e) {
                 $this->eventDispatcher->dispatch(
                     Events::STAGE_FINISHED,
-                    new StageFinishedEvent(StageFinishedEvent::STATUS_FAILED, $stage->getName())
+                    new StageFinishedEvent(StageFinishedEvent::STATUS_FAILED, $stage)
                 );
 
                 throw $e;

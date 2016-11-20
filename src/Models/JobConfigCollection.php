@@ -19,7 +19,7 @@ declare(strict_types=1);
 
 namespace Trivago\Rumi\Models;
 
-class JobConfigCollection
+class JobConfigCollection implements \IteratorAggregate
 {
     /**
      * @var JobConfig[]
@@ -31,11 +31,9 @@ class JobConfigCollection
         $this->jobs[] = $job;
     }
 
-    /**
-     * @return JobConfig[]
-     */
-    public function getJobs(): array
+    public function getIterator()
     {
-        return $this->jobs;
+        return new \ArrayIterator($this->jobs);
     }
+
 }

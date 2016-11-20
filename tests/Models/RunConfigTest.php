@@ -17,6 +17,8 @@
  */
 
 namespace Trivago\Rumi\Models;
+use Prophecy\Argument;
+use Trivago\Rumi\Builders\JobConfigBuilder;
 
 /**
  * @covers \Trivago\Rumi\Models\RunConfig
@@ -31,10 +33,14 @@ class RunConfigTest extends \PHPUnit_Framework_TestCase
         $mergeBranch = 'merge_branch';
 
         // when
-        $SUT = new RunConfig(new StagesCollection($stages), new CacheConfig($caches), $mergeBranch);
+        $SUT = new RunConfig(
+            $this->prophesize(StagesCollection::class)->reveal(),
+            new CacheConfig($caches),
+            $mergeBranch
+        );
 
         // then
-        $this->assertContainsOnlyInstancesOf(StageConfig::class, iterator_to_array($SUT->getStagesCollection(), true));
+        $this->assertInstanceOf(StagesCollection::class, $SUT->getStagesCollection());
         $this->assertEquals($caches, iterator_to_array($SUT->getCache(), true));
         $this->assertEquals($mergeBranch, $SUT->getMergeBranch());
     }

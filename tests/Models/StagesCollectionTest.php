@@ -18,6 +18,8 @@
 
 namespace Trivago\Rumi\Models;
 
+use Trivago\Rumi\Builders\JobConfigBuilder;
+
 /**
  * @covers \Trivago\Rumi\Models\StagesCollection
  */
@@ -32,12 +34,20 @@ class StagesCollectionTest extends \PHPUnit_Framework_TestCase
         ];
 
         //when
-        $stagesCollection = new StagesCollection($config);
+        $jobConfigBuilder = $this->prophesize(JobConfigBuilder::class);
+        $jobConfigBuilder->build([])->willReturn(new JobConfigCollection());
+
+        $stagesCollection = new StagesCollection(
+            $jobConfigBuilder->reveal(),
+            $config
+        );
 
         // then
-        foreach ($stagesCollection as $i=>$stage)
+        /** @var StageConfig $stage */
+        foreach ($stagesCollection as $i=> $stage)
         {
             $this->assertEquals('stage1Name', $stage->getName());
+            $this->assertInstanceOf(JobConfigCollection::class, $stage->getJobs());
         }
 
     }

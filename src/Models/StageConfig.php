@@ -33,9 +33,9 @@ class StageConfig
     /**
      * StageConfig constructor.
      * @param string $name
-     * @param array $jobs
+     * @param JobConfigCollection $jobs
      */
-    public function __construct(string $name, array $jobs)
+    public function __construct(string $name, JobConfigCollection $jobs)
     {
         $this->name = $name;
         $this->jobs = $jobs;
@@ -50,9 +50,9 @@ class StageConfig
     }
 
     /**
-     * @return array
+     * @return JobConfigCollection
      */
-    public function getJobs(): array
+    public function getJobs(): JobConfigCollection
     {
         return $this->jobs;
     }
