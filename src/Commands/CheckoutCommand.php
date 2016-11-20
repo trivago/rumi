@@ -21,21 +21,22 @@ namespace Trivago\Rumi\Commands;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Trivago\Rumi\Process\GitProcessesExecution;
 
 class CheckoutCommand extends CommandAbstract
 {
     /**
-     * @var GitCheckoutExecuteCommands
+     * @var GitProcessesExecution
      */
-    private $gitCheckoutExecuteCommands;
+    private $gitProcessesExecution;
 
     /**
-     * @param GitCheckoutExecuteCommands $gitCheckoutExecuteCommands
+     * @param GitProcessesExecution $gitProcessesExecution
      */
-    public function __construct(GitCheckoutExecuteCommands $gitCheckoutExecuteCommands)
+    public function __construct(GitProcessesExecution $gitProcessesExecution)
     {
         parent::__construct();
-        $this->gitCheckoutExecuteCommands = $gitCheckoutExecuteCommands;
+        $this->gitProcessesExecution = $gitProcessesExecution;
     }
 
     protected function configure()
@@ -49,19 +50,24 @@ class CheckoutCommand extends CommandAbstract
             ->addArgument('commit', InputArgument::REQUIRED, 'Commit id/branch name to checkout');
     }
 
+    /**
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     *
+     * @return int|mixed
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $this->gitCheckoutExecuteCommands->executeGitCloneBranch($input->getArgument('repository'), $output);
+            $this->gitProcessesExecution->executeGitCloneBranch($input->getArgument('repository'), $output);
 
-            $this->gitCheckoutExecuteCommands->executeGitCheckoutCommitProcess($input->getArgument('commit'), $output);
+            $this->gitProcessesExecution->executeGitCheckoutCommitProcess($input->getArgument('commit'), $output);
 
-            $this->gitCheckoutExecuteCommands->executeGitMergeBranchProcess($input->getOption(self::CONFIG), $output);
+            $this->gitProcessesExecution->executeGitMergeBranchProcess($input->getOption(self::CONFIG), $output);
 
             $output->writeln('<info>Checkout done</info>');
-
         } catch (\Exception $e) {
-            $output->writeln('<error>' . $e->getMessage() . '</error>');
+            $output->writeln('<error>'.$e->getMessage().'</error>');
 
             return $e->getCode();
         }
