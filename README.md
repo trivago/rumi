@@ -60,8 +60,8 @@ Job is marked as failed if return status of *ci_image* is other then zero.
 ### Available environment variables
 Rumi injects following environment variables on the test runtime to your test container:
 * GIT_COMMIT - contains current commit sha
-* GIT_BRANCH = contains current branch name
-* GIT_URL = contains url used to checkout the code
+* GIT_BRANCH - contains current branch name
+* GIT_URL - contains url used to checkout the code
 
 ### Limitations
 
