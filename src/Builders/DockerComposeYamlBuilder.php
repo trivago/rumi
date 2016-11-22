@@ -110,17 +110,17 @@ class DockerComposeYamlBuilder
      */
     protected function dumpFile($parsedDockerCompose)
     {
-        $tempTestDirectory = tempnam(sys_get_temp_dir(), 'RUNNER') . md5(microtime()) . '_d';
+        $tempTestDirectory = tempnam(sys_get_temp_dir(), 'RUNNER').md5(microtime()).'_d';
         usleep(1);
         mkdir($tempTestDirectory);
 
         $dumper = new Dumper();
         file_put_contents(
-            $tempTestDirectory . '/docker-compose.yml',
+            $tempTestDirectory.'/docker-compose.yml',
             $dumper->dump($parsedDockerCompose, 10)
         );
 
-        return $tempTestDirectory . '/docker-compose.yml';
+        return $tempTestDirectory.'/docker-compose.yml';
     }
 
     /**
@@ -143,12 +143,12 @@ class DockerComposeYamlBuilder
     {
         // if the full volume is mounted, there is no magic needed
         if (strpos($volumeSpecification, './') !== 0) {
-            return str_replace('.:', $volumeName . ':', $volumeSpecification);
+            return str_replace('.:', $volumeName.':', $volumeSpecification);
         }
 
         // if we use systempath instead of docker volume
         if (!$this->isDockerVolume($volumeName)) {
-            return str_replace('./', rtrim($volumeName, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR, $volumeSpecification);
+            return str_replace('./', rtrim($volumeName, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR, $volumeSpecification);
         }
 
         // we need to get real docker volume path and use it
@@ -164,7 +164,7 @@ class DockerComposeYamlBuilder
     {
         if (substr($volumeSpec, 0, 1) == '/' or substr($volumeSpec, 0, 1) == '~') {
             throw new \Exception(
-                'Volume configuration: \'' . $volumeSpec . '\' is forbidden.',
+                'Volume configuration: \''.$volumeSpec.'\' is forbidden.',
                 ReturnCodes::VOLUME_MOUNT_FROM_FILESYSTEM);
         }
     }
