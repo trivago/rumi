@@ -61,7 +61,7 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 
     public function testGivenGitCloneBranchIsExecuted_WhenProcessIsSuccessful_ThenFullCheckoutIsDone()
     {
-        $this->gitProcessesExecution->executeGitCloneBranch($this->input, $this->output);
+        $this->gitProcessesExecution->executeGitCloneBranch('abc', $this->output);
 
         $this->SUT->run(
             new ArrayInput(
@@ -78,7 +78,7 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 
     public function testGivenGitCloneBranchIsExecuted_WhenProcessFailed_ThenErrorIsDisplayed()
     {
-        $this->gitProcessesExecution->executeGitCloneBranch($this->input, $this->output)->willThrow(new \Exception('Error'));
+        $this->gitProcessesExecution->executeGitCloneBranch('asd', $this->output)->willThrow(new \Exception('Error'));
 
         $this->SUT->run(
             new ArrayInput(
@@ -95,7 +95,7 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 
     public function testGivenGitCheckoutCommitProcessIsExecuted_WhenProcessIsSuccessful_ThenFullCheckoutIsDone()
     {
-        $this->gitProcessesExecution->executeGitCheckoutCommitProcess($this->input, $this->output);
+        $this->gitProcessesExecution->executeGitCheckoutCommitProcess('sha123', $this->output);
 
         $this->SUT->run(
             new ArrayInput(
@@ -148,7 +148,7 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
     {
         $this->gitProcessesExecution->executeGitMergeBranchProcess($this->input, $this->output, 'config');
 
-        $output = $this->SUT->run(
+        $returnCode = $this->SUT->run(
             new ArrayInput(
                 [
                     'repository' => 'abc',
@@ -158,7 +158,7 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
             $this->output
         );
 
-        $this->assertEquals(ReturnCodes::SUCCESS, $output);
+        $this->assertEquals(ReturnCodes::SUCCESS, $returnCode);
     }
 
     public function testGivenGitMergeBranchProcessIsExecuted_WhenProcessFailed_ThenErrorIsDisplayed()
@@ -176,5 +176,25 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertContains('error', $this->output->fetch());
+    }
+
+    public function testGivenExceptionWithReturnCode_WhenCommandIsExecuted_ThenReturnCodeIsPassed(){
+        // given
+        $code = 123;
+        $this->gitProcessesExecution->executeGitCloneBranch('abc', $this->output)->willThrow(new \Exception('Error', $code));
+
+        // when
+        $returnCode = $this->SUT->run(
+            new ArrayInput(
+                [
+                    'repository' => 'abc',
+                    'commit' => 'sha123',
+                ]
+            ),
+            $this->output
+        );
+
+        // then
+        $this->assertEquals($code, $returnCode);
     }
 }
