@@ -53,8 +53,8 @@ class JobConfigBuilderTest extends \PHPUnit_Framework_TestCase
         $jobs = $this->SUT->build($config);
 
         // then
-        $this->assertEmpty($jobs->getJobs());
-        $this->assertTrue(is_array($jobs->getJobs()));
+        $this->assertEmpty($jobs->getIterator()->count());
+        $this->assertTrue(is_array($jobs->getIterator()->getArrayCopy()));
     }
 
     public function testGivenOneJobDefined_WhenBuildExecuted_ThenOutputIsCorrectJobObject()
@@ -69,9 +69,9 @@ class JobConfigBuilderTest extends \PHPUnit_Framework_TestCase
         $jobs = $this->SUT->build($config);
 
         // then
-        $this->assertCount(1, $jobs->getJobs());
+        $this->assertEquals(1, $jobs->getIterator()->count());
         /** @var JobConfig $job */
-        $job = $jobs->getJobs()[0];
+        $job = $jobs->getIterator()->offsetGet(0);
 
         $this->assertInstanceOf(JobConfig::class, $job);
         $this->assertSame('Do something fun', $job->getName());
@@ -90,9 +90,9 @@ class JobConfigBuilderTest extends \PHPUnit_Framework_TestCase
         $jobs = $this->SUT->build($config);
 
         // then
-        $this->assertCount(1, $jobs->getJobs());
+        $this->assertEquals(1, $jobs->getIterator()->count());
         /** @var JobConfig $job */
-        $job = $jobs->getJobs()[0];
+        $job = $jobs->getIterator()->offsetGet(0);
 
         $this->assertSame('__container__', $job->getCiContainer());
     }
@@ -110,9 +110,9 @@ class JobConfigBuilderTest extends \PHPUnit_Framework_TestCase
         $jobs = $this->SUT->build($config);
 
         // then
-        $this->assertCount(1, $jobs->getJobs());
+        $this->assertEquals(1, $jobs->getIterator()->count());
         /** @var JobConfig $job */
-        $job = $jobs->getJobs()[0];
+        $job = $jobs->getIterator()->offsetGet(0);
 
         $this->assertSame('__entrypoint__', $job->getEntryPoint());
     }
@@ -131,9 +131,9 @@ class JobConfigBuilderTest extends \PHPUnit_Framework_TestCase
         $jobs = $this->SUT->build($config);
 
         // then
-        $this->assertCount(1, $jobs->getJobs());
+        $this->assertEquals(1, $jobs->getIterator()->count());
         /** @var JobConfig $job */
-        $job = $jobs->getJobs()[0];
+        $job = $jobs->getIterator()->offsetGet(0);
 
         $this->assertSame($commands, $job->getCommands());
     }
@@ -146,6 +146,6 @@ class JobConfigBuilderTest extends \PHPUnit_Framework_TestCase
         $jobs = $this->SUT->build(null);
 
         // then
-        $this->assertEmpty($jobs->getJobs());
+        $this->assertEmpty($jobs->getIterator()->getArrayCopy());
     }
 }

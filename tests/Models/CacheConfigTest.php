@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 /*
  * Copyright 2016 trivago GmbH
@@ -19,21 +18,23 @@ declare(strict_types=1);
 
 namespace Trivago\Rumi\Models;
 
-class JobConfigCollection implements \IteratorAggregate
+/**
+ * @covers \Trivago\Rumi\Models\CacheConfig
+ */
+class CacheConfigTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var JobConfig[]
-     */
-    private $jobs = [];
 
-    public function add(JobConfig $job)
+    public function testGivenValidConfig_WhenEntityCreated_ThenGetDirectoriesReturnsContent()
     {
-        $this->jobs[] = $job;
-    }
+        //given
+        $directories =  ['a', 'b', 'c'];
 
-    public function getIterator()
-    {
-        return new \ArrayIterator($this->jobs);
+        // when
+        $cacheConfig = new CacheConfig($directories);
+
+        // then
+        $this->assertEquals($directories, iterator_to_array($cacheConfig, true));
+        $this->assertEquals(3, $cacheConfig->count());
     }
 
 }

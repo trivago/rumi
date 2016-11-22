@@ -68,8 +68,7 @@ class RumiApplication extends Application
         $oRunCommand = new RunCommand(
             $this->container->get('trivago.rumi.event_dispatcher'),
             $this->container->get('trivago.rumi.services.config_reader'),
-            $this->container->get('trivago.rumi.commands.run.stage_executor'),
-            $this->container->get('trivago.rumi.job_config_builder')
+            $this->container->get('trivago.rumi.commands.run.stage_executor')
         );
         $this->add($oRunCommand);
         $this->add(new CheckoutCommand($this->container, $this->container->get('trivago.rumi.validators.git_checkout_validator')));

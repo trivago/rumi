@@ -156,7 +156,7 @@ class CheckoutCommand extends CommandAbstract
         try {
             $configReader = $this->container->get('trivago.rumi.services.config_reader');
 
-            $config = $configReader->getConfig($this->getWorkingDir(), $configFile);
+            $config = $configReader->getRunConfig($this->getWorkingDir(), $configFile);
 
             if (!empty($config->getMergeBranch())) {
                 return $config->getMergeBranch();

@@ -36,7 +36,9 @@ use Trivago\Rumi\Events\RunFinishedEvent;
 use Trivago\Rumi\Events\RunStartedEvent;
 use Trivago\Rumi\Events\StageFinishedEvent;
 use Trivago\Rumi\Events\StageStartedEvent;
+use Trivago\Rumi\Models\CacheConfig;
 use Trivago\Rumi\Models\RunConfig;
+use Trivago\Rumi\Models\StagesCollection;
 use Trivago\Rumi\Process\RunningProcessesFactory;
 use Trivago\Rumi\Services\ConfigReader;
 
@@ -106,7 +108,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenNoCiYamlFile_WhenExecuted_ThenDisplaysErrorMessage()
     {
         // given
-        $this->configReader->getConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))->willThrow(new \Exception(
+        $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))->willThrow(new \Exception(
             'Required file \''.CommandAbstract::DEFAULT_CONFIG.'\' does not exist',
             ReturnCodes::RUMI_YML_DOES_NOT_EXIST
         ));
@@ -122,7 +124,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenCiYamlSyntaxIsWrong_WhenExecuted_ThenDisplaysErrorMessage()
     {
         // given
-        $this->configReader->getConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))->willThrow(new ParseException(
+        $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))->willThrow(new ParseException(
             'Unable to parse at line 2 (near "::yaml_file").'
         ));
 
@@ -142,9 +144,15 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
             $this->getTearDownProcess()
         );
 
-        $this->configReader->getConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
+        $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
-                new RunConfig(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]], [], null)
+                new RunConfig(
+                    new StagesCollection(
+                        $this->container->get('trivago.rumi.job_config_builder'),
+                        ['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]]
+                    ),
+                    new CacheConfig([]),
+                    "")
             );
 
         // when
@@ -171,9 +179,15 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->setProcessFactoryMock($startProcess, $tearDownProcess);
 
-        $this->configReader->getConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
+        $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
-                new RunConfig(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]], [], null)
+                new RunConfig(
+                    new StagesCollection(
+                        $this->container->get('trivago.rumi.job_config_builder'),
+                        ['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]]
+                    ),
+                    new CacheConfig([]),
+                    "")
             );
 
         // when
@@ -204,9 +218,15 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->setProcessFactoryMock($startProcess, $tearDownProcess);
 
-        $this->configReader->getConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
+        $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
-                new RunConfig(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]], [], null)
+                new RunConfig(
+                    new StagesCollection(
+                        $this->container->get('trivago.rumi.job_config_builder'),
+                        ['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]]
+                    ),
+                    new CacheConfig([]),
+                    "")
             );
 
         // when
@@ -233,18 +253,25 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->setProcessFactoryMock($startProcess, $tearDownProcess);
 
-        $this->configReader->getConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
+        $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
-                new RunConfig([
-                    'Stage one' => [
-                        'Job one' => ['docker' => ['www' => ['image' => 'abc']]],
-                        'Job two' => ['docker' => ['www' => ['image' => 'abc']]],
-                    ],
-                    'Stage two' => [
-                        'Job one' => ['docker' => ['www' => ['image' => 'abc']]],
-                        'Job two' => ['docker' => ['www' => ['image' => 'abc']]],
-                    ],
-                ], [], null)
+                new RunConfig(
+                    new StagesCollection(
+                        $this->container->get('trivago.rumi.job_config_builder'),
+                        [
+                            'Stage one' => [
+                                'Job one' => ['docker' => ['www' => ['image' => 'abc']]],
+                                'Job two' => ['docker' => ['www' => ['image' => 'abc']]],
+                            ],
+                            'Stage two' => [
+                                'Job one' => ['docker' => ['www' => ['image' => 'abc']]],
+                                'Job two' => ['docker' => ['www' => ['image' => 'abc']]],
+                            ],
+                        ]
+                    ),
+                    new CacheConfig([]),
+                    ""
+                )
             );
 
         // when
@@ -301,9 +328,16 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->setProcessFactoryMock($startProcess, $tearDownProcess);
 
-        $this->configReader->getConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
+        $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
-                new RunConfig(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]], [], null)
+                new RunConfig(
+                    new StagesCollection(
+                        $this->container->get('trivago.rumi.job_config_builder'),
+                        ['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]]
+                    ),
+                    new CacheConfig([]),
+                    ""
+                )
             );
 
         // when
@@ -357,7 +391,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         $input = new ArrayInput(['--config' => $configFile]);
 
         $this->configReader
-            ->getConfig(Argument::any(), Argument::is($configFile))
+            ->getRunConfig(Argument::any(), Argument::is($configFile))
             ->willThrow(new \Exception($exceptionMessage, ReturnCodes::RUMI_YML_DOES_NOT_EXIST))
             ->shouldBeCalledTimes(1);
 

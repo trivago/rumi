@@ -49,16 +49,16 @@ class JobConfigBuilder
         }
 
         foreach ($stageConfig as $jobName => $jobConfig) {
-            $job = new JobConfig(
-                $jobName,
-                $this->composeHandler->parseComposePart(!empty($jobConfig['docker']) ? $jobConfig['docker'] : null),
-                !empty($jobConfig['ci_image']) ? $jobConfig['ci_image'] : null,
-                !empty($jobConfig['entrypoint']) ? $jobConfig['entrypoint'] : null,
-                !empty($jobConfig['commands']) ? $jobConfig['commands'] : null,
-                !empty($jobConfig['timeout']) ? $jobConfig['timeout'] : JobConfig::DEFAULT_TIMEOUT
+            $jobConfigCollection->add(
+                new JobConfig(
+                    $jobName,
+                    $this->composeHandler->parseComposePart($jobConfig['docker'] ?? null),
+                    $jobConfig['ci_image'] ?? null,
+                    $jobConfig['entrypoint'] ?? null,
+                    $jobConfig['commands'] ?? null,
+                    $jobConfig['timeout'] ?? JobConfig::DEFAULT_TIMEOUT
+                )
             );
-
-            $jobConfigCollection->add($job);
         }
 
         return $jobConfigCollection;

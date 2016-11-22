@@ -18,25 +18,27 @@
 
 namespace Trivago\Rumi\Events;
 
+use Trivago\Rumi\Models\StageConfig;
+
 class StageFinishedEvent extends AbstractFinishedEvent
 {
     /**
-     * @var
+     * @var StageConfig
      */
-    private $name;
+    private $stageConfig;
 
-    public function __construct($status, $name)
+    public function __construct(string $status, StageConfig $stageConfig)
     {
         parent::__construct($status);
 
-        $this->name = $name;
+        $this->stageConfig = $stageConfig;
     }
 
     /**
-     * @return mixed
+     * @return StageConfig
      */
-    public function getName()
+    public function getStageConfig(): StageConfig
     {
-        return $this->name;
+        return $this->stageConfig;
     }
 }

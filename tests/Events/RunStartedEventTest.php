@@ -18,7 +18,11 @@
 
 namespace Trivago\Rumi\Events;
 
+use Trivago\Rumi\Builders\JobConfigBuilder;
+use Trivago\Rumi\Models\CacheConfig;
+use Trivago\Rumi\Models\JobConfigCollection;
 use Trivago\Rumi\Models\RunConfig;
+use Trivago\Rumi\Models\StagesCollection;
 
 /**
  * @covers \Trivago\Rumi\Events\RunStartedEvent
@@ -28,7 +32,17 @@ class RunStartedEventTest extends \PHPUnit_Framework_TestCase
     public function testGivenConfig_WhenNewInstanceCreated_ThenGetterWorks()
     {
         //given
-        $runConfig = new RunConfig(['abc'], ['cache'], 'merge_branch');
+        $jobConfigBuilder = $this->prophesize(JobConfigBuilder::class);
+        $jobConfigBuilder->build(['config'])->willReturn(new JobConfigCollection());
+
+        $runConfig = new RunConfig(
+            new StagesCollection(
+                $jobConfigBuilder->reveal(),
+                ['abc'=>['config']]
+            ),
+            new CacheConfig(['cache']),
+            'merge_branch'
+        );
 
         // when
         $event = new RunStartedEvent($runConfig);

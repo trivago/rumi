@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 /*
  * Copyright 2016 trivago GmbH
@@ -19,21 +18,42 @@ declare(strict_types=1);
 
 namespace Trivago\Rumi\Models;
 
-class JobConfigCollection implements \IteratorAggregate
+
+class StageConfig
 {
     /**
-     * @var JobConfig[]
+     * @var string
      */
-    private $jobs = [];
+    private $name;
+    /**
+     * @var array
+     */
+    private $jobs;
 
-    public function add(JobConfig $job)
+    /**
+     * StageConfig constructor.
+     * @param string $name
+     * @param JobConfigCollection $jobs
+     */
+    public function __construct(string $name, JobConfigCollection $jobs)
     {
-        $this->jobs[] = $job;
+        $this->name = $name;
+        $this->jobs = $jobs;
     }
 
-    public function getIterator()
+    /**
+     * @return string
+     */
+    public function getName(): string
     {
-        return new \ArrayIterator($this->jobs);
+        return $this->name;
     }
 
+    /**
+     * @return JobConfigCollection
+     */
+    public function getJobs(): JobConfigCollection
+    {
+        return $this->jobs;
+    }
 }

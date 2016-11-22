@@ -42,6 +42,9 @@ class JobConfigCollectionTest extends \PHPUnit_Framework_TestCase
         $this->SUT->add($job);
 
         // then
-        $this->assertEquals($job, $this->SUT->getJobs()[0]);
+        foreach($this->SUT as $collectionJob)
+        {
+            $this->assertEquals($job, $collectionJob);
+        }
     }
 }
