@@ -19,10 +19,9 @@
 namespace Trivago\Rumi\Builders;
 
 use Trivago\Rumi\Models\JobConfig;
-use Trivago\Rumi\Models\MetricConfig;
 
 /**
- * @covers Trivago\Rumi\Builders\JobConfigBuilder
+ * @covers \Trivago\Rumi\Builders\JobConfigBuilder
  */
 class JobConfigBuilderTest extends \PHPUnit_Framework_TestCase
 {
@@ -54,8 +53,8 @@ class JobConfigBuilderTest extends \PHPUnit_Framework_TestCase
         $jobs = $this->SUT->build($config);
 
         // then
-        $this->assertEmpty($jobs);
-        $this->assertTrue(is_array($jobs));
+        $this->assertEmpty($jobs->getIterator()->count());
+        $this->assertTrue(is_array($jobs->getIterator()->getArrayCopy()));
     }
 
     public function testGivenOneJobDefined_WhenBuildExecuted_ThenOutputIsCorrectJobObject()
@@ -70,9 +69,9 @@ class JobConfigBuilderTest extends \PHPUnit_Framework_TestCase
         $jobs = $this->SUT->build($config);
 
         // then
-        $this->assertCount(1, $jobs);
+        $this->assertEquals(1, $jobs->getIterator()->count());
         /** @var JobConfig $job */
-        $job = $jobs[0];
+        $job = $jobs->getIterator()->offsetGet(0);
 
         $this->assertInstanceOf(JobConfig::class, $job);
         $this->assertSame('Do something fun', $job->getName());
@@ -91,9 +90,9 @@ class JobConfigBuilderTest extends \PHPUnit_Framework_TestCase
         $jobs = $this->SUT->build($config);
 
         // then
-        $this->assertCount(1, $jobs);
+        $this->assertEquals(1, $jobs->getIterator()->count());
         /** @var JobConfig $job */
-        $job = $jobs[0];
+        $job = $jobs->getIterator()->offsetGet(0);
 
         $this->assertSame('__container__', $job->getCiContainer());
     }
@@ -111,9 +110,9 @@ class JobConfigBuilderTest extends \PHPUnit_Framework_TestCase
         $jobs = $this->SUT->build($config);
 
         // then
-        $this->assertCount(1, $jobs);
+        $this->assertEquals(1, $jobs->getIterator()->count());
         /** @var JobConfig $job */
-        $job = $jobs[0];
+        $job = $jobs->getIterator()->offsetGet(0);
 
         $this->assertSame('__entrypoint__', $job->getEntryPoint());
     }
@@ -132,13 +131,12 @@ class JobConfigBuilderTest extends \PHPUnit_Framework_TestCase
         $jobs = $this->SUT->build($config);
 
         // then
-        $this->assertCount(1, $jobs);
+        $this->assertEquals(1, $jobs->getIterator()->count());
         /** @var JobConfig $job */
-        $job = $jobs[0];
+        $job = $jobs->getIterator()->offsetGet(0);
 
         $this->assertSame($commands, $job->getCommands());
     }
-
 
     public function testGivenEmptyJobsDefinition_WhenBuilderExecuted_ThenItDoesNothing()
     {
@@ -148,6 +146,6 @@ class JobConfigBuilderTest extends \PHPUnit_Framework_TestCase
         $jobs = $this->SUT->build(null);
 
         // then
-        $this->assertEmpty($jobs);
+        $this->assertEmpty($jobs->getIterator()->getArrayCopy());
     }
 }

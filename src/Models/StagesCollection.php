@@ -16,29 +16,38 @@
  * limitations under the License.
  */
 
-namespace Trivago\Rumi\Events;
+namespace Trivago\Rumi\Models;
 
-use Trivago\Rumi\Models\StageConfig;
+use Trivago\Rumi\Builders\JobConfigBuilder;
 
-class StageFinishedEvent extends AbstractFinishedEvent
+class StagesCollection implements \IteratorAggregate
 {
     /**
-     * @var StageConfig
+     * @var array
      */
-    private $stageConfig;
+    private $stages = [];
 
-    public function __construct(string $status, StageConfig $stageConfig)
+    /**
+     * @param JobConfigBuilder $jobConfigBuilder
+     * @param array $stages
+     */
+    public function __construct(JobConfigBuilder $jobConfigBuilder, array $stages = [])
     {
-        parent::__construct($status);
-
-        $this->stageConfig = $stageConfig;
+        foreach ($stages as $stageName => $stageConfig)
+        {
+            $this->stages[] = new StageConfig(
+                $stageName,
+                $jobConfigBuilder->build($stageConfig)
+            );
+        }
     }
 
     /**
-     * @return StageConfig
+     *
      */
-    public function getStageConfig(): StageConfig
+    public function getIterator()
     {
-        return $this->stageConfig;
+        return new \ArrayIterator($this->stages);
     }
+
 }

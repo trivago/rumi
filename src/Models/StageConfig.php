@@ -16,29 +16,44 @@
  * limitations under the License.
  */
 
-namespace Trivago\Rumi\Events;
+namespace Trivago\Rumi\Models;
 
-use Trivago\Rumi\Models\StageConfig;
 
-class StageFinishedEvent extends AbstractFinishedEvent
+class StageConfig
 {
     /**
-     * @var StageConfig
+     * @var string
      */
-    private $stageConfig;
+    private $name;
+    /**
+     * @var array
+     */
+    private $jobs;
 
-    public function __construct(string $status, StageConfig $stageConfig)
+    /**
+     * StageConfig constructor.
+     * @param string $name
+     * @param JobConfigCollection $jobs
+     */
+    public function __construct(string $name, JobConfigCollection $jobs)
     {
-        parent::__construct($status);
-
-        $this->stageConfig = $stageConfig;
+        $this->name = $name;
+        $this->jobs = $jobs;
     }
 
     /**
-     * @return StageConfig
+     * @return string
      */
-    public function getStageConfig(): StageConfig
+    public function getName(): string
     {
-        return $this->stageConfig;
+        return $this->name;
+    }
+
+    /**
+     * @return JobConfigCollection
+     */
+    public function getJobs(): JobConfigCollection
+    {
+        return $this->jobs;
     }
 }

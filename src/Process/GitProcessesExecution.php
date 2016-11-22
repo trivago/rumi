@@ -84,7 +84,7 @@ class GitProcessesExecution
         try {
             $configReader = $this->configReader;
 
-            $config = $configReader->getConfig($this->getWorkingDir(), $configFile);
+            $config = $configReader->getRunConfig($this->getWorkingDir(), $configFile);
 
             if (!empty($config->getMergeBranch())) {
                 return $config->getMergeBranch();

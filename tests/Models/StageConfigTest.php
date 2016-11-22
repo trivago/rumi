@@ -16,25 +16,26 @@
  * limitations under the License.
  */
 
-namespace Trivago\Rumi\Commands;
+namespace Trivago\Rumi\Models;
 
-
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputOption;
-
-abstract class CommandAbstract extends Command
+/**
+ * @covers \Trivago\Rumi\Models\StageConfig
+ */
+class StageConfigTest extends \PHPUnit_Framework_TestCase
 {
-    const CONFIG = 'config';
-    const CONFIG_SHORT = 'c';
 
-    const DEFAULT_CONFIG = '.rumi.yml';
+    public function testGivenNameAndJobConfigCollection_WhenStageConfigCreated_ThenGettersAreFine()
+    {
+        // given
+        $name = 'stageName';
+        $jobs = $this->prophesize(JobConfigCollection::class)->reveal();
 
-    protected function configure(){
-        $this->addOption(
-            self::CONFIG,
-            self::CONFIG_SHORT,
-            InputOption::VALUE_REQUIRED,
-            'Configuration file to read',
-            self::DEFAULT_CONFIG);
+
+        // when
+        $stageConfig = new StageConfig($name, $jobs);
+
+        // then
+        $this->assertEquals($name, $stageConfig->getName());
+        $this->assertEquals($jobs, $stageConfig->getJobs());
     }
 }

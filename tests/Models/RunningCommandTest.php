@@ -23,7 +23,7 @@ use Symfony\Component\Process\Process;
 use Trivago\Rumi\Process\RunningProcessesFactory;
 
 /**
- * @covers Trivago\Rumi\Models\RunningCommand
+ * @covers \Trivago\Rumi\Models\RunningCommand
  */
 class RunningCommandTest extends \PHPUnit_Framework_TestCase
 {
@@ -107,8 +107,7 @@ class RunningCommandTest extends \PHPUnit_Framework_TestCase
         // given
         $process_prophecy = $this->prophesize(Process::class);
         $process_prophecy->start()->shouldBeCalled();
-        $process_prophecy->getOutput()->willReturn('output');
-        $process_prophecy->getErrorOutput()->willReturn('erroroutput');
+        $process_prophecy->getOutput()->willReturn('outputerroroutput');
 
         $process = $process_prophecy->reveal();
 

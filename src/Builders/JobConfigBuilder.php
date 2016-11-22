@@ -19,6 +19,7 @@
 namespace Trivago\Rumi\Builders;
 
 use Trivago\Rumi\Models\JobConfig;
+use Trivago\Rumi\Models\JobConfigCollection;
 
 class JobConfigBuilder
 {
@@ -35,25 +36,31 @@ class JobConfigBuilder
         $this->composeHandler = $compose_handler;
     }
 
+    /**
+     * @param $stageConfig
+     *
+     * @return JobConfigCollection
+     */
     public function build($stageConfig)
     {
+        $jobConfigCollection = new JobConfigCollection();
         if (empty($stageConfig)) {
-            return [];
+            return $jobConfigCollection;
         }
-        $jobs = [];
+
         foreach ($stageConfig as $jobName => $jobConfig) {
-            $job = new JobConfig(
-                $jobName,
-                $this->composeHandler->parseComposePart(!empty($jobConfig['docker']) ? $jobConfig['docker'] : null),
-                !empty($jobConfig['ci_image']) ? $jobConfig['ci_image'] : null,
-                !empty($jobConfig['entrypoint']) ? $jobConfig['entrypoint'] : null,
-                !empty($jobConfig['commands']) ? $jobConfig['commands'] : null,
-                !empty($jobConfig['timeout']) ? $jobConfig['timeout'] : JobConfig::DEFAULT_TIMEOUT
+            $jobConfigCollection->add(
+                new JobConfig(
+                    $jobName,
+                    $this->composeHandler->parseComposePart($jobConfig['docker'] ?? null),
+                    $jobConfig['ci_image'] ?? null,
+                    $jobConfig['entrypoint'] ?? null,
+                    $jobConfig['commands'] ?? null,
+                    $jobConfig['timeout'] ?? JobConfig::DEFAULT_TIMEOUT
+                )
             );
-
-            $jobs[] = $job;
         }
 
-        return $jobs;
+        return $jobConfigCollection;
     }
 }

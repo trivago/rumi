@@ -57,6 +57,12 @@ You can define an unlimited amount of stages and jobs. You should try to make st
 
 Job is marked as failed if return status of *ci_image* is other then zero.
 
+### Available environment variables
+Rumi injects following environment variables on the test runtime to your test container:
+* GIT_COMMIT - contains current commit sha
+* GIT_BRANCH - contains current branch name
+* GIT_URL - contains url used to checkout the code
+
 ### Limitations
 
 1. Port configuration in the `yml` definition is discarded. CI jobs are not able to expose ports. This is likely to change in the later versions. In case you need communication between your containers link Docker containers with each other.

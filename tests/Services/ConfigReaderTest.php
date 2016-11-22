@@ -20,7 +20,11 @@ namespace Trivago\Rumi\Services;
 
 use org\bovigo\vfs\vfsStream;
 use Symfony\Component\Yaml\Dumper;
+use Trivago\Rumi\Builders\JobConfigBuilder;
 use Trivago\Rumi\Commands\CommandAbstract;
+use Trivago\Rumi\Models\JobConfigCollection;
+use Trivago\Rumi\Models\StageConfig;
+use Trivago\Rumi\Models\StagesCollection;
 
 /**
  * @covers \Trivago\Rumi\Services\ConfigReader
@@ -32,9 +36,16 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
      */
     private $SUT;
 
+    /**
+     * @var JobConfigBuilder
+     */
+    private $jobConfigBuilder;
+
     public function setUp()
     {
-        $this->SUT = new ConfigReader();
+        $this->jobConfigBuilder = $this->prophesize(JobConfigBuilder::class);
+
+        $this->SUT = new ConfigReader($this->jobConfigBuilder->reveal());
         vfsStream::setup('directory');
     }
 
@@ -48,7 +59,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
         //given
 
         //when
-        $this->SUT->getConfig(vfsStream::url('directory'), 'not_existing');
+        $this->SUT->getRunConfig(vfsStream::url('directory'), 'not_existing');
 
         //then
     }
@@ -57,8 +68,10 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
     {
         //given
         $cache = ['a', 'b', 'c'];
-        $stages = [1, 2, 3];
+        $stages = ['stage1'=>[], 'stage2'=>[], 'stage3'=>[]];
         $merge_branch = 'origin/feature_1';
+
+        $this->jobConfigBuilder->build([])->willReturn(new JobConfigCollection());
 
         $config = [
             'cache' => $cache,
@@ -70,12 +83,30 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
         file_put_contents(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG, $dumper->dump($config));
 
         //when
-        $runConfig = $this->SUT->getConfig(vfsStream::url('directory') . '/', CommandAbstract::DEFAULT_CONFIG);
+        $runConfig = $this->SUT->getRunConfig(vfsStream::url('directory') . '/', CommandAbstract::DEFAULT_CONFIG);
 
         //then
-        $this->assertEquals($cache, $runConfig->getCache());
-        $this->assertEquals($stages, $runConfig->getStages());
+        $this->assertEquals($cache, iterator_to_array($runConfig->getCache()));
+        $this->assertInstanceOf(StagesCollection::class, $runConfig->getStagesCollection());
         $this->assertEquals($merge_branch, $runConfig->getMergeBranch());
+    }
+
+    public function testGivenOnlyStageIsDefined_WhenGetConfigCalled_ThenRunConfigIsReturned()
+    {
+        //given
+        $config = [
+            'stages' => ['1'=>[], '2'=>[], '3'=>[]]
+        ];
+        file_put_contents(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG, (new Dumper())->dump($config));
+        $this->jobConfigBuilder->build([])->willReturn(new JobConfigCollection());
+
+        //when
+        $runConfig = $this->SUT->getRunConfig(vfsStream::url('directory') . '/', CommandAbstract::DEFAULT_CONFIG);
+
+        //then
+        $this->assertEmpty(iterator_to_array($runConfig->getCache()));
+        $this->assertInstanceOf(StagesCollection::class, $runConfig->getStagesCollection());
+        $this->assertEmpty($runConfig->getMergeBranch());
     }
 
     /**
@@ -88,7 +119,7 @@ class ConfigReaderTest extends \PHPUnit_Framework_TestCase
         file_put_contents(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG, 'wrong::' . PHP_EOL . '::yaml_file');
 
         // when
-        $this->SUT->getConfig(vfsStream::url('directory') . '/', CommandAbstract::DEFAULT_CONFIG);
+        $this->SUT->getRunConfig(vfsStream::url('directory') . '/', CommandAbstract::DEFAULT_CONFIG);
 
         // then
     }

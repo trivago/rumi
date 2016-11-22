@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /*
  * Copyright 2016 trivago GmbH
@@ -16,25 +17,23 @@
  * limitations under the License.
  */
 
-namespace Trivago\Rumi\Commands;
+namespace Trivago\Rumi\Models;
 
-
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputOption;
-
-abstract class CommandAbstract extends Command
+class JobConfigCollection implements \IteratorAggregate
 {
-    const CONFIG = 'config';
-    const CONFIG_SHORT = 'c';
+    /**
+     * @var JobConfig[]
+     */
+    private $jobs = [];
 
-    const DEFAULT_CONFIG = '.rumi.yml';
-
-    protected function configure(){
-        $this->addOption(
-            self::CONFIG,
-            self::CONFIG_SHORT,
-            InputOption::VALUE_REQUIRED,
-            'Configuration file to read',
-            self::DEFAULT_CONFIG);
+    public function add(JobConfig $job)
+    {
+        $this->jobs[] = $job;
     }
+
+    public function getIterator()
+    {
+        return new \ArrayIterator($this->jobs);
+    }
+
 }

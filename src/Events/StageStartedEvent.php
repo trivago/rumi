@@ -19,40 +19,32 @@
 namespace Trivago\Rumi\Events;
 
 use Symfony\Component\EventDispatcher\Event;
+use Trivago\Rumi\Models\JobConfigCollection;
+use Trivago\Rumi\Models\StageConfig;
 
 class StageStartedEvent extends Event
 {
     /**
-     * @var
+     * @var StageConfig
      */
-    private $name;
-    /**
-     * @var
-     */
-    private $jobs;
+    private $stage;
 
     /**
      * StageStartedEvent constructor.
+     *
+     * @param StageConfig $stage
      */
-    public function __construct($name, $jobs)
+    public function __construct(StageConfig $stage)
     {
-        $this->name = $name;
-        $this->jobs = $jobs;
+        $this->stage = $stage;
     }
 
     /**
-     * @return string
+     * @return StageConfig
      */
-    public function getName()
+    public function getStage(): StageConfig
     {
-        return $this->name;
+        return $this->stage;
     }
 
-    /**
-     * @return array
-     */
-    public function getJobs()
-    {
-        return $this->jobs;
-    }
 }

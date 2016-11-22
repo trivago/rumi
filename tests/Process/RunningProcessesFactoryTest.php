@@ -39,7 +39,7 @@ class RunningProcessesFactoryTest extends \PHPUnit_Framework_TestCase
         $process = $this->SUT->getJobStartProcess(
             'a', 'b', 'c', $timeout
         );
-        $this->assertEquals('docker-compose -f a run --name b c', $process->getCommandLine());
+        $this->assertEquals('docker-compose -f a run --name b c 2>&1', $process->getCommandLine());
         $this->assertEquals($timeout, $process->getTimeout());
         $this->assertEquals($timeout, $process->getIdleTimeout());
     }

@@ -18,20 +18,19 @@
 
 namespace Trivago\Rumi\Events;
 
+use Trivago\Rumi\Models\StageConfig;
+
 class StageStartedEventTest extends \PHPUnit_Framework_TestCase
 {
     public function testGivenNameAndJobs_WhenNewInstanceCreated_ThenGettersAreFine()
     {
         // given
-        $name = 'abc';
-        $jobs = ['abc', 'def'];
+        $stageConfig = $this->prophesize(StageConfig::class)->reveal();
 
         // when
-        $event = new StageStartedEvent($name, $jobs);
+        $event = new StageStartedEvent($stageConfig);
 
         // then
-
-        $this->assertEquals($name, $event->getName());
-        $this->assertEquals($jobs, $event->getJobs());
+        $this->assertEquals($stageConfig, $event->getStage());
     }
 }

@@ -16,29 +16,35 @@
  * limitations under the License.
  */
 
-namespace Trivago\Rumi\Events;
+namespace Trivago\Rumi\Models;
 
-use Trivago\Rumi\Models\StageConfig;
-
-class StageFinishedEvent extends AbstractFinishedEvent
+/**
+ * @covers \Trivago\Rumi\Models\JobConfigCollection
+ */
+class JobConfigCollectionTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var StageConfig
+     * @var JobConfigCollection
      */
-    private $stageConfig;
+    private $SUT;
 
-    public function __construct(string $status, StageConfig $stageConfig)
+    protected function setUp()
     {
-        parent::__construct($status);
-
-        $this->stageConfig = $stageConfig;
+        $this->SUT = new JobConfigCollection();
     }
 
-    /**
-     * @return StageConfig
-     */
-    public function getStageConfig(): StageConfig
+    public function testGivenJob_WhenAddedToCollection_ThenItsPartOfCollection()
     {
-        return $this->stageConfig;
+        // given
+        $job = $this->prophesize(JobConfig::class)->reveal();
+
+        // when
+        $this->SUT->add($job);
+
+        // then
+        foreach($this->SUT as $collectionJob)
+        {
+            $this->assertEquals($job, $collectionJob);
+        }
     }
 }

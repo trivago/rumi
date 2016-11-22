@@ -6,7 +6,9 @@
     <services>
         <service id="trivago.rumi.event_dispatcher" class="Symfony\Component\EventDispatcher\EventDispatcher"/>
 
-        <service class="Trivago\Rumi\Services\ConfigReader" id="trivago.rumi.services.config_reader"/>
+        <service class="Trivago\Rumi\Services\ConfigReader" id="trivago.rumi.services.config_reader">
+            <argument type="service" id="trivago.rumi.job_config_builder"/>
+        </service>
 
         <service class="Trivago\Rumi\Commands\Run\StageExecutor" id="trivago.rumi.commands.run.stage_executor">
             <argument id="trivago.rumi.event_dispatcher" type="service"/>

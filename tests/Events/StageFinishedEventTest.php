@@ -17,6 +17,7 @@
  */
 
 namespace Trivago\Rumi\Events;
+use Trivago\Rumi\Models\StageConfig;
 
 /**
  * @covers \Trivago\Rumi\Events\StageFinishedEvent
@@ -27,15 +28,15 @@ class StageFinishedEventTest extends \PHPUnit_Framework_TestCase
     public function testGivenNameAndStatus_WhenNewInstanceCreated_GettersAreFine()
     {
         //given
-        $name = 'abc';
-        $status = StageFinishedEvent::STATUS_FAILED;
+        $stageConfig = $this->prophesize(StageConfig::class)->reveal();
+        $status = 'SUCCESS';
 
         // when
-        $event = new StageFinishedEvent($status, $name);
+        $event = new StageFinishedEvent($status, $stageConfig);
 
         // then
 
-        $this->assertEquals($name, $event->getName());
+        $this->assertEquals($stageConfig, $event->getStageConfig());
         $this->assertEquals($status, $event->getStatus());
     }
 }
