@@ -16,6 +16,9 @@ readonly CWD="//${PWD}"
 readonly SOCK=///var/run/docker.sock
 readonly DOCKER_CONFIG=`echo ~/.docker/config.json`
 
+# https://github.com/trivago/rumi/issues/47
+touch ${DOCKER_CONFIG}
+
 # Always use the latest stable rumi image
 docker pull trivago/rumi:stable
 
