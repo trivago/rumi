@@ -7,9 +7,9 @@
          xsi:noNamespaceSchemaLocation="
                      http://pmd.sf.net/ruleset_xml_schema.xsd">
     <description>
-        Custom rule set for PROJECT_NAME
+        PHP Mess Detector rule sets for rumi
 
-        For futher information about the rule set please visit
+        For further information about the rule set please visit
         https://phpmd.org/rules/index.html.
     </description>
 
