@@ -23,8 +23,25 @@ class Timer
     public static function execute(callable $cb)
     {
         $time = microtime(true);
-        $cb();
+
+        $cbArgs = self::determineCallbackArguments(func_num_args(), func_get_args());
+        $cb(...$cbArgs);
 
         return number_format(microtime(true) - $time, 3, '.', '') . 's';
+    }
+
+    /**
+     * @return array
+     */
+    private static function determineCallbackArguments(int $argc, array $args): array
+    {
+        if (1 < $argc) {
+            $cbArgs = $args;
+            array_shift($cbArgs);
+
+            return $cbArgs;
+        }
+
+        return [];
     }
 }

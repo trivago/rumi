@@ -18,6 +18,8 @@
 
 /**
  * @covers \Trivago\Rumi\Timer
+ *
+ * @SuppressWarnings(PHPMD.StaticAccess)
  */
 class TimerTest extends PHPUnit_Framework_TestCase
 {
@@ -35,5 +37,15 @@ class TimerTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->called);
         $this->assertStringStartsWith('0.3', $result);
         $this->assertStringEndsWith('s', $result);
+    }
+
+    public function testCallbackArgumentsArePassedProperly()
+    {
+        $cb = function (int $arg1, bool $arg2) {
+            $this->assertEquals(23, $arg1);
+            $this->assertTrue($arg2);
+        };
+
+        \Trivago\Rumi\Timer::execute($cb, 23, true);
     }
 }
