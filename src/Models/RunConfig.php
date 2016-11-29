@@ -45,8 +45,8 @@ class RunConfig
     public function __construct(
         StagesCollection $stages,
         CacheConfig $cache,
-        string $mergeBranch)
-    {
+        string $mergeBranch
+    ) {
         $this->stages = $stages;
         $this->cache = $cache;
         $this->mergeBranch = $mergeBranch;

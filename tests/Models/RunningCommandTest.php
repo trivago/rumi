@@ -19,6 +19,8 @@
 namespace Trivago\Rumi\Models;
 
 use Prophecy\Argument;
+use Prophecy\Prophecy\ObjectProphecy;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Process\Process;
 use Trivago\Rumi\Process\RunningProcessesFactory;
 
@@ -35,34 +37,41 @@ class RunningCommandTest extends \PHPUnit_Framework_TestCase
     /**
      * @var JobConfig
      */
-    private $job_config;
+    private $jobConfig;
 
     /**
      * @var RunningProcessesFactory
      */
-    private $running_process_factory;
+    private $runningProcessFactory;
+
+    /**
+     * @var EventDispatcherInterface|ObjectProphecy
+     */
+    private $eventDispather;
 
     public function setUp()
     {
-        $this->job_config = $this->prophesize(JobConfig::class);
-        $this->running_process_factory = $this->prophesize(RunningProcessesFactory::class);
+        $this->eventDispather = $this->prophesize(EventDispatcherInterface::class);
+        $this->jobConfig = $this->prophesize(JobConfig::class);
+        $this->runningProcessFactory = $this->prophesize(RunningProcessesFactory::class);
         $this->SUT = new RunningCommand(
-            $this->job_config->reveal(),
+            $this->jobConfig->reveal(),
             'path',
-            $this->running_process_factory->reveal()
+            $this->runningProcessFactory->reveal(),
+            $this->eventDispather->reveal()
         );
     }
 
     public function testGivenJobConfig_WhenGetCommandCalled_ThenItReturnsValidCommand()
     {
-        $this->job_config->getCommandsAsString()->willReturn('test_command');
+        $this->jobConfig->getCommandsAsString()->willReturn('test_command');
 
         $this->assertEquals('test_command', $this->SUT->getCommand());
     }
 
     public function testGivenJobConfig_WhenGetNameCalled_ThenItReturnsValidName()
     {
-        $this->job_config->getName()->willReturn('test_command');
+        $this->jobConfig->getName()->willReturn('test_command');
 
         $this->assertEquals('test_command', $this->SUT->getJobName());
     }
@@ -74,7 +83,7 @@ class RunningCommandTest extends \PHPUnit_Framework_TestCase
         $process_prophecy->run()->shouldBeCalled();
         $process = $process_prophecy->reveal();
 
-        $this->running_process_factory->getTearDownProcess('path', Argument::type('string'))->willReturn($process);
+        $this->runningProcessFactory->getTearDownProcess('path', Argument::type('string'))->willReturn($process);
 
         // when
         $this->SUT->tearDown();
@@ -92,7 +101,7 @@ class RunningCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->setJobConfigProphecy();
 
-        $this->running_process_factory->getJobStartProcess('path', Argument::type('string'), 'ci_image', 1200)->willReturn($process);
+        $this->runningProcessFactory->getJobStartProcess('path', Argument::type('string'), 'ci_image', 1200)->willReturn($process);
 
         // when
         $this->SUT->start();
@@ -113,7 +122,7 @@ class RunningCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->setJobConfigProphecy();
 
-        $this->running_process_factory->getJobStartProcess('path', Argument::type('string'), 'ci_image', 1200)->willReturn($process);
+        $this->runningProcessFactory->getJobStartProcess('path', Argument::type('string'), 'ci_image', 1200)->willReturn($process);
 
         // when
         $this->SUT->start();
@@ -128,9 +137,9 @@ class RunningCommandTest extends \PHPUnit_Framework_TestCase
      */
     private function setJobConfigProphecy()
     {
-        $this->job_config->getCommandsAsString()->willReturn('echo abc');
-        $this->job_config->getCiContainer()->willReturn('ci_image');
-        $this->job_config->getName()->willReturn(__METHOD__);
-        $this->job_config->getTimeout()->willReturn(1200);
+        $this->jobConfig->getCommandsAsString()->willReturn('echo abc');
+        $this->jobConfig->getCiContainer()->willReturn('ci_image');
+        $this->jobConfig->getTimeout()->willReturn(1200);
+        $this->jobConfig->getName()->willReturn(__METHOD__)->shouldBeCalled();
     }
 }

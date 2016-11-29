@@ -18,8 +18,10 @@
 
 namespace Trivago\Rumi\Models;
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
+use Trivago\Rumi\Events;
 use Trivago\Rumi\Process\RunningProcessesFactory;
 
 class RunningCommand
@@ -48,20 +50,27 @@ class RunningCommand
      * @var JobConfig
      */
     private $jobConfig;
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
 
     /**
-     * @param JobConfig               $jobConfig
-     * @param string                  $yamlPath
+     * @param JobConfig $jobConfig
+     * @param string $yamlPath
      * @param RunningProcessesFactory $factory
+     * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(
         JobConfig $jobConfig,
         $yamlPath,
-        RunningProcessesFactory $factory
+        RunningProcessesFactory $factory,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->jobConfig = $jobConfig;
         $this->yamlPath = $yamlPath;
         $this->runningProcessesFactory = $factory;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -125,6 +134,8 @@ class RunningCommand
 
     public function start()
     {
+        $this->eventDispatcher->dispatch(Events::JOB_STARTED, new Events\JobStartedEvent($this->getJobName()));
+
         $this->process =
             $this->runningProcessesFactory->getJobStartProcess(
                 $this->getYamlPath(),
