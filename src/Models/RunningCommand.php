@@ -67,7 +67,7 @@ class RunningCommand
     /**
      * @return string
      */
-    public function getCommand()
+    public function getCommand(): string
     {
         return $this->jobConfig->getCommandsAsString();
     }
@@ -83,9 +83,14 @@ class RunningCommand
     /**
      * @return bool
      */
-    public function isSuccessful()
+    public function isSuccessful(): bool
     {
         return $this->process->isSuccessful();
+    }
+
+    public function isFailed(): bool
+    {
+        return false === $this->isSuccessful();
     }
 
     /**
@@ -118,8 +123,6 @@ class RunningCommand
         return $this->tempContainerId;
     }
 
-    /**
-     */
     public function start()
     {
         $this->process =
