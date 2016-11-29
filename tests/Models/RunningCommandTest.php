@@ -130,6 +130,7 @@ class RunningCommandTest extends \PHPUnit_Framework_TestCase
     {
         $this->job_config->getCommandsAsString()->willReturn('echo abc');
         $this->job_config->getCiContainer()->willReturn('ci_image');
+        $this->job_config->getName()->willReturn(__METHOD__);
         $this->job_config->getTimeout()->willReturn(1200);
     }
 }
