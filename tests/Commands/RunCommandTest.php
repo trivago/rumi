@@ -413,9 +413,9 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
     {
         $startProcess = $this->prophesize(Process::class);
         $startProcess->start()->shouldBeCalled();
-        $startProcess->isRunning()->shouldBeCalled();
+        $startProcess->isRunning()->willReturn(false)->shouldBeCalled();
         $startProcess->isSuccessful()->willReturn($isSuccessful)->shouldBeCalled();
-        $startProcess->getOutput()->shouldBeCalled();
+        $startProcess->getOutput()->willReturn('')->shouldBeCalled();
 
         return $startProcess;
     }

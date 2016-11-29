@@ -32,7 +32,7 @@ class RunningCommand
     /**
      * @var string
      */
-    private $yamlPath;
+    private $yamlPath = '';
 
     /**
      * @var RunningProcessesFactory
@@ -67,7 +67,7 @@ class RunningCommand
     /**
      * @return string
      */
-    public function getCommand(): string
+    public function getCommand()
     {
         return $this->jobConfig->getCommandsAsString();
     }
@@ -104,7 +104,7 @@ class RunningCommand
     /**
      * @return string
      */
-    public function getYamlPath()
+    public function getYamlPath(): string
     {
         return $this->yamlPath;
     }
@@ -114,7 +114,7 @@ class RunningCommand
      *
      * @return string
      */
-    private function getTmpName()
+    private function getTmpName(): string
     {
         if (empty($this->tempContainerId)) {
             $this->tempContainerId = 'cirunner-'.md5(uniqid().time().$this->getCommand());
@@ -150,7 +150,7 @@ class RunningCommand
     /**
      * @return bool
      */
-    public function isRunning()
+    public function isRunning(): bool
     {
         return $this->process->isRunning();
     }
@@ -158,7 +158,7 @@ class RunningCommand
     /**
      * @return string
      */
-    public function getOutput()
+    public function getOutput(): string
     {
         return $this->process->getOutput();
     }
@@ -166,7 +166,7 @@ class RunningCommand
     /**
      * @return string
      */
-    public function getJobName()
+    public function getJobName(): string
     {
         return $this->jobConfig->getName();
     }
