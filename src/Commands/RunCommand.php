@@ -72,7 +72,7 @@ class RunCommand extends CommandAbstract
         EventDispatcherInterface $eventDispatcher,
         ConfigReader $configReader,
         StageExecutor $stageExecutor
-) {
+    ) {
         parent::__construct();
         $this->eventDispatcher = $eventDispatcher;
         $this->configReader = $configReader;
@@ -161,7 +161,8 @@ class RunCommand extends CommandAbstract
      *
      * My intention is to move it to RunExecutor class
      */
-    private function startRun(RunConfig $runConfig, OutputInterface $output, VCSInfoInterface $VCSInfo, string $volume){
+    private function startRun(RunConfig $runConfig, OutputInterface $output, VCSInfoInterface $VCSInfo, string $volume)
+    {
         foreach ($runConfig->getStagesCollection() as $stage) {
             try {
                 $this->eventDispatcher->dispatch(
@@ -192,7 +193,5 @@ class RunCommand extends CommandAbstract
                 throw $e;
             }
         }
-
-
     }
 }

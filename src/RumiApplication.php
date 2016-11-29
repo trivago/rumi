@@ -48,9 +48,6 @@ class RumiApplication extends Application
         $this->setUpCommands();
     }
 
-    /**
-     * @return ContainerBuilder
-     */
     private function initContainer()
     {
         $this->container = new ContainerBuilder();
