@@ -51,8 +51,6 @@ class StageExecutor
      */
     private $runningProcessesFactory;
 
-
-
     /**
      * @param EventDispatcherInterface $eventDispatcher
      * @param DockerComposeYamlBuilder $dockerComposeYamlBuilder
