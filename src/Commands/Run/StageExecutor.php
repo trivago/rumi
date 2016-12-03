@@ -59,8 +59,8 @@ class StageExecutor
     public function __construct(
         EventDispatcherInterface $eventDispatcher,
         DockerComposeYamlBuilder $dockerComposeYamlBuilder,
-        RunningProcessesFactory $runningProcessesFactory)
-    {
+        RunningProcessesFactory $runningProcessesFactory
+    ) {
         $this->eventDispatcher = $eventDispatcher;
         $this->dockerComposeYamlBuilder = $dockerComposeYamlBuilder;
         $this->runningProcessesFactory = $runningProcessesFactory;
@@ -134,14 +134,11 @@ class StageExecutor
                         $output->writeln(PHP_EOL.'Process timed out after '.$runningCommand->getTimeout().'s');
                     }
 
-                    $this->dispatchJobFinishedEvent(
-                        $runningCommand,
-                        $runningCommand->isSuccessful() ? JobFinishedEvent::STATUS_SUCCESS : JobFinishedEvent::STATUS_FAILED
-                    );
+                    $this->dispatchJobFinishedEvent($runningCommand);
 
                     $runningCommand->tearDown();
 
-                    if (!$runningCommand->isSuccessful()) {
+                    if ($runningCommand->isFailed()) {
                         throw new CommandFailedException($runningCommand->getCommand());
                     }
                 }
@@ -179,10 +176,16 @@ class StageExecutor
 
     /**
      * @param RunningCommand $runningCommand
-     * @param $status
+     * @param string|null $status
      */
-    private function dispatchJobFinishedEvent(RunningCommand $runningCommand, $status)
+    private function dispatchJobFinishedEvent(RunningCommand $runningCommand, string $status = null)
     {
+        if (null === $status) {
+            $status = $runningCommand->isSuccessful()
+                ? JobFinishedEvent::STATUS_SUCCESS
+                : JobFinishedEvent::STATUS_FAILED;
+        }
+
         $this->eventDispatcher->dispatch(
             Events::JOB_FINISHED,
             new JobFinishedEvent(

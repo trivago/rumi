@@ -24,7 +24,7 @@ class JobConfig
     /**
      * @var string
      */
-    protected $name;
+    protected $name = '';
 
     /**
      * @var array
