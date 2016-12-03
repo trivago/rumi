@@ -20,6 +20,7 @@ namespace Trivago\Rumi\Process;
 
 /**
  * @covers \Trivago\Rumi\Process\RunningProcessesFactory
+ * @SuppressWarnings(PHPMD.StaticAccess)
  */
 class RunningProcessesFactoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -30,15 +31,14 @@ class RunningProcessesFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        RunningProcessesFactory::enableTearDown();
         $this->SUT = new RunningProcessesFactory();
     }
 
     public function testGetJobStartProcess()
     {
         $timeout = 1200;
-        $process = $this->SUT->getJobStartProcess(
-            'a', 'b', 'c', $timeout
-        );
+        $process = $this->SUT->getJobStartProcess('a', 'b', 'c', $timeout);
         $this->assertEquals('docker-compose -f a run --name b c 2>&1', $process->getCommandLine());
         $this->assertEquals($timeout, $process->getTimeout());
         $this->assertEquals($timeout, $process->getIdleTimeout());
@@ -46,11 +46,16 @@ class RunningProcessesFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testGetTearDownProcess()
     {
-        $process = $this->SUT->getTearDownProcess(
-            'a', 'b'
-        );
+        $process = $this->SUT->getTearDownProcess('a', 'b');
         $this->assertEquals('docker rm -f b;
             docker-compose -f a rm -v --force;
             docker rm -f $(docker-compose -f a ps -q)', $process->getCommandLine());
+    }
+
+    public function testTearDownShouldBeDisabled()
+    {
+        RunningProcessesFactory::disableTearDown();
+        $process = $this->SUT->getTearDownProcess(__METHOD__, __NAMESPACE__);
+        $this->assertContains('skip', $process->getCommandLine());
     }
 }

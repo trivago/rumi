@@ -23,6 +23,13 @@ use Symfony\Component\Process\Process;
 class RunningProcessesFactory
 {
     /**
+     * Flag to mark if the tear down process should be skipped or not
+     *
+     * @var bool
+     */
+    private static $skipTearDown = false;
+
+    /**
      * @param $yamlPath
      * @param $tmpName
      * @param $ciImage
@@ -47,6 +54,15 @@ class RunningProcessesFactory
      */
     public function getTearDownProcess($yamlPath, $tmpName)
     {
+        if (self::$skipTearDown) {
+            return new class('echo "skip tear down" > /dev/null') extends Process {
+                //@codingStandardsIgnoreStart
+                public function run($callback = null) {}
+                public function start(callable $callback = null) {}
+                //@codingStandardsIgnoreEnd
+            };
+        }
+
         $process = new Process(
             'docker rm -f '.$tmpName.';
             docker-compose -f '.$yamlPath.' rm -v --force;
@@ -55,5 +71,21 @@ class RunningProcessesFactory
         $process->setTimeout(300)->setIdleTimeout(300);
 
         return $process;
+    }
+
+    /**
+     * Set flag to skip the tear down process
+     */
+    public static function disableTearDown()
+    {
+        static::$skipTearDown = true;
+    }
+
+    /**
+     * Set flag to run the tear down process
+     */
+    public static function enableTearDown()
+    {
+        static::$skipTearDown = false;
     }
 }

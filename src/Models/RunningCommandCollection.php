@@ -28,7 +28,8 @@ class RunningCommandCollection implements \IteratorAggregate, \ArrayAccess
     /**
      * @param RunningCommand $command
      */
-    public function add(RunningCommand $command){
+    public function add(RunningCommand $command)
+    {
         $this->commands[] = $command;
     }
 

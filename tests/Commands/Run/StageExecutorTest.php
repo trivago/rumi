@@ -6,7 +6,6 @@
 
 namespace Trivago\Rumi\Commands\Run;
 
-
 use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
