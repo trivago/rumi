@@ -20,6 +20,7 @@ namespace Trivago\Rumi\Commands;
 
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Trivago\Rumi\Commands\Run\StageExecutor;
@@ -28,10 +29,11 @@ use Trivago\Rumi\Events\RunFinishedEvent;
 use Trivago\Rumi\Events\RunStartedEvent;
 use Trivago\Rumi\Events\StageFinishedEvent;
 use Trivago\Rumi\Events\StageStartedEvent;
+use Trivago\Rumi\Exceptions\SkipException;
 use Trivago\Rumi\Models\RunConfig;
-use Trivago\Rumi\Models\StageConfig;
 use Trivago\Rumi\Models\VCSInfo\GitInfo;
 use Trivago\Rumi\Models\VCSInfo\VCSInfoInterface;
+use Trivago\Rumi\Process\RunningProcessesFactory;
 use Trivago\Rumi\Services\ConfigReader;
 use Trivago\Rumi\Timer;
 
@@ -42,6 +44,8 @@ class RunCommand extends CommandAbstract
     const GIT_BRANCH = 'git_branch';
 
     const VOLUME = 'volume';
+
+    const OPTION_NO_TEAR_DOWN = 'no-teardown';
 
     /**
      * @var string
@@ -89,7 +93,14 @@ class RunCommand extends CommandAbstract
             ->addArgument(self::VOLUME, InputArgument::OPTIONAL, 'Docker volume containing data')
             ->addArgument(self::GIT_COMMIT, InputArgument::OPTIONAL, 'Commit ID')
             ->addArgument(self::GIT_URL, InputArgument::OPTIONAL, 'Git checkout url')
-            ->addArgument(self::GIT_BRANCH, InputArgument::OPTIONAL, 'Git checkout branch');
+            ->addArgument(self::GIT_BRANCH, InputArgument::OPTIONAL, 'Git checkout branch')
+            ->addOption(
+                self::OPTION_NO_TEAR_DOWN,
+                'ntd',
+                InputOption::VALUE_OPTIONAL,
+                'Skips the tear down process',
+                false
+            );
         $this->workingDir = getcwd();
     }
 
@@ -113,6 +124,14 @@ class RunCommand extends CommandAbstract
         return $this->workingDir.'/';
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int
+     *
+     * @SuppressWarnings(PHPMD.StaticAccess)
+     * @SuppressWarnings(PHPMD.ElseExpression)
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
@@ -120,6 +139,12 @@ class RunCommand extends CommandAbstract
                 $volume = $input->getArgument(self::VOLUME);
             } else {
                 $volume = $this->getWorkingDir();
+            }
+
+            if ($input->getOption(self::OPTION_NO_TEAR_DOWN)) {
+                RunningProcessesFactory::disableTearDown();
+            } else {
+                RunningProcessesFactory::enableTearDown();
             }
 
             $VCSInfo = new GitInfo(
