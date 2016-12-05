@@ -89,7 +89,7 @@ class RunningCommandCollection implements \ArrayAccess, \Iterator
         unset($this->launchedProcesses[$this->ptr]);
 
         if (!empty($this->commands)) {
-            $this->launchedProcesses[] = $this->shiftCommand();
+            $this->launchedProcesses[] = $this->shiftNextCommandOrNull();
         }
 
 //        $command->tearDown(); // we started the command internally should we stop the process then internally too?
@@ -130,12 +130,12 @@ class RunningCommandCollection implements \ArrayAccess, \Iterator
         $this->launchedProcesses = [];
         reset($this->commands);
         for ($i = 0; $i < $this->maxParallelProcesses && !empty($this->commands); ++$i) {
-            $this->launchedProcesses[] = $this->shiftCommand();
+            $this->launchedProcesses[] = $this->shiftNextCommandOrNull();
         }
         $this->ptr = key($this->launchedProcesses);
     }
 
-    private function shiftCommand()
+    private function shiftNextCommandOrNull()
     {
         $command = array_shift($this->commands); // LIFO
         if (null !== $command) {
