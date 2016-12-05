@@ -26,6 +26,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Trivago\Rumi\Commands\RunCommand;
 use Trivago\Rumi\Events;
+use Trivago\Rumi\Models\JobConfig;
+use Trivago\Rumi\Models\StageConfig;
 use Trivago\Rumi\Plugins\CouchDB\Models\Job;
 use Trivago\Rumi\Plugins\CouchDB\Models\Run;
 use Trivago\Rumi\Plugins\CouchDB\Models\Stage;
@@ -71,15 +73,17 @@ class CouchDbPlugin implements PluginInterface
             }
             $this->run = new Run($input->getArgument(RunCommand::GIT_COMMIT));
 
-            foreach ($e->getRunConfig()->getStagesCollection() as $stageName => $jobs) {
-                $stage = new Stage($stageName);
-                foreach ($jobs as $jobName => $options) {
-                    $stage->addJob(new Job($jobName, 'SHEDULED'));
+            /** @var StageConfig $stage */
+            foreach ($e->getRunConfig()->getStagesCollection() as $stageConfig) {
+                $stage = new Stage($stageConfig->getName());
+                /** @var JobConfig $job */
+                foreach ($stageConfig->getJobs() as $job) {
+                    $stage->addJob(new Job($job->getName(), 'SHEDULED'));
                 }
                 $this->run->addStage($stage);
             }
-
             $eventDispatcher->addListener(Events::JOB_STARTED, function (Events\JobStartedEvent $e) {
+
                 $stage = $this->findStage($e->getName());
                 $stage->getJob($e->getName())->setStatus('INPROGRESS');
 
@@ -118,6 +122,7 @@ class CouchDbPlugin implements PluginInterface
             /** @var Stage $stage */
             foreach ($stage->getJobs() as $job) {
                 /** @var Job $job */
+
                 if ($job->getName() == $jobName) {
                     return $stage;
                 }

@@ -9,6 +9,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Removed
 
+## [1.4.1] 2016-12-05
+### Changed
+- CouchDB plugin fix
+
 ## [1.4.0] 2016-12-05
 ### Added
 
