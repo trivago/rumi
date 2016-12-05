@@ -47,10 +47,8 @@ class RunningProcessesFactoryTest extends \PHPUnit_Framework_TestCase
     public function testGetTearDownProcess()
     {
         $process = $this->SUT->getTearDownProcess(
-            'a', 'b'
+            'a'
         );
-        $this->assertEquals('docker rm -f b;
-            docker-compose -f a rm -v --force;
-            docker rm -f $(docker-compose -f a ps -q)', $process->getCommandLine());
+        $this->assertEquals('docker rm -f -v $(docker-compose -f a ps -q)', $process->getCommandLine());
     }
 }

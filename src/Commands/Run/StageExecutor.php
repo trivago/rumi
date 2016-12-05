@@ -171,6 +171,8 @@ class StageExecutor
             $this->dispatchJobFinishedEvent($runningCommand, JobFinishedEvent::STATUS_ABORTED);
 
             $runningCommand->tearDown();
+
+            usleep(500000);
         }
     }
 

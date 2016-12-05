@@ -442,7 +442,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         $this->processFactory->getJobStartProcess(Argument::any(), Argument::any(), Argument::any(), Argument::any())
             ->willReturn($startProcess->reveal());
 
-        $this->processFactory->getTearDownProcess(Argument::any(), Argument::any())
+        $this->processFactory->getTearDownProcess(Argument::any())
             ->willReturn($tearDownProcess->reveal());
     }
 }
