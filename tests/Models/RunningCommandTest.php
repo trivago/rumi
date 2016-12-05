@@ -83,7 +83,7 @@ class RunningCommandTest extends \PHPUnit_Framework_TestCase
         $process_prophecy->run()->shouldBeCalled();
         $process = $process_prophecy->reveal();
 
-        $this->runningProcessFactory->getTearDownProcess('path', Argument::type('string'))->willReturn($process);
+        $this->runningProcessFactory->getTearDownProcess('path')->willReturn($process);
 
         // when
         $this->SUT->tearDown();
