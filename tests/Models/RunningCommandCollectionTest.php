@@ -20,7 +20,6 @@ namespace Trivago\Rumi\Models;
 
 class RunningCommandCollectionTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testGivenRunningProcess_WhenCollectionCreated_ThenItContains()
     {
         // given
@@ -32,7 +31,6 @@ class RunningCommandCollectionTest extends \PHPUnit_Framework_TestCase
 
         // then
 
-        $this->assertContains($process, $collection->getIterator()->getArrayCopy());
-
+        $this->assertContains($process, iterator_to_array($collection));
     }
 }

@@ -114,36 +114,29 @@ class StageExecutor
     private function handleProcesses(OutputInterface $output, RunningCommandCollection $commandCollection)
     {
         try {
-            while ($commandCollection->getIterator()->count()) {
-                /** @var RunningCommand $runningCommand */
-                foreach ($commandCollection as $id => $runningCommand) {
-                    try {
-                        if ($runningCommand->isRunning()) {
-                            $runningCommand->checkTimeout();
-                            continue;
-                        }
-                    } catch (ProcessTimedOutException $e) {
-                        $timeout = true;
-                        // will be handled below
-                    }
-                    unset($commandCollection[$id]);
-
-                    $output->writeln(sprintf('<info>Executing job: %s</info>', $runningCommand->getJobName()));
-                    $output->write($runningCommand->getOutput());
-                    if (!empty($timeout)) {
-                        $output->writeln(PHP_EOL.'Process timed out after '.$runningCommand->getTimeout().'s');
-                    }
-
-                    $this->dispatchJobFinishedEvent($runningCommand);
-
-                    $runningCommand->tearDown();
-
-                    if ($runningCommand->isFailed()) {
-                        throw new CommandFailedException($runningCommand->getCommand());
-                    }
+            /** @var RunningCommand $runningCommand */
+            foreach ($commandCollection as $id => $runningCommand) {
+                try {
+                    $runningCommand->checkTimeout();
+                } catch (ProcessTimedOutException $e) {
+                    $timeout = true;
                 }
-                usleep(500000);
+
+                $output->writeln(sprintf('<info>Executing job: %s</info>', $runningCommand->getJobName()));
+                $output->write($runningCommand->getOutput());
+                if (!empty($timeout)) {
+                    $output->writeln(PHP_EOL.'Process timed out after '.$runningCommand->getTimeout().'s');
+                }
+
+                $this->dispatchJobFinishedEvent($runningCommand);
+
+                $runningCommand->tearDown();
+
+                if ($runningCommand->isFailed()) {
+                    throw new CommandFailedException($runningCommand->getCommand());
+                }
             }
+//            usleep(500000);
         } catch (CommandFailedException $e) {
             $output->writeln("<error>Command '".$e->getMessage()."' failed</error>");
 
@@ -159,7 +152,7 @@ class StageExecutor
      */
     private function tearDownProcesses(OutputInterface $output, RunningCommandCollection $runningCommands)
     {
-        if (!$runningCommands->getIterator()->count()) {
+        if (!$runningCommands->valid()) {
             return;
         }
 

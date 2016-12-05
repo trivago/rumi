@@ -18,7 +18,9 @@
 
 namespace Trivago\Rumi\Models;
 
-class RunningCommandCollection implements \IteratorAggregate, \ArrayAccess
+use Symfony\Component\Process\Exception\ProcessTimedOutException;
+
+class RunningCommandCollection implements \ArrayAccess, \Iterator
 {
     /**
      * @var RunningCommand[]
@@ -26,15 +28,35 @@ class RunningCommandCollection implements \IteratorAggregate, \ArrayAccess
     private $commands = [];
 
     /**
+     * @var RunningCommand[]
+     */
+    private $launchedProcesses = [];
+
+    /**
+     * @var int
+     */
+    private $ptr = null;
+
+    /**
+     * @var int
+     */
+    private $maxParallelProcesses = 5;
+
+    /**
      * @param RunningCommand $command
      */
-    public function add(RunningCommand $command){
+    public function add(RunningCommand $command)
+    {
         $this->commands[] = $command;
     }
 
-    public function getIterator()
+    public function startProcesses()
     {
-        return new \ArrayIterator($this->commands);
+        foreach ($this->commands as $command) {
+            $command->start();
+            // add random delay to put less stress on the docker daemon
+            usleep(rand(100000, 500000));
+        }
     }
 
     public function offsetExists($offset)
@@ -49,11 +71,76 @@ class RunningCommandCollection implements \IteratorAggregate, \ArrayAccess
 
     public function offsetSet($offset, $value)
     {
+        if (false === ($value instanceof RunningCommand)) {
+            throw new \InvalidArgumentException('Value is not a instance of ' . RunningCommand::class);
+        }
+
         $this->commands[$offset] = $value;
     }
 
     public function offsetUnset($offset)
     {
         unset($this->commands[$offset]);
+    }
+
+    public function current()
+    {
+        $command = $this->launchedProcesses[$this->ptr];
+        unset($this->launchedProcesses[$this->ptr]);
+
+        if (!empty($this->commands)) {
+            $this->launchedProcesses[] = $this->shiftCommand();
+        }
+
+//        $command->tearDown(); // we started the command internally should we stop the process then internally too?
+
+        return $command;
+    }
+
+    public function next()
+    {
+        while ($this->valid()) {
+            foreach ($this->launchedProcesses as $key => $command) {
+                if (!$command->isRunning()) {
+                    $this->ptr = $key;
+                    return;
+                }
+                try {
+                    $command->checkTimeout();
+                } catch (ProcessTimedOutException $e) {
+                    $this->ptr = $key;
+                    return;
+                }
+            }
+        }
+    }
+
+    public function key()
+    {
+        return $this->ptr;
+    }
+
+    public function valid()
+    {
+        return count($this->launchedProcesses) > 0;
+    }
+
+    public function rewind()
+    {
+        $this->maxParallelProcesses = [];
+        reset($this->commands);
+        for ($i = 0; $i < $this->maxParallelProcesses && !empty($this->commands); ++$i) {
+            $this->launchedProcesses[] = $this->shiftCommand();
+        }
+        $this->ptr = key($this->maxParallelProcesses);
+    }
+
+    private function shiftCommand()
+    {
+        $command = array_shift($this->commands); // LIFO
+        if (null !== $command) {
+            // $command->start(); // start command here
+        }
+        return $command;
     }
 }
