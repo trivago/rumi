@@ -127,12 +127,12 @@ class RunningCommandCollection implements \ArrayAccess, \Iterator
 
     public function rewind()
     {
-        $this->maxParallelProcesses = [];
+        $this->launchedProcesses = [];
         reset($this->commands);
         for ($i = 0; $i < $this->maxParallelProcesses && !empty($this->commands); ++$i) {
             $this->launchedProcesses[] = $this->shiftCommand();
         }
-        $this->ptr = key($this->maxParallelProcesses);
+        $this->ptr = key($this->launchedProcesses);
     }
 
     private function shiftCommand()
