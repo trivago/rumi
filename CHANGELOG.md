@@ -6,6 +6,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 ### Changed
+
+### Removed
+
+## [1.4.0] 2016-12-05
+### Added
+
+### Changed
 - Fix stderr and stdout ordering in the docker-compose logs output
 - Migrated from php 5 to php 7
 - Updated all composer dependencies
