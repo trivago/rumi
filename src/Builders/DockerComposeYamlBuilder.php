@@ -93,6 +93,9 @@ class DockerComposeYamlBuilder
                 continue;
             }
 
+            // performance flags
+            $composeConfig[$container]['cpu_shares'] = 2;
+
             foreach ($composeConfig[$container]['volumes'] as $volumeKey => $volumeSpec) {
                 $this->validateVolume($volumeSpec);
 
