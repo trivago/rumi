@@ -154,7 +154,7 @@ class RunningCommand
     {
         $this
             ->runningProcessesFactory
-            ->getTearDownProcess($this->getYamlPath())
+            ->getTearDownProcess($this->getYamlPath(), $this->getTmpName())
             ->run();
     }
 

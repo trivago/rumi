@@ -41,13 +41,16 @@ class RunningProcessesFactory
 
     /**
      * @param $yamlPath
+     * @param $tmpName
      *
      * @return Process
      */
-    public function getTearDownProcess($yamlPath)
+    public function getTearDownProcess($yamlPath, $tmpName)
     {
         $process = new Process(
-            'docker rm -f -v $(docker-compose -f '.$yamlPath.' ps -q)'
+            'docker rm -f '.$tmpName.';
+            docker-compose -f '.$yamlPath.' rm -v --force;
+            docker rm -f $(docker-compose -f '.$yamlPath.' ps -q)'
         );
         $process->setTimeout(300)->setIdleTimeout(300);
 
