@@ -21,14 +21,10 @@ namespace Trivago\Rumi\Commands;
 use Prophecy\Argument;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Trivago\Rumi\Events;
 use Trivago\Rumi\Events\RunFinishedEvent;
 use Trivago\Rumi\Events\RunStartedEvent;
-use Trivago\Rumi\Process\RunningProcessFactory;
 use Trivago\Rumi\RumiApplication;
-use Trivago\Rumi\Services\ConfigReader;
 
 /**
  * @covers \Trivago\Rumi\Commands\RunCommand
