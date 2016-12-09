@@ -22,7 +22,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
 use Trivago\Rumi\Events;
-use Trivago\Rumi\Process\RunningProcessesFactory;
+use Trivago\Rumi\Process\RunningProcessFactoryInterface;
 
 class RunningCommand
 {
@@ -37,7 +37,7 @@ class RunningCommand
     private $yamlPath = '';
 
     /**
-     * @var RunningProcessesFactory
+     * @var RunningProcessFactoryInterface
      */
     private $runningProcessesFactory;
 
@@ -58,13 +58,13 @@ class RunningCommand
     /**
      * @param JobConfig $jobConfig
      * @param string $yamlPath
-     * @param RunningProcessesFactory $factory
+     * @param RunningProcessFactoryInterface $factory
      * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(
         JobConfig $jobConfig,
         $yamlPath,
-        RunningProcessesFactory $factory,
+        RunningProcessFactoryInterface $factory,
         EventDispatcherInterface $eventDispatcher
     ) {
         $this->jobConfig = $jobConfig;

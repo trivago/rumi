@@ -13,7 +13,7 @@
         <service class="Trivago\Rumi\Commands\Run\StageExecutor" id="trivago.rumi.commands.run.stage_executor">
             <argument id="trivago.rumi.event_dispatcher" type="service"/>
             <argument id="trivago.rumi.docker_compose_yaml_builder" type="service"/>
-            <argument id="trivago.rumi.process.running_processes_factory" type="service"/>
+            <argument id="trivago.rumi.process.running_process_factory" type="service"/>
         </service>
 
         <service class="Trivago\Rumi\Builders\ComposeParser" id="trivago.rumi.builders.compose_handler"/>
@@ -34,7 +34,11 @@
             <argument id="trivago.rumi.process.cache_process_factory" type="service"/>
         </service>
 
-        <service class="Trivago\Rumi\Process\RunningProcessesFactory" id="trivago.rumi.process.running_processes_factory"/>
+        <service class="Trivago\Rumi\Process\RunningProcessFactoryInterface"
+                 id="trivago.rumi.process.running_process_factory"
+                 shared="false">
+            <factory class="Trivago\Rumi\Process\AbstractRunningProcessFactory" method="createFactory"/>
+        </service>
         <service class="Trivago\Rumi\Process\GitCheckoutProcessFactory" id="trivago.rumi.process.git_checkout_process_factory"/>
         <service class="Trivago\Rumi\Process\CacheProcessFactory" id="trivago.rumi.process.cache_process_factory"/>
         <service class="Trivago\Rumi\Process\VolumeInspectProcessFactory" id="trivago.rumi.process.volume_inspect_process_factory"/>

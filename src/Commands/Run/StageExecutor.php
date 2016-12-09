@@ -32,7 +32,7 @@ use Trivago\Rumi\Models\RunningCommand;
 use Trivago\Rumi\Models\RunningCommandCollection;
 use Trivago\Rumi\Models\StageConfig;
 use Trivago\Rumi\Models\VCSInfo\VCSInfoInterface;
-use Trivago\Rumi\Process\RunningProcessesFactory;
+use Trivago\Rumi\Process\RunningProcessFactoryInterface;
 
 class StageExecutor
 {
@@ -47,19 +47,19 @@ class StageExecutor
     private $dockerComposeYamlBuilder;
 
     /**
-     * @var RunningProcessesFactory
+     * @var RunningProcessFactoryInterface
      */
     private $runningProcessesFactory;
 
     /**
      * @param EventDispatcherInterface $eventDispatcher
      * @param DockerComposeYamlBuilder $dockerComposeYamlBuilder
-     * @param RunningProcessesFactory  $runningProcessesFactory
+     * @param RunningProcessFactoryInterface  $runningProcessesFactory
      */
     public function __construct(
         EventDispatcherInterface $eventDispatcher,
         DockerComposeYamlBuilder $dockerComposeYamlBuilder,
-        RunningProcessesFactory $runningProcessesFactory
+        RunningProcessFactoryInterface $runningProcessesFactory
     ) {
         $this->eventDispatcher = $eventDispatcher;
         $this->dockerComposeYamlBuilder = $dockerComposeYamlBuilder;

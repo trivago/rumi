@@ -29,11 +29,10 @@ use Trivago\Rumi\Events\RunFinishedEvent;
 use Trivago\Rumi\Events\RunStartedEvent;
 use Trivago\Rumi\Events\StageFinishedEvent;
 use Trivago\Rumi\Events\StageStartedEvent;
-use Trivago\Rumi\Exceptions\SkipException;
 use Trivago\Rumi\Models\RunConfig;
 use Trivago\Rumi\Models\VCSInfo\GitInfo;
 use Trivago\Rumi\Models\VCSInfo\VCSInfoInterface;
-use Trivago\Rumi\Process\RunningProcessesFactory;
+use Trivago\Rumi\Process\AbstractRunningProcessFactory;
 use Trivago\Rumi\Services\ConfigReader;
 use Trivago\Rumi\Timer;
 
@@ -142,9 +141,9 @@ class RunCommand extends CommandAbstract
             }
 
             if ($input->getOption(self::OPTION_NO_TEAR_DOWN)) {
-                RunningProcessesFactory::disableTearDown();
+                AbstractRunningProcessFactory::disableTearDown();
             } else {
-                RunningProcessesFactory::enableTearDown();
+                AbstractRunningProcessFactory::enableTearDown();
             }
 
             $VCSInfo = new GitInfo(

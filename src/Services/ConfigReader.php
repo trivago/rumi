@@ -52,7 +52,7 @@ class ConfigReader
      */
     public function getRunConfig($workingDir, $configFile)
     {
-        $configFilePath = $workingDir . $configFile;
+        $configFilePath = $workingDir . ltrim($configFile, '/');
 
         if (!file_exists($configFilePath)) {
             throw new \Exception(

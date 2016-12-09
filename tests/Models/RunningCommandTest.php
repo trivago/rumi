@@ -22,7 +22,7 @@ use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Process\Process;
-use Trivago\Rumi\Process\RunningProcessesFactory;
+use Trivago\Rumi\Process\RunningProcessFactoryInterface;
 
 /**
  * @covers \Trivago\Rumi\Models\RunningCommand
@@ -40,7 +40,7 @@ class RunningCommandTest extends \PHPUnit_Framework_TestCase
     private $jobConfig;
 
     /**
-     * @var RunningProcessesFactory
+     * @var RunningProcessFactoryInterface
      */
     private $runningProcessFactory;
 
@@ -53,7 +53,7 @@ class RunningCommandTest extends \PHPUnit_Framework_TestCase
     {
         $this->eventDispather = $this->prophesize(EventDispatcherInterface::class);
         $this->jobConfig = $this->prophesize(JobConfig::class);
-        $this->runningProcessFactory = $this->prophesize(RunningProcessesFactory::class);
+        $this->runningProcessFactory = $this->prophesize(RunningProcessFactoryInterface::class);
         $this->SUT = new RunningCommand(
             $this->jobConfig->reveal(),
             'path',

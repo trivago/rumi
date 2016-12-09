@@ -1,5 +1,4 @@
 <?php
-
 /*
  * Copyright 2016 trivago GmbH
  *
@@ -20,7 +19,11 @@ namespace Trivago\Rumi\Process;
 
 use Symfony\Component\Process\Process;
 
-class RunningProcessesFactory
+/**
+ * @package Trivago\Rumi\Process
+ * @author Dejan Spasic <spasic.dejan@yahoo.de>
+ */
+abstract class AbstractRunningProcessFactory implements RunningProcessFactoryInterface
 {
     /**
      * Flag to mark if the tear down process should be skipped or not
@@ -30,16 +33,26 @@ class RunningProcessesFactory
     private static $skipTearDown = false;
 
     /**
-     * @param $yamlPath
-     * @param $tmpName
-     * @param $ciImage
-     *
+     * @return RunningProcessFactoryInterface
+     */
+    public static function createFactory(): RunningProcessFactoryInterface
+    {
+        return static::$skipTearDown
+            ? new NoTeardownRunningProcessFactory()
+            : new RunningProcessFactory();
+    }
+
+    /**
+     * @param string $yamlPath
+     * @param string $tmpName
+     * @param string $ciImage
+     * @param int $timeout
      * @return Process
      */
-    public function getJobStartProcess($yamlPath, $tmpName, $ciImage, $timeout)
+    public function getJobStartProcess(string $yamlPath, string $tmpName, string $ciImage, int $timeout): Process
     {
         $process = new Process(
-            'docker-compose -f '.$yamlPath.' run --name '.$tmpName.' '.$ciImage.' 2>&1'
+            'docker-compose -f ' . $yamlPath . ' run --name ' . $tmpName . ' ' . $ciImage . ' 2>&1'
         );
         $process->setTimeout($timeout)->setIdleTimeout($timeout);
 
@@ -47,31 +60,12 @@ class RunningProcessesFactory
     }
 
     /**
-     * @param $yamlPath
-     * @param $tmpName
+     * @param string $yamlPath
+     * @param string $tmpName
      *
      * @return Process
      */
-    public function getTearDownProcess($yamlPath, $tmpName)
-    {
-        if (self::$skipTearDown) {
-            return new class('echo "skip tear down" > /dev/null') extends Process {
-                //@codingStandardsIgnoreStart
-                public function run($callback = null) {}
-                public function start(callable $callback = null) {}
-                //@codingStandardsIgnoreEnd
-            };
-        }
-
-        $process = new Process(
-            'docker rm -f '.$tmpName.';
-            docker-compose -f '.$yamlPath.' rm -v --force;
-            docker rm -f $(docker-compose -f '.$yamlPath.' ps -q)'
-        );
-        $process->setTimeout(300)->setIdleTimeout(300);
-
-        return $process;
-    }
+    abstract public function getTearDownProcess(string $yamlPath, string $tmpName): Process;
 
     /**
      * Set flag to skip the tear down process

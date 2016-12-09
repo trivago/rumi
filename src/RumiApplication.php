@@ -24,6 +24,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Trivago\Rumi\Commands\CacheRestoreCommand;
 use Trivago\Rumi\Commands\CacheStoreCommand;
 use Trivago\Rumi\Commands\CheckoutCommand;
@@ -46,6 +47,11 @@ class RumiApplication extends Application
 
         $this->initContainer();
         $this->setUpCommands();
+    }
+
+    public function getEventDispatcher(): EventDispatcherInterface
+    {
+        return $this->container->get('trivago.rumi.event_dispatcher');
     }
 
     private function initContainer()

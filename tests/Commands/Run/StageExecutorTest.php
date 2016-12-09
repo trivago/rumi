@@ -12,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Trivago\Rumi\Builders\DockerComposeYamlBuilder;
 use Trivago\Rumi\Models\VCSInfo\VCSInfoInterface;
-use Trivago\Rumi\Process\RunningProcessesFactory;
+use Trivago\Rumi\Process\RunningProcessFactoryInterface;
 
 class StageExecutorTest extends \PHPUnit_Framework_TestCase
 {
@@ -27,7 +27,7 @@ class StageExecutorTest extends \PHPUnit_Framework_TestCase
     private $dockerComposeYamlBuilder;
 
     /**
-     * @var RunningProcessesFactory|ObjectProphecy
+     * @var RunningProcessFactoryInterface|ObjectProphecy
      */
     private $runningProcessFactory;
 
@@ -51,7 +51,7 @@ class StageExecutorTest extends \PHPUnit_Framework_TestCase
     {
         $this->eventDispatcher = $this->prophesize(EventDispatcherInterface::class);
         $this->dockerComposeYamlBuilder = $this->prophesize(DockerComposeYamlBuilder::class);
-        $this->runningProcessFactory = $this->prophesize(RunningProcessesFactory::class);
+        $this->runningProcessFactory = $this->prophesize(RunningProcessFactoryInterface::class);
         $this->VCSInfo = $this->prophesize(VCSInfoInterface::class);
 
         $this->outputInterface = new BufferedOutput();

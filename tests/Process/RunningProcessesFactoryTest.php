@@ -19,20 +19,19 @@
 namespace Trivago\Rumi\Process;
 
 /**
- * @covers \Trivago\Rumi\Process\RunningProcessesFactory
+ * @covers \Trivago\Rumi\Process\RunningProcessFactoryInterface
  * @SuppressWarnings(PHPMD.StaticAccess)
  */
 class RunningProcessesFactoryTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var RunningProcessesFactory
+     * @var RunningProcessFactoryInterface
      */
     private $SUT;
 
     public function setUp()
     {
-        RunningProcessesFactory::enableTearDown();
-        $this->SUT = new RunningProcessesFactory();
+        $this->SUT = new RunningProcessFactory();
     }
 
     public function testGetJobStartProcess()
@@ -50,12 +49,5 @@ class RunningProcessesFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('docker rm -f b;
             docker-compose -f a rm -v --force;
             docker rm -f $(docker-compose -f a ps -q)', $process->getCommandLine());
-    }
-
-    public function testTearDownShouldBeDisabled()
-    {
-        RunningProcessesFactory::disableTearDown();
-        $process = $this->SUT->getTearDownProcess(__METHOD__, __NAMESPACE__);
-        $this->assertContains('skip', $process->getCommandLine());
     }
 }
