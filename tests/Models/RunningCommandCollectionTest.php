@@ -16,25 +16,23 @@
  * limitations under the License.
  */
 
-namespace Trivago\Rumi\Commands;
+namespace Trivago\Rumi\Models;
 
-
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputOption;
-
-abstract class CommandAbstract extends Command
+class RunningCommandCollectionTest extends \PHPUnit_Framework_TestCase
 {
-    const CONFIG = 'config';
-    const CONFIG_SHORT = 'c';
 
-    const DEFAULT_CONFIG = '.rumi.yml';
+    public function testGivenRunningProcess_WhenCollectionCreated_ThenItContains()
+    {
+        // given
+        $process = $this->prophesize(RunningCommand::class)->reveal();
 
-    protected function configure(){
-        $this->addOption(
-            self::CONFIG,
-            self::CONFIG_SHORT,
-            InputOption::VALUE_REQUIRED,
-            'Configuration file to read',
-            self::DEFAULT_CONFIG);
+        // when
+        $collection = new RunningCommandCollection();
+        $collection->add($process);
+
+        // then
+
+        $this->assertContains($process, $collection->getIterator()->getArrayCopy());
+
     }
 }

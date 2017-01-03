@@ -20,47 +20,58 @@ namespace Trivago\Rumi\Models;
 
 class RunConfig
 {
+    /**
+     * @var StagesCollection
+     */
     private $stages;
+
+    /**
+     * @var CacheConfig
+     */
     private $cache;
+
+    /**
+     * @var string
+     */
     private $mergeBranch;
 
     /**
      * RunConfig constructor.
      *
-     * @param $stages array
+     * @param $stages StagesCollection
      * @param $cache
      * @param $mergeBranch
      */
     public function __construct(
-        $stages,
-        $cache,
-        $mergeBranch)
-    {
+        StagesCollection $stages,
+        CacheConfig $cache,
+        string $mergeBranch
+    ) {
         $this->stages = $stages;
         $this->cache = $cache;
         $this->mergeBranch = $mergeBranch;
     }
 
     /**
-     * @return array
+     * @return StagesCollection|StageConfig[]
      */
-    public function getStages()
+    public function getStagesCollection(): StagesCollection
     {
         return $this->stages;
     }
 
     /**
-     * @return array|null
+     * @return CacheConfig
      */
-    public function getCache()
+    public function getCache(): CacheConfig
     {
         return $this->cache;
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getMergeBranch()
+    public function getMergeBranch(): string
     {
         return $this->mergeBranch;
     }

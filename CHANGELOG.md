@@ -9,6 +9,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Removed
 
+## [1.4.1] 2016-12-05
+### Changed
+- CouchDB plugin fix
+
+## [1.4.0] 2016-12-05
+### Added
+
+### Changed
+- Fix stderr and stdout ordering in the docker-compose logs output
+- Migrated from php 5 to php 7
+- Updated all composer dependencies
+
+### Removed
+
 ## [1.3.0] 2016-10-31
 ### Added
 - Add config.json mount from the host to rumi container to rumi and rumi.bat binary

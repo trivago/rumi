@@ -16,62 +16,44 @@
  * limitations under the License.
  */
 
-namespace Trivago\Rumi\Plugins\CouchDB\Models;
+namespace Trivago\Rumi\Models;
 
-class Stage
+
+class StageConfig
 {
-    /**
-     * @var Job[]
-     */
-    private $jobs = [];
-
     /**
      * @var string
      */
     private $name;
+    /**
+     * @var array
+     */
+    private $jobs;
 
     /**
-     * @param $name
+     * StageConfig constructor.
+     * @param string $name
+     * @param JobConfigCollection $jobs
      */
-    public function __construct($name)
+    public function __construct(string $name, JobConfigCollection $jobs)
     {
         $this->name = $name;
-    }
-
-    public function addJob(Job $job)
-    {
-        $this->jobs[] = $job;
+        $this->jobs = $jobs;
     }
 
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
     /**
-     * @return Job[]
+     * @return JobConfigCollection
      */
-    public function getJobs()
+    public function getJobs(): JobConfigCollection
     {
         return $this->jobs;
-    }
-
-    /**
-     * @param $name
-     *
-     * @return null|Job
-     */
-    public function getJob($name)
-    {
-        foreach ($this->jobs as $job) {
-            if ($job->getName() == $name) {
-                return $job;
-            }
-        }
-
-        return;
     }
 }

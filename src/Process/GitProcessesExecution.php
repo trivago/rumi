@@ -39,6 +39,7 @@ class GitProcessesExecution
      */
     private $configReader;
 
+    //TODO to remove
     /**
      * @var string
      */
@@ -54,6 +55,7 @@ class GitProcessesExecution
         $this->configReader = $configReader;
     }
 
+    //@TODO to remove
     /**
      * @param $dir
      */
@@ -62,6 +64,7 @@ class GitProcessesExecution
         $this->workingDir = $dir;
     }
 
+    //@TODO to remove
     /**
      * @codeCoverageIgnore
      */
@@ -84,7 +87,7 @@ class GitProcessesExecution
         try {
             $configReader = $this->configReader;
 
-            $config = $configReader->getConfig($this->getWorkingDir(), $configFile);
+            $config = $configReader->getRunConfig($this->getWorkingDir(), $configFile);
 
             if (!empty($config->getMergeBranch())) {
                 return $config->getMergeBranch();
@@ -95,25 +98,25 @@ class GitProcessesExecution
         return;
     }
 
-    /**
-     * @param $repositoryUrl
-     * @param OutputInterface $output
-     */
-    public function executeGitCloneBranch($repositoryUrl, OutputInterface $output)
-    {
-        if (!file_exists($this->getWorkingDir().'.git')) {
-            $output->writeln('Cloning...');
-            $process =
-                $this->gitCheckoutProcessFactory->getFullCloneProcess($repositoryUrl);
-        } else {
-            $output->writeln('Fetching changes...');
-            $process =
-                $this->gitCheckoutProcessFactory->getFetchProcess();
-        }
-
-        $process->run();
-        $this->gitCheckoutValidator->checkStatus($process);
-    }
+//    /**
+//     * @param $repositoryUrl
+//     * @param OutputInterface $output
+//     */
+//    public function executeGitCloneBranch($repositoryUrl, OutputInterface $output)
+//    {
+//        if (!file_exists($this->getWorkingDir().'.git')) {
+//            $output->writeln('Cloning...');
+//            $process =
+//                $this->gitCheckoutProcessFactory->getFullCloneProcess($repositoryUrl);
+//        } else {
+//            $output->writeln('Fetching changes...');
+//            $process =
+//                $this->gitCheckoutProcessFactory->getFetchProcess();
+//        }
+//
+//        $process->run();
+//        $this->gitCheckoutValidator->checkStatus($process);
+//    }
 
     /**
      * @param $configFile

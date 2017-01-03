@@ -17,6 +17,8 @@
  */
 
 namespace Trivago\Rumi\Models;
+use Prophecy\Argument;
+use Trivago\Rumi\Builders\JobConfigBuilder;
 
 /**
  * @covers \Trivago\Rumi\Models\RunConfig
@@ -26,16 +28,20 @@ class RunConfigTest extends \PHPUnit_Framework_TestCase
     public function testGivenNewInstanceIsCreated_WhenGetterAccessed_ThenItReturnsValidData()
     {
         //given
-        $stages = ['abc'];
+        $stages = ['abc'=>[]];
         $caches = ['cache', 'cache2'];
         $mergeBranch = 'merge_branch';
 
         // when
-        $SUT = new RunConfig($stages, $caches, $mergeBranch);
+        $SUT = new RunConfig(
+            $this->prophesize(StagesCollection::class)->reveal(),
+            new CacheConfig($caches),
+            $mergeBranch
+        );
 
         // then
-        $this->assertEquals($stages, $SUT->getStages());
-        $this->assertEquals($caches, $SUT->getCache());
+        $this->assertInstanceOf(StagesCollection::class, $SUT->getStagesCollection());
+        $this->assertEquals($caches, iterator_to_array($SUT->getCache(), true));
         $this->assertEquals($mergeBranch, $SUT->getMergeBranch());
     }
 }

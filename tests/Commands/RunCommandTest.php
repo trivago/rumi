@@ -36,7 +36,9 @@ use Trivago\Rumi\Events\RunFinishedEvent;
 use Trivago\Rumi\Events\RunStartedEvent;
 use Trivago\Rumi\Events\StageFinishedEvent;
 use Trivago\Rumi\Events\StageStartedEvent;
+use Trivago\Rumi\Models\CacheConfig;
 use Trivago\Rumi\Models\RunConfig;
+use Trivago\Rumi\Models\StagesCollection;
 use Trivago\Rumi\Process\RunningProcessesFactory;
 use Trivago\Rumi\Services\ConfigReader;
 
@@ -71,6 +73,11 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
      */
     private $configReader;
 
+    /**
+     * @var RunningProcessesFactory
+     */
+    private $processFactory;
+
     public function setUp()
     {
         $this->output = new BufferedOutput();
@@ -82,20 +89,26 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         $loader->load('../../src/Resources/config/services.xml');
 
         $this->eventDispatcher = $this->prophesize(EventDispatcherInterface::class);
-        $eventDispatcher = $this->eventDispatcher->reveal();
+        $this->container->set('trivago.rumi.event_dispatcher', $this->eventDispatcher->reveal());
+
+        /* @var RunningProcessesFactory $processFactory */
+        $this->processFactory = $this->prophesize(RunningProcessesFactory::class);
+        $this->container->set('trivago.rumi.process.running_processes_factory', $this->processFactory->reveal());
 
         $this->configReader = $this->prophesize(ConfigReader::class);
-        $this->container->set('trivago.rumi.services.config_reader', $this->configReader->reveal());
-
-        $this->container->set('trivago.rumi.event_dispatcher', $eventDispatcher);
-        $this->command = new RunCommand($this->container, $eventDispatcher);
+        $this->command = new RunCommand(
+            $this->eventDispatcher->reveal(),
+            $this->configReader->reveal(),
+            $this->container->get('trivago.rumi.commands.run.stage_executor'),
+            $this->container->get('trivago.rumi.job_config_builder')
+        );
         $this->command->setWorkingDir(vfsStream::url('directory'));
     }
 
     public function testGivenNoCiYamlFile_WhenExecuted_ThenDisplaysErrorMessage()
     {
         // given
-        $this->configReader->getConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))->willThrow(new \Exception(
+        $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))->willThrow(new \Exception(
             'Required file \''.CommandAbstract::DEFAULT_CONFIG.'\' does not exist',
             ReturnCodes::RUMI_YML_DOES_NOT_EXIST
         ));
@@ -111,7 +124,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenCiYamlSyntaxIsWrong_WhenExecuted_ThenDisplaysErrorMessage()
     {
         // given
-        $this->configReader->getConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))->willThrow(new ParseException(
+        $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))->willThrow(new ParseException(
             'Unable to parse at line 2 (near "::yaml_file").'
         ));
 
@@ -126,16 +139,20 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenValidCiYamlAndBuildIsOk_WhenExecuted_ThenDisplaysConfirmationMessage()
     {
         // given
-        $startProcess = $this->getStartProcess(true);
-        $tearDownProcess = $this->getTearDownProcess();
+        $this->setProcessFactoryMock(
+            $this->getStartProcess(true),
+            $this->getTearDownProcess()
+        );
 
-        $processFactory = $this->getProcessFactoryMock($startProcess, $tearDownProcess);
-
-        $this->container->set('trivago.rumi.process.running_processes_factory', $processFactory->reveal());
-
-        $this->configReader->getConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
+        $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
-                new RunConfig(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]], [], null)
+                new RunConfig(
+                    new StagesCollection(
+                        $this->container->get('trivago.rumi.job_config_builder'),
+                        ['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]]
+                    ),
+                    new CacheConfig([]),
+                    "")
             );
 
         // when
@@ -157,17 +174,20 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         $startProcess->checkTimeout()->willReturn(null);
         $errorOutput = '##error output##';
 
-        $startProcess->getErrorOutput()->willReturn($errorOutput)->shouldBeCalled();
+        $startProcess->getOutput()->willReturn($errorOutput)->shouldBeCalled();
         $tearDownProcess = $this->getTearDownProcess();
 
-        /** @var RunningProcessesFactory $processFactory */
-        $processFactory = $this->getProcessFactoryMock($startProcess, $tearDownProcess);
+        $this->setProcessFactoryMock($startProcess, $tearDownProcess);
 
-        $this->container->set('trivago.rumi.process.running_processes_factory', $processFactory->reveal());
-
-        $this->configReader->getConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
+        $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
-                new RunConfig(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]], [], null)
+                new RunConfig(
+                    new StagesCollection(
+                        $this->container->get('trivago.rumi.job_config_builder'),
+                        ['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]]
+                    ),
+                    new CacheConfig([]),
+                    "")
             );
 
         // when
@@ -196,14 +216,17 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         });
         $tearDownProcess = $this->getTearDownProcess();
 
-        /** @var RunningProcessesFactory $processFactory */
-        $processFactory = $this->getProcessFactoryMock($startProcess, $tearDownProcess);
+        $this->setProcessFactoryMock($startProcess, $tearDownProcess);
 
-        $this->container->set('trivago.rumi.process.running_processes_factory', $processFactory->reveal());
-
-        $this->configReader->getConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
+        $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
-                new RunConfig(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]], [], null)
+                new RunConfig(
+                    new StagesCollection(
+                        $this->container->get('trivago.rumi.job_config_builder'),
+                        ['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]]
+                    ),
+                    new CacheConfig([]),
+                    "")
             );
 
         // when
@@ -225,25 +248,30 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenJobsAreSuccessful_WhenRunIsStarted_ThenEventsAreTriggeredWithProperStatuses()
     {
         // given
-        $oStartProcess = $this->getStartProcess(true);
-        $oTearDownProcess = $this->getTearDownProcess();
+        $startProcess = $this->getStartProcess(true);
+        $tearDownProcess = $this->getTearDownProcess();
 
-        $oProcessFactory = $this->getProcessFactoryMock($oStartProcess, $oTearDownProcess);
+        $this->setProcessFactoryMock($startProcess, $tearDownProcess);
 
-        $this->container->set('trivago.rumi.process.running_processes_factory', $oProcessFactory->reveal());
-
-        $this->configReader->getConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
+        $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
-                new RunConfig([
-                    'Stage one' => [
-                        'Job one' => ['docker' => ['www' => ['image' => 'abc']]],
-                        'Job two' => ['docker' => ['www' => ['image' => 'abc']]],
-                    ],
-                    'Stage two' => [
-                        'Job one' => ['docker' => ['www' => ['image' => 'abc']]],
-                        'Job two' => ['docker' => ['www' => ['image' => 'abc']]],
-                    ],
-                ], [], null)
+                new RunConfig(
+                    new StagesCollection(
+                        $this->container->get('trivago.rumi.job_config_builder'),
+                        [
+                            'Stage one' => [
+                                'Job one' => ['docker' => ['www' => ['image' => 'abc']]],
+                                'Job two' => ['docker' => ['www' => ['image' => 'abc']]],
+                            ],
+                            'Stage two' => [
+                                'Job one' => ['docker' => ['www' => ['image' => 'abc']]],
+                                'Job two' => ['docker' => ['www' => ['image' => 'abc']]],
+                            ],
+                        ]
+                    ),
+                    new CacheConfig([]),
+                    ""
+                )
             );
 
         // when
@@ -295,16 +323,21 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenJobFails_WhenRunIsStarted_ThenEventsAreTriggeredWithProperStatuses()
     {
         // given
-        $oStartProcess = $this->getStartProcess(false);
-        $oTearDownProcess = $this->getTearDownProcess();
+        $startProcess = $this->getStartProcess(false);
+        $tearDownProcess = $this->getTearDownProcess();
 
-        $oProcessFactory = $this->getProcessFactoryMock($oStartProcess, $oTearDownProcess);
+        $this->setProcessFactoryMock($startProcess, $tearDownProcess);
 
-        $this->container->set('trivago.rumi.process.running_processes_factory', $oProcessFactory->reveal());
-
-        $this->configReader->getConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
+        $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
             ->willReturn(
-                new RunConfig(['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]], [], null)
+                new RunConfig(
+                    new StagesCollection(
+                        $this->container->get('trivago.rumi.job_config_builder'),
+                        ['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]]
+                    ),
+                    new CacheConfig([]),
+                    ""
+                )
             );
 
         // when
@@ -358,7 +391,7 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
         $input = new ArrayInput(['--config' => $configFile]);
 
         $this->configReader
-            ->getConfig(Argument::any(), Argument::is($configFile))
+            ->getRunConfig(Argument::any(), Argument::is($configFile))
             ->willThrow(new \Exception($exceptionMessage, ReturnCodes::RUMI_YML_DOES_NOT_EXIST))
             ->shouldBeCalledTimes(1);
 
@@ -380,10 +413,9 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
     {
         $startProcess = $this->prophesize(Process::class);
         $startProcess->start()->shouldBeCalled();
-        $startProcess->isRunning()->shouldBeCalled();
+        $startProcess->isRunning()->willReturn(false)->shouldBeCalled();
         $startProcess->isSuccessful()->willReturn($isSuccessful)->shouldBeCalled();
-        $startProcess->getOutput()->shouldBeCalled();
-        $startProcess->getErrorOutput()->shouldBeCalled();
+        $startProcess->getOutput()->willReturn('')->shouldBeCalled();
 
         return $startProcess;
     }
@@ -405,17 +437,12 @@ class RunCommandTest extends \PHPUnit_Framework_TestCase
      *
      * @return RunningProcessesFactory
      */
-    protected function getProcessFactoryMock($startProcess, $tearDownProcess)
+    protected function setProcessFactoryMock($startProcess, $tearDownProcess)
     {
-        /** @var RunningProcessesFactory $processFactory */
-        $processFactory = $this->prophesize(RunningProcessesFactory::class);
-
-        $processFactory->getJobStartProcess(Argument::any(), Argument::any(), Argument::any(), Argument::any())
+        $this->processFactory->getJobStartProcess(Argument::any(), Argument::any(), Argument::any(), Argument::any())
             ->willReturn($startProcess->reveal());
 
-        $processFactory->getTearDownProcess(Argument::any(), Argument::any())
+        $this->processFactory->getTearDownProcess(Argument::any(), Argument::any())
             ->willReturn($tearDownProcess->reveal());
-
-        return $processFactory;
     }
 }

@@ -25,10 +25,12 @@ use Trivago\Rumi\Builders\DockerComposeYamlBuilder;
 use Trivago\Rumi\Commands\ReturnCodes;
 use Trivago\Rumi\Events;
 use Trivago\Rumi\Events\JobFinishedEvent;
-use Trivago\Rumi\Events\JobStartedEvent;
 use Trivago\Rumi\Exceptions\CommandFailedException;
 use Trivago\Rumi\Models\JobConfig;
+use Trivago\Rumi\Models\JobConfigCollection;
 use Trivago\Rumi\Models\RunningCommand;
+use Trivago\Rumi\Models\RunningCommandCollection;
+use Trivago\Rumi\Models\StageConfig;
 use Trivago\Rumi\Models\VCSInfo\VCSInfoInterface;
 use Trivago\Rumi\Process\RunningProcessesFactory;
 
@@ -57,66 +59,64 @@ class StageExecutor
     public function __construct(
         EventDispatcherInterface $eventDispatcher,
         DockerComposeYamlBuilder $dockerComposeYamlBuilder,
-        RunningProcessesFactory $runningProcessesFactory)
-    {
+        RunningProcessesFactory $runningProcessesFactory
+    ) {
         $this->eventDispatcher = $eventDispatcher;
         $this->dockerComposeYamlBuilder = $dockerComposeYamlBuilder;
         $this->runningProcessesFactory = $runningProcessesFactory;
     }
 
     /**
-     * @param JobConfig[] $jobs
+     * @param StageConfig $stageConfig
      * @param $volume
-     * @param OutputInterface  $output
+     * @param OutputInterface $output
      * @param VCSInfoInterface $VCSInfo
      */
-    public function executeStage($jobs, $volume, OutputInterface $output, VCSInfoInterface $VCSInfo)
+    public function executeStage(StageConfig $stageConfig, $volume, OutputInterface $output, VCSInfoInterface $VCSInfo)
     {
-        $this->handleProcesses($output, $this->startStageProcesses($jobs, $VCSInfo, $volume));
+        $commandCollection = $this->prepareStageProcesses($stageConfig->getJobs(), $VCSInfo, $volume);
+
+        $this->startStageProcesses($commandCollection);
+
+        $this->handleProcesses($output, $commandCollection);
     }
 
     /**
-     * @param JobConfig[]      $jobs
-     * @param VCSInfoInterface $VCSInfo
+     * @param JobConfigCollection $jobConfigCollection
+     * @param VCSInfoInterface    $VCSInfo
      * @param $volume
      *
-     * @return array
+     * @return RunningCommandCollection
      */
-    private function startStageProcesses($jobs, VCSInfoInterface $VCSInfo, $volume)
+    private function prepareStageProcesses(JobConfigCollection $jobConfigCollection, VCSInfoInterface $VCSInfo, $volume)
     {
-        $processes = [];
+        $commandsCollection = new RunningCommandCollection();
 
-        foreach ($jobs as $jobConfig) {
-            $runningCommand = new RunningCommand(
+        /** @var JobConfig $jobConfig */
+        foreach ($jobConfigCollection as $jobConfig) {
+            $commandsCollection->add(new RunningCommand(
                 $jobConfig,
                 $this->dockerComposeYamlBuilder->build($jobConfig, $VCSInfo, $volume),
-                $this->runningProcessesFactory
-            );
-
-            $this->eventDispatcher->dispatch(Events::JOB_STARTED, new JobStartedEvent($jobConfig->getName()));
-
-            $runningCommand->start();
-
-            // add random delay to put less stress on the docker daemon
-            usleep(rand(100000, 500000));
-
-            $processes[] = $runningCommand;
+                $this->runningProcessesFactory,
+                $this->eventDispatcher
+            ));
         }
 
-        return $processes;
+        return $commandsCollection;
     }
 
     /**
      * @param OutputInterface  $output
-     * @param RunningCommand[] $processes
+     * @param RunningCommandCollection $commandCollection
      *
      * @throws \Exception
      */
-    private function handleProcesses(OutputInterface $output, $processes)
+    private function handleProcesses(OutputInterface $output, RunningCommandCollection $commandCollection)
     {
         try {
-            while (count($processes)) {
-                foreach ($processes as $id => $runningCommand) {
+            while ($commandCollection->getIterator()->count()) {
+                /** @var RunningCommand $runningCommand */
+                foreach ($commandCollection as $id => $runningCommand) {
                     try {
                         if ($runningCommand->isRunning()) {
                             $runningCommand->checkTimeout();
@@ -126,22 +126,19 @@ class StageExecutor
                         $timeout = true;
                         // will be handled below
                     }
-                    unset($processes[$id]);
+                    unset($commandCollection[$id]);
 
                     $output->writeln(sprintf('<info>Executing job: %s</info>', $runningCommand->getJobName()));
                     $output->write($runningCommand->getOutput());
                     if (!empty($timeout)) {
-                        $output->writeln(PHP_EOL.'Process timed out after ' . $runningCommand->getTimeout().'s');
+                        $output->writeln(PHP_EOL.'Process timed out after '.$runningCommand->getTimeout().'s');
                     }
 
-                    $this->dispatchJobFinishedEvent(
-                        $runningCommand,
-                        $runningCommand->isSuccessful() ? JobFinishedEvent::STATUS_SUCCESS : JobFinishedEvent::STATUS_FAILED
-                    );
+                    $this->dispatchJobFinishedEvent($runningCommand);
 
                     $runningCommand->tearDown();
 
-                    if (!$runningCommand->isSuccessful()) {
+                    if ($runningCommand->isFailed()) {
                         throw new CommandFailedException($runningCommand->getCommand());
                     }
                 }
@@ -150,7 +147,7 @@ class StageExecutor
         } catch (CommandFailedException $e) {
             $output->writeln("<error>Command '".$e->getMessage()."' failed</error>");
 
-            $this->tearDownProcesses($output, $processes);
+            $this->tearDownProcesses($output, $commandCollection);
 
             throw new \Exception('Stage failed', ReturnCodes::FAILED);
         }
@@ -158,17 +155,17 @@ class StageExecutor
 
     /**
      * @param OutputInterface  $output
-     * @param RunningCommand[] $processes
+     * @param RunningCommandCollection $runningCommands
      */
-    private function tearDownProcesses(OutputInterface $output, $processes)
+    private function tearDownProcesses(OutputInterface $output, RunningCommandCollection $runningCommands)
     {
-        if (empty($processes)) {
+        if (!$runningCommands->getIterator()->count()) {
             return;
         }
 
         $output->writeln('Shutting down jobs in background...', OutputInterface::VERBOSITY_VERBOSE);
 
-        foreach ($processes as $runningCommand) {
+        foreach ($runningCommands as $runningCommand) {
             $output->writeln('- '.$runningCommand->getCommand(), OutputInterface::VERBOSITY_VERBOSE);
 
             $this->dispatchJobFinishedEvent($runningCommand, JobFinishedEvent::STATUS_ABORTED);
@@ -179,10 +176,16 @@ class StageExecutor
 
     /**
      * @param RunningCommand $runningCommand
-     * @param $status
+     * @param string|null $status
      */
-    private function dispatchJobFinishedEvent(RunningCommand $runningCommand, $status)
+    private function dispatchJobFinishedEvent(RunningCommand $runningCommand, string $status = null)
     {
+        if (null === $status) {
+            $status = $runningCommand->isSuccessful()
+                ? JobFinishedEvent::STATUS_SUCCESS
+                : JobFinishedEvent::STATUS_FAILED;
+        }
+
         $this->eventDispatcher->dispatch(
             Events::JOB_FINISHED,
             new JobFinishedEvent(
@@ -191,5 +194,16 @@ class StageExecutor
                 $runningCommand->getOutput()
             )
         );
+    }
+
+    private function startStageProcesses(RunningCommandCollection $commandsCollection)
+    {
+        /** @var RunningCommand $runningCommand */
+        foreach ($commandsCollection as $runningCommand) {
+            $runningCommand->start();
+
+            // add random delay to put less stress on the docker daemon
+            usleep(rand(100000, 500000));
+        }
     }
 }

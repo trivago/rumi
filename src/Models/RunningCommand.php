@@ -18,8 +18,10 @@
 
 namespace Trivago\Rumi\Models;
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
+use Trivago\Rumi\Events;
 use Trivago\Rumi\Process\RunningProcessesFactory;
 
 class RunningCommand
@@ -32,7 +34,7 @@ class RunningCommand
     /**
      * @var string
      */
-    private $yamlPath;
+    private $yamlPath = '';
 
     /**
      * @var RunningProcessesFactory
@@ -48,20 +50,27 @@ class RunningCommand
      * @var JobConfig
      */
     private $jobConfig;
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
 
     /**
-     * @param JobConfig               $jobConfig
-     * @param string                  $yamlPath
+     * @param JobConfig $jobConfig
+     * @param string $yamlPath
      * @param RunningProcessesFactory $factory
+     * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(
         JobConfig $jobConfig,
         $yamlPath,
-        RunningProcessesFactory $factory
+        RunningProcessesFactory $factory,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->jobConfig = $jobConfig;
         $this->yamlPath = $yamlPath;
         $this->runningProcessesFactory = $factory;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -83,9 +92,14 @@ class RunningCommand
     /**
      * @return bool
      */
-    public function isSuccessful()
+    public function isSuccessful(): bool
     {
         return $this->process->isSuccessful();
+    }
+
+    public function isFailed(): bool
+    {
+        return false === $this->isSuccessful();
     }
 
     /**
@@ -99,7 +113,7 @@ class RunningCommand
     /**
      * @return string
      */
-    public function getYamlPath()
+    public function getYamlPath(): string
     {
         return $this->yamlPath;
     }
@@ -109,7 +123,7 @@ class RunningCommand
      *
      * @return string
      */
-    private function getTmpName()
+    private function getTmpName(): string
     {
         if (empty($this->tempContainerId)) {
             $this->tempContainerId = 'cirunner-'.md5(uniqid().time().$this->getCommand());
@@ -118,10 +132,10 @@ class RunningCommand
         return $this->tempContainerId;
     }
 
-    /**
-     */
     public function start()
     {
+        $this->eventDispatcher->dispatch(Events::JOB_STARTED, new Events\JobStartedEvent($this->getJobName()));
+
         $this->process =
             $this->runningProcessesFactory->getJobStartProcess(
                 $this->getYamlPath(),
@@ -147,7 +161,7 @@ class RunningCommand
     /**
      * @return bool
      */
-    public function isRunning()
+    public function isRunning(): bool
     {
         return $this->process->isRunning();
     }
@@ -155,15 +169,15 @@ class RunningCommand
     /**
      * @return string
      */
-    public function getOutput()
+    public function getOutput(): string
     {
-        return $this->process->getOutput().$this->process->getErrorOutput();
+        return $this->process->getOutput();
     }
 
     /**
      * @return string
      */
-    public function getJobName()
+    public function getJobName(): string
     {
         return $this->jobConfig->getName();
     }

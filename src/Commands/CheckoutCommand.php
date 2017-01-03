@@ -21,6 +21,7 @@ namespace Trivago\Rumi\Commands;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Trivago\Rumi\Process\GitCloneProcess;
 use Trivago\Rumi\Process\GitProcessesExecution;
 
 class CheckoutCommand extends CommandAbstract
@@ -31,12 +32,19 @@ class CheckoutCommand extends CommandAbstract
     private $gitProcessesExecution;
 
     /**
-     * @param GitProcessesExecution $gitProcessesExecution
+     * @var GitCloneProcess
      */
-    public function __construct(GitProcessesExecution $gitProcessesExecution)
+    private $gitCloneProcess;
+
+    /**
+     * @param GitProcessesExecution $gitProcessesExecution
+     * @param GitCloneProcess $gitCloneProcess
+     */
+    public function __construct(GitProcessesExecution $gitProcessesExecution, GitCloneProcess $gitCloneProcess)
     {
         parent::__construct();
         $this->gitProcessesExecution = $gitProcessesExecution;
+        $this->gitCloneProcess = $gitCloneProcess;
     }
 
     protected function configure()
@@ -59,7 +67,7 @@ class CheckoutCommand extends CommandAbstract
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $this->gitProcessesExecution->executeGitCloneBranch($input->getArgument('repository'), $output);
+            $this->gitCloneProcess->executeGitCloneBranch($input->getArgument('repository'), $output);
 
             $this->gitProcessesExecution->executeGitCheckoutCommitProcess($input->getArgument('commit'), $output);
 
