@@ -63,14 +63,26 @@ class GitCloneProcessTest extends \PHPUnit_Framework_TestCase
 
         $this->gitCheckoutValidator = $this->prophesize(GitCheckoutValidator::class);
         $this->processFactory = $this->prophesize(GitCheckoutProcessFactory::class);
-
-//        $this->workingDir->setWorkingDir(vfsStream::url('directory'));
+        $this->workingDir = $this->prophesize(WorkingDir::class);
 
         $this->gitCloneProcess = new GitCloneProcess(
-            $this->workingDir,
-            $this->gitCheckoutValidator->reveal(),
-            $this->processFactory->reveal()
+            $this->workingDir->reveal(),
+            $this->processFactory->reveal(),
+            $this->gitCheckoutValidator->reveal()
         );
+    }
+
+
+    public function testGivenWorkingDirIsEmpty_WhenCommandExecuted_ThenFullCheckoutIsDone()
+    {
+        $cloneProcess = $this->prophesize(Process::class);
+
+        $this->workingDir->getWorkingDir()->willReturn('non-existing-file');
+
+        $this->processFactory->getFullCloneProcess('repo_url')->willReturn($cloneProcess->reveal());
+        $this->gitCloneProcess->executeGitCloneBranch('repo_url', $this->output);
+
+        $this->assertContains('Cloning...', $this->output->fetch());
     }
 
     public function testGivenWorkingDirContainsDotGit_WhenCommandExecuted_ThenFetchIsDone()
@@ -82,15 +94,5 @@ class GitCloneProcessTest extends \PHPUnit_Framework_TestCase
         $this->gitCloneProcess->executeGitCloneBranch('repo_url', $this->output);
 
         $this->assertContains('Fetching changes...', $this->output->fetch());
-    }
-
-    public function testGivenWorkingDirIsEmpty_WhenCommandExecuted_ThenFullCheckoutIsDone()
-    {
-        $fetchProcess = $this->prophesize(Process::class);
-
-        $this->processFactory->getFullCloneProcess('repo_url')->willReturn($fetchProcess->reveal());
-        $this->gitCloneProcess->executeGitCloneBranch('repo_url', $this->output);
-
-        $this->assertContains('Cloning...', $this->output->fetch());
     }
 }

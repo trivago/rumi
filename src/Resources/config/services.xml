@@ -56,5 +56,12 @@
             <argument type="service" id="trivago.rumi.validators.git_checkout_validator"/>
         </service>
 
+        <service class="Trivago\Rumi\Process\GitMergeProcess" id="trivago.rumi.process.git_merge_process">
+            <argument type="service" id="trivago.rumi.resources.working_dir" />
+            <argument type="service" id="trivago.rumi.services.config_reader" />
+            <argument type="service" id="trivago.rumi.process.git_checkout_process_factory" />
+            <argument type="service" id="trivago.rumi.validators.git_checkout_validator" />
+        </service>
+
     </services>
 </container>

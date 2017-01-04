@@ -85,27 +85,6 @@ class GitProcessesExecutionTest extends \PHPUnit_Framework_TestCase
         $this->gitProcessesExecution->setWorkingDir(vfsStream::url('directory'));
     }
 
-//    public function testGivenWorkingDirContainsDotGit_WhenCommandExecuted_ThenFetchIsDone()
-//    {
-//        touch(vfsStream::url('directory').'/.git');
-//        $fetchProcess = $this->prophesize(Process::class);
-//
-//        $this->processFactory->getFetchProcess()->willReturn($fetchProcess->reveal());
-//        $this->gitProcessesExecution->executeGitCloneBranch('repo_url', $this->output);
-//
-//        $this->assertContains('Fetching changes...', $this->output->fetch());
-//    }
-//
-//    public function testGivenWorkingDirIsEmpty_WhenCommandExecuted_ThenFullCheckoutIsDone()
-//    {
-//        $fetchProcess = $this->prophesize(Process::class);
-//
-//        $this->processFactory->getFullCloneProcess('repo_url')->willReturn($fetchProcess->reveal());
-//        $this->gitProcessesExecution->executeGitCloneBranch('repo_url', $this->output);
-//
-//        $this->assertContains('Cloning...', $this->output->fetch());
-//    }
-
     public function testGivenMergeBranchIsSpecified_WhenCommandExecuted_ThenItMergesWithIt()
     {
         $runConfig = $this->prophesize(RunConfig::class);

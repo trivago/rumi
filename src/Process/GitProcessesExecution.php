@@ -39,12 +39,6 @@ class GitProcessesExecution
      */
     private $configReader;
 
-    //TODO to remove
-    /**
-     * @var string
-     */
-    private $workingDir;
-
     public function __construct(
         GitCheckoutValidator $gitCheckoutValidator,
         GitCheckoutProcessFactory $gitCheckoutProcessFactory,
@@ -55,90 +49,48 @@ class GitProcessesExecution
         $this->configReader = $configReader;
     }
 
-    //@TODO to remove
-    /**
-     * @param $dir
-     */
-    public function setWorkingDir($dir)
-    {
-        $this->workingDir = $dir;
-    }
-
-    //@TODO to remove
-    /**
-     * @codeCoverageIgnore
-     */
-    private function getWorkingDir()
-    {
-        if (empty($this->workingDir)) {
-            return;
-        }
-
-        return $this->workingDir.'/';
-    }
-
-    /**
-     * @param $configFile
-     *
-     * @return null|string|void
-     */
-    public function getMergeBranch($configFile)
-    {
-        try {
-            $configReader = $this->configReader;
-
-            $config = $configReader->getRunConfig($this->getWorkingDir(), $configFile);
-
-            if (!empty($config->getMergeBranch())) {
-                return $config->getMergeBranch();
-            }
-        } catch (\Exception $e) {
-        }
-
-        return;
-    }
-
 //    /**
-//     * @param $repositoryUrl
-//     * @param OutputInterface $output
+//     * @param $configFile
+//     *
+//     * @return null|string|void
 //     */
-//    public function executeGitCloneBranch($repositoryUrl, OutputInterface $output)
+//    public function getMergeBranch($configFile)
 //    {
-//        if (!file_exists($this->getWorkingDir().'.git')) {
-//            $output->writeln('Cloning...');
-//            $process =
-//                $this->gitCheckoutProcessFactory->getFullCloneProcess($repositoryUrl);
-//        } else {
-//            $output->writeln('Fetching changes...');
-//            $process =
-//                $this->gitCheckoutProcessFactory->getFetchProcess();
+//        try {
+//            $configReader = $this->configReader;
+//
+//            $config = $configReader->getRunConfig($this->getWorkingDir(), $configFile);
+//
+//            if (!empty($config->getMergeBranch())) {
+//                return $config->getMergeBranch();
+//            }
+//        } catch (\Exception $e) {
 //        }
 //
-//        $process->run();
-//        $this->gitCheckoutValidator->checkStatus($process);
+//        return;
 //    }
-
-    /**
-     * @param $configFile
-     * @param OutputInterface $output
-     *
-     * @throws \Exception
-     */
-    public function executeGitMergeBranchProcess($configFile, OutputInterface $output)
-    {
-        $mergeBranch = $this->getMergeBranch($configFile);
-
-        if (!empty($mergeBranch)) {
-            $output->writeln('Merging with '.$mergeBranch);
-            try {
-                $process = $this->gitCheckoutProcessFactory->getMergeProcess($mergeBranch);
-                $process->run();
-                $this->gitCheckoutValidator->checkStatus($process);
-            } catch (\Exception $e) {
-                throw new \Exception('Can not clearly merge with '.$mergeBranch);
-            }
-        }
-    }
+//
+//    /**
+//     * @param $configFile
+//     * @param OutputInterface $output
+//     *
+//     * @throws \Exception
+//     */
+//    public function executeGitMergeBranchProcess($configFile, OutputInterface $output)
+//    {
+//        $mergeBranch = $this->getMergeBranch($configFile);
+//
+//        if (!empty($mergeBranch)) {
+//            $output->writeln('Merging with '.$mergeBranch);
+//            try {
+//                $process = $this->gitCheckoutProcessFactory->getMergeProcess($mergeBranch);
+//                $process->run();
+//                $this->gitCheckoutValidator->checkStatus($process);
+//            } catch (\Exception $e) {
+//                throw new \Exception('Can not clearly merge with '.$mergeBranch);
+//            }
+//        }
+//    }
 
     /**
      * @param $commitSha

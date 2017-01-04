@@ -22,6 +22,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Trivago\Rumi\Process\GitCloneProcess;
+use Trivago\Rumi\Process\GitMergeProcess;
 use Trivago\Rumi\Process\GitProcessesExecution;
 
 class CheckoutCommand extends CommandAbstract
@@ -37,14 +38,24 @@ class CheckoutCommand extends CommandAbstract
     private $gitCloneProcess;
 
     /**
+     * @var GitMergeProcess
+     */
+    private $gitMergeProcess;
+
+    /**
      * @param GitProcessesExecution $gitProcessesExecution
      * @param GitCloneProcess $gitCloneProcess
+     * @param GitMergeProcess $gitMergeProcess
      */
-    public function __construct(GitProcessesExecution $gitProcessesExecution, GitCloneProcess $gitCloneProcess)
+    public function __construct(
+        GitProcessesExecution $gitProcessesExecution,
+        GitCloneProcess $gitCloneProcess,
+        GitMergeProcess $gitMergeProcess)
     {
         parent::__construct();
         $this->gitProcessesExecution = $gitProcessesExecution;
         $this->gitCloneProcess = $gitCloneProcess;
+        $this->gitMergeProcess = $gitMergeProcess;
     }
 
     protected function configure()
@@ -71,7 +82,7 @@ class CheckoutCommand extends CommandAbstract
 
             $this->gitProcessesExecution->executeGitCheckoutCommitProcess($input->getArgument('commit'), $output);
 
-            $this->gitProcessesExecution->executeGitMergeBranchProcess($input->getOption(self::CONFIG), $output);
+            $this->gitMergeProcess->executeGitMergeBranchProcess($input->getOption(self::CONFIG), $output);
 
             $output->writeln('<info>Checkout done</info>');
         } catch (\Exception $e) {

@@ -69,7 +69,10 @@ class RumiApplication extends Application
         );
 
         $this->add($oRunCommand);
-        $this->add(new CheckoutCommand($this->container->get('trivago.rumi.process.git_processes_execution'), $this->container->get('trivago.rumi.process.git_clone_process')));
+        $this->add(new CheckoutCommand(
+            $this->container->get('trivago.rumi.process.git_processes_execution'),
+            $this->container->get('trivago.rumi.process.git_clone_process'),
+            $this->container->get('trivago.rumi.process.git_merge_process')));
         $this->add(new CacheStoreCommand($this->container));
         $this->add(new CacheRestoreCommand($this->container));
         $this->setDefaultCommand($oRunCommand->getName());

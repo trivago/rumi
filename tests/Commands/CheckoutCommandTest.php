@@ -21,6 +21,8 @@ namespace Trivago\Rumi\Commands;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\BufferedOutput;
+use Trivago\Rumi\Process\GitCloneProcess;
+use Trivago\Rumi\Process\GitMergeProcess;
 use Trivago\Rumi\Process\GitProcessesExecution;
 
 /**
@@ -32,6 +34,18 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
      * @var GitProcessesExecution
      */
     private $gitProcessesExecution;
+
+
+    /**
+     * @var GitCloneProcess
+     */
+    private $gitCloneProcess;
+
+
+    /**
+     * @var GitMergeProcess
+     */
+    private $gitMergeProcess;
 
     /**
      * @var InputInterface
@@ -52,16 +66,20 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
     {
         $this->output = new BufferedOutput();
         $this->gitProcessesExecution = $this->prophesize(GitProcessesExecution::class);
+        $this->gitCloneProcess = $this->prophesize(GitCloneProcess::class);
+        $this->gitMergeProcess = $this->prophesize(GitMergeProcess::class);
         $this->input = $this->prophesize(InputInterface::class);
 
         $this->SUT = new CheckoutCommand(
-            $this->gitProcessesExecution->reveal()
+            $this->gitProcessesExecution->reveal(),
+            $this->gitCloneProcess->reveal(),
+            $this->gitMergeProcess->reveal()
         );
     }
 
     public function testGivenGitCloneBranchIsExecuted_WhenProcessIsSuccessful_ThenFullCheckoutIsDone()
     {
-        $this->gitProcessesExecution->executeGitCloneBranch($this->input, $this->output);
+        $this->gitCloneProcess->executeGitCloneBranch($this->input, $this->output);
 
         $this->SUT->run(
             new ArrayInput(
@@ -78,7 +96,7 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 
     public function testGivenGitCloneBranchIsExecuted_WhenProcessFailed_ThenErrorIsDisplayed()
     {
-        $this->gitProcessesExecution->executeGitCloneBranch($this->input, $this->output)->willThrow(new \Exception('Error'));
+        $this->gitCloneProcess->executeGitCloneBranch($this->input, $this->output)->willThrow(new \Exception('Error'));
 
         $this->SUT->run(
             new ArrayInput(
@@ -129,7 +147,7 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 
     public function testGivenGitMergeBranchProcessIsExecuted_WhenProcessIsSuccessful_ThenFullCheckoutIsDone()
     {
-        $this->gitProcessesExecution->executeGitMergeBranchProcess($this->input, $this->output, 'config');
+        $this->gitMergeProcess->executeGitMergeBranchProcess('config', $this->output);
 
         $this->SUT->run(
             new ArrayInput(
@@ -146,7 +164,7 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 
     public function testGivenGitMergeBranchProcessIsExecuted_WhenProcessIsSuccessful_ThenReturnCodeIsSuccess()
     {
-        $this->gitProcessesExecution->executeGitMergeBranchProcess($this->input, $this->output, 'config');
+        $this->gitMergeProcess->executeGitMergeBranchProcess('config', $this->output);
 
         $output = $this->SUT->run(
             new ArrayInput(
@@ -163,7 +181,7 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 
     public function testGivenGitMergeBranchProcessIsExecuted_WhenProcessFailed_ThenErrorIsDisplayed()
     {
-        $this->gitProcessesExecution->executeGitMergeBranchProcess($this->input, $this->output, 'config')->willThrow(new \Exception('Error'));
+        $this->gitMergeProcess->executeGitMergeBranchProcess('config', $this->output)->willThrow(new \Exception('Error'));
 
         $this->SUT->run(
             new ArrayInput(
