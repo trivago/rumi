@@ -22,7 +22,7 @@ use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Process\Process;
 use Trivago\Rumi\Process\GitCheckoutProcessFactory;
 use Trivago\Rumi\Process\GitCloneProcess;
-use Trivago\Rumi\Resources\WorkingDir;
+use Trivago\Rumi\Resources\WorkingDirTrait;
 use Trivago\Rumi\Validators\GitCheckoutValidator;
 
 /**
@@ -41,7 +41,7 @@ class GitCloneProcessTest extends \PHPUnit_Framework_TestCase
     private $processFactory;
 
     /**
-     * @var WorkingDir
+     * @var WorkingDirTrait
      */
     private $workingDir;
 
@@ -63,10 +63,9 @@ class GitCloneProcessTest extends \PHPUnit_Framework_TestCase
 
         $this->gitCheckoutValidator = $this->prophesize(GitCheckoutValidator::class);
         $this->processFactory = $this->prophesize(GitCheckoutProcessFactory::class);
-        $this->workingDir = $this->prophesize(WorkingDir::class);
+        $this->workingDir = $this->getMockForTrait(WorkingDirTrait::class);
 
         $this->gitCloneProcess = new GitCloneProcess(
-            $this->workingDir->reveal(),
             $this->processFactory->reveal(),
             $this->gitCheckoutValidator->reveal()
         );
@@ -77,10 +76,8 @@ class GitCloneProcessTest extends \PHPUnit_Framework_TestCase
     {
         $cloneProcess = $this->prophesize(Process::class);
 
-        $this->workingDir->getWorkingDir()->willReturn('non-existing-file');
-
         $this->processFactory->getFullCloneProcess('repo_url')->willReturn($cloneProcess->reveal());
-        $this->gitCloneProcess->executeGitCloneBranch('repo_url', $this->output);
+        $this->gitCloneProcess->executeGitCloneBranch(null, 'repo_url', $this->output);
 
         $this->assertContains('Cloning...', $this->output->fetch());
     }
@@ -88,10 +85,11 @@ class GitCloneProcessTest extends \PHPUnit_Framework_TestCase
     public function testGivenWorkingDirContainsDotGit_WhenCommandExecuted_ThenFetchIsDone()
     {
         touch(vfsStream::url('directory').'/.git');
+
         $fetchProcess = $this->prophesize(Process::class);
 
         $this->processFactory->getFetchProcess()->willReturn($fetchProcess->reveal());
-        $this->gitCloneProcess->executeGitCloneBranch('repo_url', $this->output);
+        $this->gitCloneProcess->executeGitCloneBranch(vfsStream::url('directory').'/.git', 'repo_url', $this->output);
 
         $this->assertContains('Fetching changes...', $this->output->fetch());
     }

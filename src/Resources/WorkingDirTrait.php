@@ -1,7 +1,7 @@
 <?php
 namespace Trivago\Rumi\Resources;
 
-class WorkingDir
+trait WorkingDirTrait
 {
     /**
      * @var string

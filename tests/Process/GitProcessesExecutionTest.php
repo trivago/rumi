@@ -84,48 +84,48 @@ class GitProcessesExecutionTest extends \PHPUnit_Framework_TestCase
 
         $this->gitProcessesExecution->setWorkingDir(vfsStream::url('directory'));
     }
-
-    public function testGivenMergeBranchIsSpecified_WhenCommandExecuted_ThenItMergesWithIt()
-    {
-        $runConfig = $this->prophesize(RunConfig::class);
-        $runConfig->getMergeBranch()->willReturn('origin/master');
-
-        $this->configReader->getRunConfig(vfsStream::url('directory').'/', 'config_file')->willReturn(
-            $runConfig->reveal()
-        );
-
-        $mergeProcess = $this->prophesize(Process::class);
-        $mergeProcess->run();
-
-        $this->gitCheckoutValidator->checkStatus($mergeProcess->reveal());
-
-        $this->processFactory->getMergeProcess('origin/master')->willReturn($mergeProcess->reveal());
-        $this->gitProcessesExecution->executeGitMergeBranchProcess('config_file', $this->output);
-
-        $this->assertContains('Merging with origin/master', $this->output->fetch());
-    }
-
-    /**
-     * @expectedException \Exception
-     * @expectedExceptionMessage Can not clearly merge with origin/master
-     */
-    public function testGivenMergeFails_WhenCommandExecuted_ThenItReturnsValidOutput()
-    {
-        $runConfig = $this->prophesize(RunConfig::class);
-        $runConfig->getMergeBranch()->willReturn('origin/master');
-
-        $this->configReader->getRunConfig(vfsStream::url('directory').'/', 'config_file')->willReturn(
-            $runConfig->reveal()
-        );
-
-        $mergeProcess = $this->prophesize(Process::class);
-        $mergeProcess->run()->shouldBeCalled();
-
-        $this->gitCheckoutValidator->checkStatus($mergeProcess->reveal())->willThrow(new \Exception('Error'));
-        $this->processFactory->getMergeProcess('origin/master')->willReturn($mergeProcess->reveal());
-
-        $this->gitProcessesExecution->executeGitMergeBranchProcess('config_file', $this->output);
-    }
+//
+//    public function testGivenMergeBranchIsSpecified_WhenCommandExecuted_ThenItMergesWithIt()
+//    {
+//        $runConfig = $this->prophesize(RunConfig::class);
+//        $runConfig->getMergeBranch()->willReturn('origin/master');
+//
+//        $this->configReader->getRunConfig(vfsStream::url('directory').'/', 'config_file')->willReturn(
+//            $runConfig->reveal()
+//        );
+//
+//        $mergeProcess = $this->prophesize(Process::class);
+//        $mergeProcess->run();
+//
+//        $this->gitCheckoutValidator->checkStatus($mergeProcess->reveal());
+//
+//        $this->processFactory->getMergeProcess('origin/master')->willReturn($mergeProcess->reveal());
+//        $this->gitProcessesExecution->executeGitMergeBranchProcess('config_file', $this->output);
+//
+//        $this->assertContains('Merging with origin/master', $this->output->fetch());
+//    }
+//
+//    /**
+//     * @expectedException \Exception
+//     * @expectedExceptionMessage Can not clearly merge with origin/master
+//     */
+//    public function testGivenMergeFails_WhenCommandExecuted_ThenItReturnsValidOutput()
+//    {
+//        $runConfig = $this->prophesize(RunConfig::class);
+//        $runConfig->getMergeBranch()->willReturn('origin/master');
+//
+//        $this->configReader->getRunConfig(vfsStream::url('directory').'/', 'config_file')->willReturn(
+//            $runConfig->reveal()
+//        );
+//
+//        $mergeProcess = $this->prophesize(Process::class);
+//        $mergeProcess->run()->shouldBeCalled();
+//
+//        $this->gitCheckoutValidator->checkStatus($mergeProcess->reveal())->willThrow(new \Exception('Error'));
+//        $this->processFactory->getMergeProcess('origin/master')->willReturn($mergeProcess->reveal());
+//
+//        $this->gitProcessesExecution->executeGitMergeBranchProcess('config_file', $this->output);
+//    }
 
     public function testGivenCommitSha_WhenCommandExecuted_ThenReturnedOutputContainsGivenCommitSha()
     {

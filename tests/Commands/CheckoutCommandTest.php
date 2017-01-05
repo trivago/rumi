@@ -18,6 +18,7 @@
 
 namespace Trivago\Rumi\Commands;
 
+use org\bovigo\vfs\vfsStream;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -62,8 +63,15 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
      */
     private $output;
 
+    /**
+     * @var String
+     */
+    private $workingDir;
+
     public function setUp()
     {
+        vfsStream::setup('directory');
+
         $this->output = new BufferedOutput();
         $this->gitProcessesExecution = $this->prophesize(GitProcessesExecution::class);
         $this->gitCloneProcess = $this->prophesize(GitCloneProcess::class);
@@ -75,11 +83,14 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
             $this->gitCloneProcess->reveal(),
             $this->gitMergeProcess->reveal()
         );
+        $this->SUT->setWorkingDir(vfsStream::url('directory'));
     }
 
     public function testGivenGitCloneBranchIsExecuted_WhenProcessIsSuccessful_ThenFullCheckoutIsDone()
     {
-        $this->gitCloneProcess->executeGitCloneBranch($this->input, $this->output);
+        touch(vfsStream::url('directory').'/.git');
+
+        $this->gitCloneProcess->executeGitCloneBranch(vfsStream::url('directory').'/.git', $this->input, $this->output);
 
         $this->SUT->run(
             new ArrayInput(
@@ -96,7 +107,9 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 
     public function testGivenGitCloneBranchIsExecuted_WhenProcessFailed_ThenErrorIsDisplayed()
     {
-        $this->gitCloneProcess->executeGitCloneBranch($this->input, $this->output)->willThrow(new \Exception('Error'));
+        touch(vfsStream::url('directory').'/');
+
+        $this->gitCloneProcess->executeGitCloneBranch(vfsStream::url('directory').'/', $this->input, $this->output)->willThrow(new \Exception('Error'));
 
         $this->SUT->run(
             new ArrayInput(
@@ -147,7 +160,8 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 
     public function testGivenGitMergeBranchProcessIsExecuted_WhenProcessIsSuccessful_ThenFullCheckoutIsDone()
     {
-        $this->gitMergeProcess->executeGitMergeBranchProcess('config', $this->output);
+        touch(vfsStream::url('directory').'/');
+        $this->gitMergeProcess->executeGitMergeBranchProcess(vfsStream::url('directory').'/' ,'config', $this->output);
 
         $this->SUT->run(
             new ArrayInput(
@@ -164,7 +178,8 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 
     public function testGivenGitMergeBranchProcessIsExecuted_WhenProcessIsSuccessful_ThenReturnCodeIsSuccess()
     {
-        $this->gitMergeProcess->executeGitMergeBranchProcess('config', $this->output);
+        touch(vfsStream::url('directory').'/');
+        $this->gitMergeProcess->executeGitMergeBranchProcess('/','config', $this->output);
 
         $output = $this->SUT->run(
             new ArrayInput(
@@ -181,7 +196,8 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 
     public function testGivenGitMergeBranchProcessIsExecuted_WhenProcessFailed_ThenErrorIsDisplayed()
     {
-        $this->gitMergeProcess->executeGitMergeBranchProcess('config', $this->output)->willThrow(new \Exception('Error'));
+        touch(vfsStream::url('directory').'/');
+        $this->gitMergeProcess->executeGitMergeBranchProcess(vfsStream::url('directory').'/','config', $this->output)->willThrow(new \Exception('Error'));
 
         $this->SUT->run(
             new ArrayInput(

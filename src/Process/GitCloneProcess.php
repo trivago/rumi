@@ -3,16 +3,10 @@ namespace Trivago\Rumi\Process;
 
 
 use Symfony\Component\Console\Output\OutputInterface;
-use Trivago\Rumi\Resources\WorkingDir;
 use Trivago\Rumi\Validators\GitCheckoutValidator;
 
 class GitCloneProcess
 {
-    /**
-     * @var WorkingDir
-     */
-    private $workingDir;
-
     /**
      * @var GitCheckoutProcessFactory
      */
@@ -26,23 +20,22 @@ class GitCloneProcess
 
 
     public function __construct(
-        WorkingDir $workingDir,
         GitCheckoutProcessFactory $gitCheckoutProcessFactory,
         GitCheckoutValidator $gitCheckoutValidator
     )
     {
-        $this->workingDir = $workingDir;
         $this->gitCheckoutProcessFactory = $gitCheckoutProcessFactory;
         $this->gitCheckoutValidator = $gitCheckoutValidator;
     }
 
     /**
+     * @param $workingDir
      * @param $repositoryUrl
      * @param OutputInterface $output
      */
-    public function executeGitCloneBranch($repositoryUrl, OutputInterface $output)
+    public function executeGitCloneBranch($workingDir, $repositoryUrl, OutputInterface $output)
     {
-        if (!file_exists($this->workingDir->getWorkingDir().'.git')) {
+        if (!file_exists($workingDir)) {
             $output->writeln('Cloning...');
             $process =
                 $this->gitCheckoutProcessFactory->getFullCloneProcess($repositoryUrl);

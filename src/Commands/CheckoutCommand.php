@@ -43,6 +43,11 @@ class CheckoutCommand extends CommandAbstract
     private $gitMergeProcess;
 
     /**
+     * @var String
+     */
+    private $workingDir;
+
+    /**
      * @param GitProcessesExecution $gitProcessesExecution
      * @param GitCloneProcess $gitCloneProcess
      * @param GitMergeProcess $gitMergeProcess
@@ -70,19 +75,38 @@ class CheckoutCommand extends CommandAbstract
     }
 
     /**
-     * @param InputInterface  $input
+     * @param $dir
+     */
+    public function setWorkingDir($dir)
+    {
+        $this->workingDir = $dir;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    private function getWorkingDir()
+    {
+        if (empty($this->workingDir)) {
+            return;
+        }
+
+        return $this->workingDir . '/';
+    }
+
+    /**
+     * @param InputInterface $input
      * @param OutputInterface $output
-     *
      * @return int|mixed
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $this->gitCloneProcess->executeGitCloneBranch($input->getArgument('repository'), $output);
+            $this->gitCloneProcess->executeGitCloneBranch($this->getWorkingDir(), $input->getArgument('repository'), $output);
 
             $this->gitProcessesExecution->executeGitCheckoutCommitProcess($input->getArgument('commit'), $output);
 
-            $this->gitMergeProcess->executeGitMergeBranchProcess($input->getOption(self::CONFIG), $output);
+            $this->gitMergeProcess->executeGitMergeBranchProcess($this->getWorkingDir(), $input->getOption(self::CONFIG), $output);
 
             $output->writeln('<info>Checkout done</info>');
         } catch (\Exception $e) {

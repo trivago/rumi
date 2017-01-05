@@ -10,17 +10,11 @@ namespace Trivago\Rumi\Process;
 
 
 use Symfony\Component\Console\Output\OutputInterface;
-use Trivago\Rumi\Resources\WorkingDir;
 use Trivago\Rumi\Services\ConfigReader;
 use Trivago\Rumi\Validators\GitCheckoutValidator;
 
 class GitMergeProcess
 {
-    /**
-     * @var WorkingDir
-     */
-    private $workingDir;
-
     /**
      * @var ConfigReader
      */
@@ -39,19 +33,16 @@ class GitMergeProcess
 
     /**
      * GitMergeProcess constructor.
-     * @param WorkingDir $workingDir
      * @param ConfigReader $configReader
      * @param GitCheckoutProcessFactory $gitCheckoutProcessFactory
      * @param GitCheckoutValidator $gitCheckoutValidator
      */
     public function __construct(
-        WorkingDir $workingDir,
         ConfigReader $configReader,
         GitCheckoutProcessFactory $gitCheckoutProcessFactory,
         GitCheckoutValidator $gitCheckoutValidator
         )
     {
-        $this->workingDir = $workingDir;
         $this->configReader = $configReader;
         $this->gitCheckoutProcessFactory = $gitCheckoutProcessFactory;
         $this->gitCheckoutValidator = $gitCheckoutValidator;
@@ -59,16 +50,16 @@ class GitMergeProcess
 
 
     /**
+     * @param $workingDir
      * @param $configFile
-     *
      * @return null|string|void
      */
-    public function getMergeBranch($configFile)
+    public function getMergeBranch($workingDir, $configFile)
     {
         try {
             $configReader = $this->configReader;
 
-            $config = $configReader->getRunConfig($this->workingDir->getWorkingDir(), $configFile);
+            $config = $configReader->getRunConfig($workingDir, $configFile);
 
             if (!empty($config->getMergeBranch())) {
                 return $config->getMergeBranch();
@@ -80,14 +71,15 @@ class GitMergeProcess
     }
 
     /**
+     * @param $workingDir
      * @param $configFile
      * @param OutputInterface $output
      *
      * @throws \Exception
      */
-    public function executeGitMergeBranchProcess($configFile, OutputInterface $output)
+    public function executeGitMergeBranchProcess($workingDir, $configFile, OutputInterface $output)
     {
-        $mergeBranch = $this->getMergeBranch($configFile);
+        $mergeBranch = $this->getMergeBranch($workingDir, $configFile);
 
         if (!empty($mergeBranch)) {
             $output->writeln('Merging with '.$mergeBranch);
