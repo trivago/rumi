@@ -107,9 +107,9 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 
     public function testGivenGitCloneBranchIsExecuted_WhenProcessFailed_ThenErrorIsDisplayed()
     {
-        touch(vfsStream::url('directory').'/');
+        touch(vfsStream::url('directory').'/.git');
 
-        $this->gitCloneProcess->executeGitCloneBranch(vfsStream::url('directory').'/', $this->input, $this->output)->willThrow(new \Exception('Error'));
+        $this->gitCloneProcess->executeGitCloneBranch(vfsStream::url('directory').'/.git', $this->input, $this->output)->willThrow(new \Exception('Error'));
 
         $this->SUT->run(
             new ArrayInput(

@@ -75,26 +75,6 @@ class CheckoutCommand extends CommandAbstract
     }
 
     /**
-     * @param $dir
-     */
-    public function setWorkingDir($dir)
-    {
-        $this->workingDir = $dir;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    private function getWorkingDir()
-    {
-        if (empty($this->workingDir)) {
-            return;
-        }
-
-        return $this->workingDir . '/';
-    }
-
-    /**
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return int|mixed
@@ -102,7 +82,7 @@ class CheckoutCommand extends CommandAbstract
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $this->gitCloneProcess->executeGitCloneBranch($this->getWorkingDir(), $input->getArgument('repository'), $output);
+            $this->gitCloneProcess->executeGitCloneBranch($input->getArgument('repository'), $output);
 
             $this->gitProcessesExecution->executeGitCheckoutCommitProcess($input->getArgument('commit'), $output);
 

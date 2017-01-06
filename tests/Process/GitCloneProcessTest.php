@@ -39,12 +39,6 @@ class GitCloneProcessTest extends \PHPUnit_Framework_TestCase
      * @var GitCheckoutProcessFactory
      */
     private $processFactory;
-
-    /**
-     * @var WorkingDirTrait
-     */
-    private $workingDir;
-
     /**
      * @var BufferedOutput
      */
@@ -63,7 +57,6 @@ class GitCloneProcessTest extends \PHPUnit_Framework_TestCase
 
         $this->gitCheckoutValidator = $this->prophesize(GitCheckoutValidator::class);
         $this->processFactory = $this->prophesize(GitCheckoutProcessFactory::class);
-        $this->workingDir = $this->getMockForTrait(WorkingDirTrait::class);
 
         $this->gitCloneProcess = new GitCloneProcess(
             $this->processFactory->reveal(),
@@ -74,22 +67,25 @@ class GitCloneProcessTest extends \PHPUnit_Framework_TestCase
 
     public function testGivenWorkingDirIsEmpty_WhenCommandExecuted_ThenFullCheckoutIsDone()
     {
+        touch(vfsStream::url('directory').'/.git');
         $cloneProcess = $this->prophesize(Process::class);
 
         $this->processFactory->getFullCloneProcess('repo_url')->willReturn($cloneProcess->reveal());
-        $this->gitCloneProcess->executeGitCloneBranch(null, 'repo_url', $this->output);
+        $this->gitCloneProcess->executeGitCloneBranch('repo_url', $this->output, vfsStream::url('directory').'/.git');
 
         $this->assertContains('Cloning...', $this->output->fetch());
     }
 
     public function testGivenWorkingDirContainsDotGit_WhenCommandExecuted_ThenFetchIsDone()
     {
-        touch(vfsStream::url('directory').'/.git');
+        touch(vfsStream::url('directory').'/.git.git');
+
+        echo vfsStream::url('directory').'/.git.git';
 
         $fetchProcess = $this->prophesize(Process::class);
 
         $this->processFactory->getFetchProcess()->willReturn($fetchProcess->reveal());
-        $this->gitCloneProcess->executeGitCloneBranch(vfsStream::url('directory').'/.git', 'repo_url', $this->output);
+        $this->gitCloneProcess->executeGitCloneBranch(vfsStream::url('directory').'/.git.git', 'repo_url', $this->output);
 
         $this->assertContains('Fetching changes...', $this->output->fetch());
     }
