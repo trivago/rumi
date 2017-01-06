@@ -33,9 +33,9 @@ class GitCloneProcess
      * @param $repositoryUrl
      * @param OutputInterface $output
      */
-    public function executeGitCloneBranch($workingDir, $repositoryUrl, OutputInterface $output)
+    public function executeGitCloneBranch($repositoryUrl, OutputInterface $output, $workingDir = null)
     {
-        if (!file_exists($workingDir.'.git')) {
+        if (!file_exists($workingDir.'/.git')) {
             $output->writeln('Cloning...');
             $process =
                 $this->gitCheckoutProcessFactory->getFullCloneProcess($repositoryUrl);

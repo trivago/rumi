@@ -64,28 +64,24 @@ class GitCloneProcessTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-
     public function testGivenWorkingDirIsEmpty_WhenCommandExecuted_ThenFullCheckoutIsDone()
     {
         touch(vfsStream::url('directory').'/.git');
         $cloneProcess = $this->prophesize(Process::class);
 
         $this->processFactory->getFullCloneProcess('repo_url')->willReturn($cloneProcess->reveal());
-        $this->gitCloneProcess->executeGitCloneBranch('repo_url', $this->output, vfsStream::url('directory').'/.git');
+        $this->gitCloneProcess->executeGitCloneBranch('repo_url', $this->output, null);
 
         $this->assertContains('Cloning...', $this->output->fetch());
     }
 
     public function testGivenWorkingDirContainsDotGit_WhenCommandExecuted_ThenFetchIsDone()
     {
-        touch(vfsStream::url('directory').'/.git.git');
-
-        echo vfsStream::url('directory').'/.git.git';
-
+        touch(vfsStream::url('directory').'/.git');
         $fetchProcess = $this->prophesize(Process::class);
 
         $this->processFactory->getFetchProcess()->willReturn($fetchProcess->reveal());
-        $this->gitCloneProcess->executeGitCloneBranch(vfsStream::url('directory').'/.git.git', 'repo_url', $this->output);
+        $this->gitCloneProcess->executeGitCloneBranch('repo_url', $this->output, vfsStream::url('directory'));
 
         $this->assertContains('Fetching changes...', $this->output->fetch());
     }

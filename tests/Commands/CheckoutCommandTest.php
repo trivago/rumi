@@ -83,14 +83,13 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
             $this->gitCloneProcess->reveal(),
             $this->gitMergeProcess->reveal()
         );
-        $this->SUT->setWorkingDir(vfsStream::url('directory'));
     }
 
     public function testGivenGitCloneBranchIsExecuted_WhenProcessIsSuccessful_ThenFullCheckoutIsDone()
     {
         touch(vfsStream::url('directory').'/.git');
 
-        $this->gitCloneProcess->executeGitCloneBranch(vfsStream::url('directory').'/.git', $this->input, $this->output);
+        $this->gitCloneProcess->executeGitCloneBranch($this->input, $this->output);
 
         $this->SUT->run(
             new ArrayInput(
@@ -107,9 +106,9 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 
     public function testGivenGitCloneBranchIsExecuted_WhenProcessFailed_ThenErrorIsDisplayed()
     {
-        touch(vfsStream::url('directory').'/.git');
+        touch(vfsStream::url('directory'));
 
-        $this->gitCloneProcess->executeGitCloneBranch(vfsStream::url('directory').'/.git', $this->input, $this->output)->willThrow(new \Exception('Error'));
+        $this->gitCloneProcess->executeGitCloneBranch($this->input, $this->output, vfsStream::url('directory').'/.git')->willThrow(new \Exception('Error'));
 
         $this->SUT->run(
             new ArrayInput(
@@ -196,8 +195,8 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 
     public function testGivenGitMergeBranchProcessIsExecuted_WhenProcessFailed_ThenErrorIsDisplayed()
     {
-        touch(vfsStream::url('directory').'/');
-        $this->gitMergeProcess->executeGitMergeBranchProcess(vfsStream::url('directory').'/','config', $this->output)->willThrow(new \Exception('Error'));
+        touch(vfsStream::url('directory'));
+        $this->gitMergeProcess->executeGitMergeBranchProcess('config', $this->output, vfsStream::url('directory').'/.git')->willThrow(new \Exception('Error'));
 
         $this->SUT->run(
             new ArrayInput(

@@ -86,7 +86,7 @@ class CheckoutCommand extends CommandAbstract
 
             $this->gitProcessesExecution->executeGitCheckoutCommitProcess($input->getArgument('commit'), $output);
 
-            $this->gitMergeProcess->executeGitMergeBranchProcess($this->getWorkingDir(), $input->getOption(self::CONFIG), $output);
+            $this->gitMergeProcess->executeGitMergeBranchProcess($input->getOption(self::CONFIG), $output);
 
             $output->writeln('<info>Checkout done</info>');
         } catch (\Exception $e) {

@@ -77,7 +77,7 @@ class GitMergeProcess
      *
      * @throws \Exception
      */
-    public function executeGitMergeBranchProcess($workingDir, $configFile, OutputInterface $output)
+    public function executeGitMergeBranchProcess($configFile, OutputInterface $output, $workingDir = null)
     {
         $mergeBranch = $this->getMergeBranch($workingDir, $configFile);
 
