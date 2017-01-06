@@ -40,12 +40,6 @@
         <service class="Trivago\Rumi\Process\VolumeInspectProcessFactory" id="trivago.rumi.process.volume_inspect_process_factory"/>
         <service class="Trivago\Rumi\Validators\GitCheckoutValidator" id="trivago.rumi.validators.git_checkout_validator" />
 
-        <service class="Trivago\Rumi\Process\GitProcessesExecution" id="trivago.rumi.process.git_processes_execution" >
-            <argument type="service" id="trivago.rumi.validators.git_checkout_validator"/>
-            <argument type="service" id="trivago.rumi.process.git_checkout_process_factory" />
-            <argument type="service" id="trivago.rumi.services.config_reader" />
-        </service>
-
         <service class="Trivago\Rumi\Process\GitCloneProcess" id="trivago.rumi.process.git_clone_process" >
             <argument type="service" id="trivago.rumi.process.git_checkout_process_factory"/>
             <argument type="service" id="trivago.rumi.validators.git_checkout_validator"/>
@@ -55,6 +49,11 @@
             <argument type="service" id="trivago.rumi.services.config_reader" />
             <argument type="service" id="trivago.rumi.process.git_checkout_process_factory" />
             <argument type="service" id="trivago.rumi.validators.git_checkout_validator" />
+        </service>
+
+        <service class="Trivago\Rumi\Process\GitCheckoutCommitProcess" id="trivago.rumi.process.git_checkout_commit_process">
+            <argument type="service" id="trivago.rumi.validators.git_checkout_validator"/>
+            <argument type="service" id="trivago.rumi.process.git_checkout_process_factory" />
         </service>
 
     </services>

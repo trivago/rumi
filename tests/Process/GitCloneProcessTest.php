@@ -39,6 +39,7 @@ class GitCloneProcessTest extends \PHPUnit_Framework_TestCase
      * @var GitCheckoutProcessFactory
      */
     private $processFactory;
+
     /**
      * @var BufferedOutput
      */

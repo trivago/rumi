@@ -18,11 +18,11 @@
 
 namespace Trivago\Rumi\Process;
 
+
 use Symfony\Component\Console\Output\OutputInterface;
-use Trivago\Rumi\Services\ConfigReader;
 use Trivago\Rumi\Validators\GitCheckoutValidator;
 
-class GitProcessesExecution
+class GitCheckoutCommitProcess
 {
     /**
      * @var GitCheckoutValidator
@@ -34,63 +34,15 @@ class GitProcessesExecution
      */
     private $gitCheckoutProcessFactory;
 
-    /**
-     * @var ConfigReader
-     */
-    private $configReader;
 
     public function __construct(
         GitCheckoutValidator $gitCheckoutValidator,
-        GitCheckoutProcessFactory $gitCheckoutProcessFactory,
-        ConfigReader $configReader)
+        GitCheckoutProcessFactory $gitCheckoutProcessFactory
+    )
     {
         $this->gitCheckoutValidator = $gitCheckoutValidator;
         $this->gitCheckoutProcessFactory = $gitCheckoutProcessFactory;
-        $this->configReader = $configReader;
     }
-
-//    /**
-//     * @param $configFile
-//     *
-//     * @return null|string|void
-//     */
-//    public function getMergeBranch($configFile)
-//    {
-//        try {
-//            $configReader = $this->configReader;
-//
-//            $config = $configReader->getRunConfig($this->getWorkingDir(), $configFile);
-//
-//            if (!empty($config->getMergeBranch())) {
-//                return $config->getMergeBranch();
-//            }
-//        } catch (\Exception $e) {
-//        }
-//
-//        return;
-//    }
-//
-//    /**
-//     * @param $configFile
-//     * @param OutputInterface $output
-//     *
-//     * @throws \Exception
-//     */
-//    public function executeGitMergeBranchProcess($configFile, OutputInterface $output)
-//    {
-//        $mergeBranch = $this->getMergeBranch($configFile);
-//
-//        if (!empty($mergeBranch)) {
-//            $output->writeln('Merging with '.$mergeBranch);
-//            try {
-//                $process = $this->gitCheckoutProcessFactory->getMergeProcess($mergeBranch);
-//                $process->run();
-//                $this->gitCheckoutValidator->checkStatus($process);
-//            } catch (\Exception $e) {
-//                throw new \Exception('Can not clearly merge with '.$mergeBranch);
-//            }
-//        }
-//    }
 
     /**
      * @param $commitSha

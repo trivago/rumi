@@ -21,17 +21,12 @@ namespace Trivago\Rumi\Commands;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Trivago\Rumi\Process\GitCheckoutCommitProcess;
 use Trivago\Rumi\Process\GitCloneProcess;
 use Trivago\Rumi\Process\GitMergeProcess;
-use Trivago\Rumi\Process\GitProcessesExecution;
 
 class CheckoutCommand extends CommandAbstract
 {
-    /**
-     * @var GitProcessesExecution
-     */
-    private $gitProcessesExecution;
-
     /**
      * @var GitCloneProcess
      */
@@ -43,24 +38,24 @@ class CheckoutCommand extends CommandAbstract
     private $gitMergeProcess;
 
     /**
-     * @var String
+     * @var GitCheckoutCommitProcess
      */
-    private $workingDir;
+    private $gitCheckoutCommitProcess;
 
     /**
-     * @param GitProcessesExecution $gitProcessesExecution
      * @param GitCloneProcess $gitCloneProcess
      * @param GitMergeProcess $gitMergeProcess
+     * @param GitCheckoutCommitProcess $gitCheckoutCommitProcess
      */
     public function __construct(
-        GitProcessesExecution $gitProcessesExecution,
         GitCloneProcess $gitCloneProcess,
-        GitMergeProcess $gitMergeProcess)
+        GitMergeProcess $gitMergeProcess,
+        GitCheckoutCommitProcess $gitCheckoutCommitProcess)
     {
         parent::__construct();
-        $this->gitProcessesExecution = $gitProcessesExecution;
         $this->gitCloneProcess = $gitCloneProcess;
         $this->gitMergeProcess = $gitMergeProcess;
+        $this->gitCheckoutCommitProcess = $gitCheckoutCommitProcess;
     }
 
     protected function configure()
@@ -77,6 +72,7 @@ class CheckoutCommand extends CommandAbstract
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
+     *
      * @return int|mixed
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -84,7 +80,7 @@ class CheckoutCommand extends CommandAbstract
         try {
             $this->gitCloneProcess->executeGitCloneBranch($input->getArgument('repository'), $output);
 
-            $this->gitProcessesExecution->executeGitCheckoutCommitProcess($input->getArgument('commit'), $output);
+            $this->gitCheckoutCommitProcess->executeGitCheckoutCommitProcess($input->getArgument('commit'), $output);
 
             $this->gitMergeProcess->executeGitMergeBranchProcess($input->getOption(self::CONFIG), $output);
 
