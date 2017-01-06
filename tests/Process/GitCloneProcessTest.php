@@ -67,7 +67,6 @@ class GitCloneProcessTest extends \PHPUnit_Framework_TestCase
 
     public function testGivenWorkingDirIsEmpty_WhenCommandExecuted_ThenFullCheckoutIsDone()
     {
-        touch(vfsStream::url('directory').'/.git');
         $cloneProcess = $this->prophesize(Process::class);
 
         $this->processFactory->getFullCloneProcess('repo_url')->willReturn($cloneProcess->reveal());

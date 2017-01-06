@@ -63,11 +63,12 @@ class GitMergeProcessTest extends \PHPUnit_Framework_TestCase
 
     public function testGivenMergeBranchIsSpecified_WhenCommandExecuted_ThenItMergesWithIt()
     {
-        touch(vfsStream::url('directory').'/git');
+        touch(vfsStream::url('directory'));
+
         $runConfig = $this->prophesize(RunConfig::class);
         $runConfig->getMergeBranch()->willReturn('origin/master');
 
-        $this->configReader->getRunConfig("/git", 'config_file')->willReturn(
+        $this->configReader->getRunConfig(vfsStream::url('directory'), 'config_file')->willReturn(
             $runConfig->reveal()
         );
 
@@ -77,7 +78,7 @@ class GitMergeProcessTest extends \PHPUnit_Framework_TestCase
         $this->gitCheckoutValidator->checkStatus($mergeProcess->reveal());
 
         $this->processFactory->getMergeProcess('origin/master')->willReturn($mergeProcess->reveal());
-        $this->gitMergeProcess->executeGitMergeBranchProcess("/git", 'config_file', $this->output);
+        $this->gitMergeProcess->executeGitMergeBranchProcess('config_file', $this->output, vfsStream::url('directory'));
 
         $this->assertContains('Merging with origin/master', $this->output->fetch());
     }
@@ -93,7 +94,7 @@ class GitMergeProcessTest extends \PHPUnit_Framework_TestCase
         $runConfig = $this->prophesize(RunConfig::class);
         $runConfig->getMergeBranch()->willReturn('origin/master');
 
-        $this->configReader->getRunConfig('/git', 'config_file')->willReturn(
+        $this->configReader->getRunConfig(vfsStream::url('directory'), 'config_file')->willReturn(
             $runConfig->reveal()
         );
 
@@ -103,6 +104,6 @@ class GitMergeProcessTest extends \PHPUnit_Framework_TestCase
         $this->gitCheckoutValidator->checkStatus($mergeProcess->reveal())->willThrow(new \Exception('Error'));
         $this->processFactory->getMergeProcess('origin/master')->willReturn($mergeProcess->reveal());
 
-        $this->gitMergeProcess->executeGitMergeBranchProcess("/git", 'config_file', $this->output);
+        $this->gitMergeProcess->executeGitMergeBranchProcess('config_file', $this->output, vfsStream::url('directory'));
     }
 }
