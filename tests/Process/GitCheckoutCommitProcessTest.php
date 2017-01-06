@@ -17,7 +17,6 @@
 
 namespace Trivago\Rumi\Services;
 
-
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Process\Process;
 use Trivago\Rumi\Process\GitCheckoutCommitProcess;
@@ -46,14 +45,14 @@ class GitCheckoutCommitProcessTest extends \PHPUnit_Framework_TestCase
      */
     private $output;
 
-
-    public function setUp() {
+    public function setUp()
+    {
         $this->output = new BufferedOutput();
 
         $this->gitCheckoutValidator = $this->prophesize(GitCheckoutValidator::class);
         $this->processFactory = $this->prophesize(GitCheckoutProcessFactory::class);
 
-        $this->gitCheckoutCommitProcess = new GitCheckoutCommitProcess (
+        $this->gitCheckoutCommitProcess = new GitCheckoutCommitProcess(
             $this->gitCheckoutValidator->reveal(),
             $this->processFactory->reveal()
         );
@@ -68,5 +67,4 @@ class GitCheckoutCommitProcessTest extends \PHPUnit_Framework_TestCase
 
         $this->assertContains('Checking out sha123', $this->output->fetch());
     }
-
 }

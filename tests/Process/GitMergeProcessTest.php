@@ -3,11 +3,10 @@
  * Created by PhpStorm.
  * User: ppokalyukhina
  * Date: 05/01/17
- * Time: 20:27
+ * Time: 20:27.
  */
 
 namespace Trivago\Rumi\Services;
-
 
 use org\bovigo\vfs\vfsStream;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -44,8 +43,8 @@ class GitMergeProcessTest extends \PHPUnit_Framework_TestCase
      */
     private $gitMergeProcess;
 
-
-    public function setUp() {
+    public function setUp()
+    {
         vfsStream::setup('directory');
 
         $this->output = new BufferedOutput();

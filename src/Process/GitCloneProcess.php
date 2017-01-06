@@ -17,7 +17,6 @@
 
 namespace Trivago\Rumi\Process;
 
-
 use Symfony\Component\Console\Output\OutputInterface;
 use Trivago\Rumi\Validators\GitCheckoutValidator;
 
@@ -33,13 +32,10 @@ class GitCloneProcess
      */
     private $gitCheckoutValidator;
 
-
-
     public function __construct(
         GitCheckoutProcessFactory $gitCheckoutProcessFactory,
         GitCheckoutValidator $gitCheckoutValidator
-    )
-    {
+    ) {
         $this->gitCheckoutProcessFactory = $gitCheckoutProcessFactory;
         $this->gitCheckoutValidator = $gitCheckoutValidator;
     }

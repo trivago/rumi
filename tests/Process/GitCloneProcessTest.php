@@ -22,7 +22,6 @@ use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Process\Process;
 use Trivago\Rumi\Process\GitCheckoutProcessFactory;
 use Trivago\Rumi\Process\GitCloneProcess;
-use Trivago\Rumi\Resources\WorkingDirTrait;
 use Trivago\Rumi\Validators\GitCheckoutValidator;
 
 /**
