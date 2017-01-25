@@ -22,13 +22,13 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Trivago\Rumi\Process\GitCheckoutCommitProcess;
-use Trivago\Rumi\Process\GitCloneProcess;
+use Trivago\Rumi\Process\GitClone;
 use Trivago\Rumi\Process\GitMergeProcess;
 
 class CheckoutCommand extends CommandAbstract
 {
     /**
-     * @var GitCloneProcess
+     * @var GitClone
      */
     private $gitCloneProcess;
 
@@ -43,12 +43,12 @@ class CheckoutCommand extends CommandAbstract
     private $gitCheckoutCommitProcess;
 
     /**
-     * @param GitCloneProcess $gitCloneProcess
+     * @param GitClone $gitCloneProcess
      * @param GitMergeProcess $gitMergeProcess
      * @param GitCheckoutCommitProcess $gitCheckoutCommitProcess
      */
     public function __construct(
-        GitCloneProcess $gitCloneProcess,
+        GitClone $gitCloneProcess,
         GitMergeProcess $gitMergeProcess,
         GitCheckoutCommitProcess $gitCheckoutCommitProcess)
     {

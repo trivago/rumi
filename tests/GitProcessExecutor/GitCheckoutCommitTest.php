@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-namespace Trivago\Rumi\Services;
+namespace Trivago\Rumi\GitProcessExecutor;
 
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Process\Process;
-use Trivago\Rumi\Process\GitCheckoutCommitProcess;
 use Trivago\Rumi\Process\GitCheckoutProcessFactory;
 use Trivago\Rumi\Validators\GitCheckoutValidator;
 
-class GitCheckoutCommitProcessTest extends \PHPUnit_Framework_TestCase
+/**
+ * @covers \Trivago\Rumi\GitProcessExecutor\GitCheckoutCommit
+ */
+class GitCheckoutCommitTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var GitCheckoutCommitProcess
+     * @var GitCheckoutCommit
      */
     private $gitCheckoutCommitProcess;
 
@@ -52,7 +54,7 @@ class GitCheckoutCommitProcessTest extends \PHPUnit_Framework_TestCase
         $this->gitCheckoutValidator = $this->prophesize(GitCheckoutValidator::class);
         $this->processFactory = $this->prophesize(GitCheckoutProcessFactory::class);
 
-        $this->gitCheckoutCommitProcess = new GitCheckoutCommitProcess(
+        $this->gitCheckoutCommitProcess = new GitCheckoutCommit(
             $this->gitCheckoutValidator->reveal(),
             $this->processFactory->reveal()
         );

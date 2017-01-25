@@ -23,7 +23,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Trivago\Rumi\Process\GitCheckoutCommitProcess;
-use Trivago\Rumi\Process\GitCloneProcess;
+use Trivago\Rumi\Process\GitClone;
 use Trivago\Rumi\Process\GitMergeProcess;
 
 /**
@@ -32,7 +32,7 @@ use Trivago\Rumi\Process\GitMergeProcess;
 class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var GitCloneProcess
+     * @var GitClone
      */
     private $gitCloneProcess;
 
@@ -73,7 +73,7 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
         $this->output = new BufferedOutput();
         $this->input = $this->prophesize(InputInterface::class);
 
-        $this->gitCloneProcess = $this->prophesize(GitCloneProcess::class);
+        $this->gitCloneProcess = $this->prophesize(GitClone::class);
         $this->gitMergeProcess = $this->prophesize(GitMergeProcess::class);
         $this->gitCheckoutCommitProcess = $this->prophesize(GitCheckoutCommitProcess::class);
 
@@ -104,92 +104,6 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
     public function testGivenGitCloneBranchIsExecuted_WhenProcessFailed_ThenErrorIsDisplayed()
     {
         $this->gitCloneProcess->executeGitCloneBranch($this->input, $this->output)->willThrow(new \Exception('Error'));
-
-        $this->SUT->run(
-            new ArrayInput(
-                [
-                    'repository' => 'abc',
-                    'commit' => 'sha123',
-                ]
-            ),
-            $this->output
-        );
-
-        $this->assertContains('error', $this->output->fetch());
-    }
-
-    public function testGivenGitCheckoutCommitProcessIsExecuted_WhenProcessIsSuccessful_ThenFullCheckoutIsDone()
-    {
-        $this->gitCheckoutCommitProcess->executeGitCheckoutCommitProcess($this->input, $this->output);
-
-        $this->SUT->run(
-            new ArrayInput(
-                [
-                    'repository' => 'abc',
-                    'commit' => 'sha123',
-                ]
-            ),
-            $this->output
-        );
-
-        $this->assertContains('Checkout done', $this->output->fetch());
-    }
-
-    public function testGivenGitCheckoutCommitProcessIsExecuted_WhenProcessFailed_ThenErrorIsDisplayed()
-    {
-        $this->gitCheckoutCommitProcess->executeGitCheckoutCommitProcess($this->input, $this->output)->willThrow(new \Exception('Error'));
-
-        $this->SUT->run(
-            new ArrayInput(
-                [
-                    'repository' => 'abc',
-                    'commit' => 'sha123',
-                ]
-            ),
-            $this->output
-        );
-
-        $this->assertContains('error', $this->output->fetch());
-    }
-
-    public function testGivenGitMergeBranchProcessIsExecuted_WhenProcessIsSuccessful_ThenFullCheckoutIsDone()
-    {
-        $this->gitMergeProcess->executeGitMergeBranchProcess('config', $this->output);
-
-        $this->SUT->run(
-            new ArrayInput(
-                [
-                    'repository' => 'abc',
-                    'commit' => 'sha123',
-                ]
-            ),
-            $this->output
-        );
-
-        $this->assertContains('Checkout done', $this->output->fetch());
-    }
-
-    public function testGivenGitMergeBranchProcessIsExecuted_WhenProcessIsSuccessful_ThenReturnCodeIsSuccess()
-    {
-        $this->gitMergeProcess->executeGitMergeBranchProcess('config', $this->output);
-
-        $output = $this->SUT->run(
-            new ArrayInput(
-                [
-                    'repository' => 'abc',
-                    'commit' => 'sha123',
-                ]
-            ),
-            $this->output
-        );
-
-        $this->assertEquals(ReturnCodes::SUCCESS, $output);
-    }
-
-    public function testGivenGitMergeBranchProcessIsExecuted_WhenProcessFailed_ThenErrorIsDisplayed()
-    {
-        touch(vfsStream::url('directory'));
-        $this->gitMergeProcess->executeGitMergeBranchProcess('config', $this->output)->willThrow(new \Exception('Error'));
 
         $this->SUT->run(
             new ArrayInput(

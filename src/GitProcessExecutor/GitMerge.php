@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-namespace Trivago\Rumi\Process;
+namespace Trivago\Rumi\GitProcessExecutor;
 
 use Symfony\Component\Console\Output\OutputInterface;
+use Trivago\Rumi\Process\GitCheckoutProcessFactory;
 use Trivago\Rumi\Services\ConfigReader;
 use Trivago\Rumi\Validators\GitCheckoutValidator;
 
-class GitMergeProcess
+class GitMerge
 {
     /**
      * @var ConfigReader
@@ -59,21 +60,18 @@ class GitMergeProcess
      * @param $workingDir
      * @param $configFile
      *
-     * @return null|string|void
+     * @return null|string
      */
     public function getMergeBranch($workingDir, $configFile)
     {
         try {
-            $configReader = $this->configReader;
-
-            $config = $configReader->getRunConfig($workingDir, $configFile);
+            $config = $this->configReader->getRunConfig($workingDir, $configFile);
 
             if (!empty($config->getMergeBranch())) {
                 return $config->getMergeBranch();
             }
         } catch (\Exception $e) {
         }
-
         return;
     }
 
@@ -88,15 +86,17 @@ class GitMergeProcess
     {
         $mergeBranch = $this->getMergeBranch($workingDir, $configFile);
 
-        if (!empty($mergeBranch)) {
-            $output->writeln('Merging with '.$mergeBranch);
-            try {
-                $process = $this->gitCheckoutProcessFactory->getMergeProcess($mergeBranch);
-                $process->run();
-                $this->gitCheckoutValidator->checkStatus($process);
-            } catch (\Exception $e) {
-                throw new \Exception('Can not clearly merge with '.$mergeBranch);
-            }
+        if (empty($mergeBranch)) {
+            return;
+        }
+
+        $output->writeln('Merging with '.$mergeBranch);
+        try {
+            $process = $this->gitCheckoutProcessFactory->getMergeProcess($mergeBranch);
+            $process->run();
+            $this->gitCheckoutValidator->checkStatus($process);
+        } catch (\Exception $e) {
+            throw new \Exception('Can not clearly merge with '.$mergeBranch);
         }
     }
 }

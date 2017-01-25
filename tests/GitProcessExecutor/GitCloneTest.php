@@ -20,14 +20,14 @@ namespace Trivago\Rumi\Services;
 use org\bovigo\vfs\vfsStream;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Process\Process;
+use Trivago\Rumi\GitProcessExecutor\GitClone;
 use Trivago\Rumi\Process\GitCheckoutProcessFactory;
-use Trivago\Rumi\Process\GitCloneProcess;
 use Trivago\Rumi\Validators\GitCheckoutValidator;
 
 /**
- * @covers \Trivago\Rumi\Process\GitCloneProcess
+ * @covers \Trivago\Rumi\GitProcessExecutor\GitClone
  */
-class GitCloneProcessTest extends \PHPUnit_Framework_TestCase
+class GitCloneTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var GitCheckoutValidator
@@ -45,7 +45,7 @@ class GitCloneProcessTest extends \PHPUnit_Framework_TestCase
     private $output;
 
     /**
-     * @var GitCloneProcess
+     * @var GitClone
      */
     private $gitCloneProcess;
 
@@ -58,7 +58,7 @@ class GitCloneProcessTest extends \PHPUnit_Framework_TestCase
         $this->gitCheckoutValidator = $this->prophesize(GitCheckoutValidator::class);
         $this->processFactory = $this->prophesize(GitCheckoutProcessFactory::class);
 
-        $this->gitCloneProcess = new GitCloneProcess(
+        $this->gitCloneProcess = new GitClone(
             $this->processFactory->reveal(),
             $this->gitCheckoutValidator->reveal()
         );

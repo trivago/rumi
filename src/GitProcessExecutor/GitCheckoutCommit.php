@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2016 trivago GmbH
  *
@@ -15,47 +16,40 @@
  * limitations under the License.
  */
 
-namespace Trivago\Rumi\Process;
+namespace Trivago\Rumi\GitProcessExecutor;
 
 use Symfony\Component\Console\Output\OutputInterface;
+use Trivago\Rumi\Process\GitCheckoutProcessFactory;
 use Trivago\Rumi\Validators\GitCheckoutValidator;
 
-class GitCloneProcess
+class GitCheckoutCommit
 {
-    /**
-     * @var GitCheckoutProcessFactory
-     */
-    private $gitCheckoutProcessFactory;
-
     /**
      * @var GitCheckoutValidator
      */
     private $gitCheckoutValidator;
 
+    /**
+     * @var GitCheckoutProcessFactory
+     */
+    private $gitCheckoutProcessFactory;
+
     public function __construct(
-        GitCheckoutProcessFactory $gitCheckoutProcessFactory,
-        GitCheckoutValidator $gitCheckoutValidator
+        GitCheckoutValidator $gitCheckoutValidator,
+        GitCheckoutProcessFactory $gitCheckoutProcessFactory
     ) {
-        $this->gitCheckoutProcessFactory = $gitCheckoutProcessFactory;
         $this->gitCheckoutValidator = $gitCheckoutValidator;
+        $this->gitCheckoutProcessFactory = $gitCheckoutProcessFactory;
     }
 
     /**
-     * @param $workingDir
-     * @param $repositoryUrl
+     * @param $commitSha
      * @param OutputInterface $output
      */
-    public function executeGitCloneBranch($repositoryUrl, OutputInterface $output, $workingDir = null)
+    public function executeGitCheckoutCommitProcess($commitSha, OutputInterface $output)
     {
-        if (!file_exists($workingDir.'/.git')) {
-            $output->writeln('Cloning...');
-            $process =
-                $this->gitCheckoutProcessFactory->getFullCloneProcess($repositoryUrl);
-        } else {
-            $output->writeln('Fetching changes...');
-            $process =
-                $this->gitCheckoutProcessFactory->getFetchProcess();
-        }
+        $output->writeln('Checking out '.$commitSha.' ');
+        $process = $this->gitCheckoutProcessFactory->getCheckoutCommitProcess($commitSha);
 
         $process->run();
         $this->gitCheckoutValidator->checkStatus($process);
