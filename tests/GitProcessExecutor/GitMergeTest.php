@@ -41,7 +41,7 @@ class GitMergeProcessTest extends \PHPUnit_Framework_TestCase
     /**
      * @var GitMerge
      */
-    private $gitMergeProcess;
+    private $gitMerge;
 
     public function setUp()
     {
@@ -53,7 +53,7 @@ class GitMergeProcessTest extends \PHPUnit_Framework_TestCase
         $this->processFactory = $this->prophesize(GitCheckoutProcessFactory::class);
         $this->configReader = $this->prophesize(ConfigReader::class);
 
-        $this->gitMergeProcess = new GitMerge(
+        $this->gitMerge = new GitMerge(
             $this->configReader->reveal(),
             $this->processFactory->reveal(),
             $this->gitCheckoutValidator->reveal()
@@ -72,12 +72,12 @@ class GitMergeProcessTest extends \PHPUnit_Framework_TestCase
         );
 
         $mergeProcess = $this->prophesize(Process::class);
-        $mergeProcess->run();
+        $mergeProcess->run()->shouldBeCalled();
 
         $this->gitCheckoutValidator->checkStatus($mergeProcess->reveal());
 
         $this->processFactory->getMergeProcess('origin/master')->willReturn($mergeProcess->reveal());
-        $this->gitMergeProcess->executeGitMergeBranchProcess('config_file', $this->output, vfsStream::url('directory'));
+        $this->gitMerge->executeGitMergeBranchProcess('config_file', $this->output, vfsStream::url('directory'));
 
         $this->assertContains('Merging with origin/master', $this->output->fetch());
     }
@@ -103,6 +103,23 @@ class GitMergeProcessTest extends \PHPUnit_Framework_TestCase
         $this->gitCheckoutValidator->checkStatus($mergeProcess->reveal())->willThrow(new \Exception('Error'));
         $this->processFactory->getMergeProcess('origin/master')->willReturn($mergeProcess->reveal());
 
-        $this->gitMergeProcess->executeGitMergeBranchProcess('config_file', $this->output, vfsStream::url('directory'));
+        $this->gitMerge->executeGitMergeBranchProcess('config_file', $this->output, vfsStream::url('directory'));
+    }
+
+    public function testGivenConfigReaderThrowsException_whenIExecuteGitMergeBranchProcess_thenNothingIsReturned ()
+    {
+        touch(vfsStream::url('directory').'/git');
+
+        $runConfig = $this->prophesize(RunConfig::class);
+        $runConfig->getMergeBranch()->willReturn(null);
+
+        $this->configReader->getRunConfig(vfsStream::url('directory'), 'config_file')->willThrow(new \Exception('Error'));
+
+        $mergeProcess = $this->prophesize(Process::class);
+        $this->processFactory->getMergeProcess('origin/master')->willReturn($mergeProcess->reveal());
+
+        $this->gitMerge->executeGitMergeBranchProcess('config_file', $this->output, vfsStream::url('directory'));
+
+        $this->assertEquals('', $this->output->fetch());
     }
 }
