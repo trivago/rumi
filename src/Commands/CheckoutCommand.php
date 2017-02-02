@@ -45,17 +45,17 @@ class CheckoutCommand extends CommandAbstract
     /**
      * @param GitClone $gitCloneProcess
      * @param GitMerge $gitMergeProcess
-     * @param GitCheckoutCommit $gitCheckoutCommitProcess
+     * @param GitCheckoutCommit $gitCheckoutCommit
      */
     public function __construct(
         GitClone $gitCloneProcess,
         GitMerge $gitMergeProcess,
-        GitCheckoutCommit $gitCheckoutCommitProcess)
+        GitCheckoutCommit $gitCheckoutCommit)
     {
         parent::__construct();
         $this->gitCloneProcess = $gitCloneProcess;
         $this->gitMergeProcess = $gitMergeProcess;
-        $this->gitCheckoutCommitProcess = $gitCheckoutCommitProcess;
+        $this->gitCheckoutCommitProcess = $gitCheckoutCommit;
     }
 
     protected function configure()
