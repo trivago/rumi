@@ -21,9 +21,9 @@ namespace Trivago\Rumi\Commands;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Trivago\Rumi\Process\GitCheckoutCommitProcess;
-use Trivago\Rumi\Process\GitClone;
-use Trivago\Rumi\Process\GitMergeProcess;
+use Trivago\Rumi\GitProcessExecutor\GitCheckoutCommit;
+use Trivago\Rumi\GitProcessExecutor\GitClone;
+use Trivago\Rumi\GitProcessExecutor\GitMerge;
 
 class CheckoutCommand extends CommandAbstract
 {
@@ -33,24 +33,24 @@ class CheckoutCommand extends CommandAbstract
     private $gitCloneProcess;
 
     /**
-     * @var GitMergeProcess
+     * @var GitMerge
      */
     private $gitMergeProcess;
 
     /**
-     * @var GitCheckoutCommitProcess
+     * @var GitCheckoutCommit
      */
     private $gitCheckoutCommitProcess;
 
     /**
      * @param GitClone $gitCloneProcess
-     * @param GitMergeProcess $gitMergeProcess
-     * @param GitCheckoutCommitProcess $gitCheckoutCommitProcess
+     * @param GitMerge $gitMergeProcess
+     * @param GitCheckoutCommit $gitCheckoutCommitProcess
      */
     public function __construct(
         GitClone $gitCloneProcess,
-        GitMergeProcess $gitMergeProcess,
-        GitCheckoutCommitProcess $gitCheckoutCommitProcess)
+        GitMerge $gitMergeProcess,
+        GitCheckoutCommit $gitCheckoutCommitProcess)
     {
         parent::__construct();
         $this->gitCloneProcess = $gitCloneProcess;

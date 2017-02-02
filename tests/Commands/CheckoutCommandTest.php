@@ -22,9 +22,10 @@ use org\bovigo\vfs\vfsStream;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Trivago\Rumi\Process\GitCheckoutCommitProcess;
-use Trivago\Rumi\Process\GitClone;
-use Trivago\Rumi\Process\GitMergeProcess;
+use Trivago\Rumi\GitProcessExecutor\GitCheckoutCommit;
+use Trivago\Rumi\GitProcessExecutor\GitClone;
+use Trivago\Rumi\GitProcessExecutor\GitMerge;
+
 
 /**
  * @covers \Trivago\Rumi\Commands\CheckoutCommand
@@ -37,12 +38,12 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
     private $gitCloneProcess;
 
     /**
-     * @var GitMergeProcess
+     * @var GitMerge
      */
     private $gitMergeProcess;
 
     /**
-     * @var GitCheckoutCommitProcess
+     * @var GitCheckoutCommit
      */
     private $gitCheckoutCommitProcess;
 
@@ -74,8 +75,8 @@ class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
         $this->input = $this->prophesize(InputInterface::class);
 
         $this->gitCloneProcess = $this->prophesize(GitClone::class);
-        $this->gitMergeProcess = $this->prophesize(GitMergeProcess::class);
-        $this->gitCheckoutCommitProcess = $this->prophesize(GitCheckoutCommitProcess::class);
+        $this->gitMergeProcess = $this->prophesize(GitMerge::class);
+        $this->gitCheckoutCommitProcess = $this->prophesize(GitCheckoutCommit::class);
 
         $this->SUT = new CheckoutCommand(
             $this->gitCloneProcess->reveal(),
