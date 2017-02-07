@@ -20,7 +20,7 @@ use PHPUnit\Framework\TestCase;
 use Trivago\Rumi\Process\CacheProcessFactory;
 
 /**
- * @covers Trivago\Rumi\Process\CacheProcessFactory
+ * @covers \Trivago\Rumi\Process\CacheProcessFactory
  */
 class CacheProcessFactoryTest extends TestCase
 {
