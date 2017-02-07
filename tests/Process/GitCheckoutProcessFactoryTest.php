@@ -18,10 +18,13 @@
 
 namespace Trivago\Rumi\Process;
 
+
+use PHPUnit\Framework\TestCase;
+
 /**
  * @covers \Trivago\Rumi\Process\GitCheckoutProcessFactory
  */
-class GitCheckoutProcessFactoryTest extends \PHPUnit_Framework_TestCase
+class GitCheckoutProcessFactoryTest extends TestCase
 {
     /**
      * @var GitCheckoutProcessFactory

@@ -18,6 +18,7 @@
 namespace Trivago\Rumi\Services;
 
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Process\Process;
 use Trivago\Rumi\GitProcessExecutor\GitClone;
@@ -27,7 +28,7 @@ use Trivago\Rumi\Validators\GitCheckoutValidator;
 /**
  * @covers \Trivago\Rumi\GitProcessExecutor\GitClone
  */
-class GitCloneTest extends \PHPUnit_Framework_TestCase
+class GitCloneTest extends TestCase
 {
     /**
      * @var GitCheckoutValidator

@@ -17,13 +17,14 @@
  */
 
 namespace Trivago\Rumi\Models;
-use Prophecy\Argument;
-use Trivago\Rumi\Builders\JobConfigBuilder;
+
+
+use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \Trivago\Rumi\Models\RunConfig
  */
-class RunConfigTest extends \PHPUnit_Framework_TestCase
+class RunConfigTest extends TestCase
 {
     public function testGivenNewInstanceIsCreated_WhenGetterAccessed_ThenItReturnsValidData()
     {

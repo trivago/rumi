@@ -19,6 +19,7 @@
 namespace Trivago\Rumi\Commands;
 
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -28,9 +29,9 @@ use Symfony\Component\Process\Process;
 use Trivago\Rumi\Process\CacheProcessFactory;
 
 /**
- * @covers Trivago\Rumi\Commands\CacheRestoreCommand
+ * @covers \Trivago\Rumi\Commands\CacheRestoreCommand
  */
-class CacheRestoreCommandTest extends \PHPUnit_Framework_TestCase
+class CacheRestoreCommandTest extends TestCase
 {
     /**
      * @var ContainerBuilder

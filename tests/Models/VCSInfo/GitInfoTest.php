@@ -18,10 +18,13 @@
 
 namespace Trivago\Rumi\Models\VCSInfo;
 
+
+use PHPUnit\Framework\TestCase;
+
 /**
- * @covers Trivago\Rumi\Models\VCSInfo\GitInfo
+ * @covers \Trivago\Rumi\Models\VCSInfo\GitInfo
  */
-class GitInfoTest extends \PHPUnit_Framework_TestCase
+class GitInfoTest extends TestCase
 {
     public function testGiveNewInstanceIsCreated_WhenGetTriggered_ThenItReturnsProperValues()
     {

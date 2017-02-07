@@ -17,13 +17,16 @@
  */
 
 namespace Trivago\Rumi\Events;
+
+
+use PHPUnit\Framework\TestCase;
 use Trivago\Rumi\Models\StageConfig;
 
 /**
  * @covers \Trivago\Rumi\Events\StageFinishedEvent
  * @covers \Trivago\Rumi\Events\AbstractFinishedEvent
  */
-class StageFinishedEventTest extends \PHPUnit_Framework_TestCase
+class StageFinishedEventTest extends TestCase
 {
     public function testGivenNameAndStatus_WhenNewInstanceCreated_GettersAreFine()
     {

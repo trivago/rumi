@@ -19,6 +19,7 @@
 namespace Trivago\Rumi\Commands;
 
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -28,12 +29,11 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Process\Process;
 use Trivago\Rumi\Commands\CacheStore\CacheStoreDir;
 use Trivago\Rumi\Process\CacheProcessFactory;
-use Trivago\Rumi\Services\ConfigReader;
 
 /**
  * @covers \Trivago\Rumi\Commands\CacheStoreCommand
  */
-class CacheStoreCommandTest extends \PHPUnit_Framework_TestCase
+class CacheStoreCommandTest extends TestCase
 {
     /**
      * @var ContainerBuilder

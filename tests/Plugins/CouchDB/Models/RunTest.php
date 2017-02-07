@@ -18,10 +18,13 @@
 
 namespace Trivago\Rumi\Plugins\CouchDB\Models;
 
+
+use PHPUnit\Framework\TestCase;
+
 /**
- * @covers Trivago\Rumi\Plugins\CouchDB\Models\Run
+ * @covers \Trivago\Rumi\Plugins\CouchDB\Models\Run
  */
-class RunTest extends \PHPUnit_Framework_TestCase
+class RunTest extends TestCase
 {
     public function testGivenCommitId_WhenNewInstanceCreated_ThenGettersAreFine()
     {

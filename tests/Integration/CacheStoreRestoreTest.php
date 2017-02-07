@@ -18,6 +18,7 @@
 
 namespace Trivago\Rumi\Integration;
 
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -30,7 +31,7 @@ use Trivago\Rumi\Services\ConfigReader;
 /**
  * @coversNothing
  */
-class CacheStoreRestoreTest extends \PHPUnit_Framework_TestCase
+class CacheStoreRestoreTest extends TestCase
 {
     /**
      * @var ContainerBuilder

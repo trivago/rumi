@@ -18,6 +18,7 @@
 
 namespace Trivago\Rumi\Events;
 
+use PHPUnit\Framework\TestCase;
 use Trivago\Rumi\Builders\JobConfigBuilder;
 use Trivago\Rumi\Models\CacheConfig;
 use Trivago\Rumi\Models\JobConfigCollection;
@@ -27,7 +28,7 @@ use Trivago\Rumi\Models\StagesCollection;
 /**
  * @covers \Trivago\Rumi\Events\RunStartedEvent
  */
-class RunStartedEventTest extends \PHPUnit_Framework_TestCase
+class RunStartedEventTest extends TestCase
 {
     public function testGivenConfig_WhenNewInstanceCreated_ThenGetterWorks()
     {

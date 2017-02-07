@@ -18,7 +18,9 @@
 
 namespace Trivago\Rumi\Events;
 
-class JobFinishedEventTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class JobFinishedEventTest extends TestCase
 {
     public function testGivenNewInstanceIsCreated_WhenStatusPassed_YouCanUseGetterToAccessIt()
     {

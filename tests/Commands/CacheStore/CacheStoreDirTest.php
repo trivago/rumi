@@ -19,6 +19,7 @@
 namespace Trivago\Rumi\Commands\CacheStore;
 
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\Process\Process;
 use Trivago\Rumi\Process\CacheProcessFactory;
@@ -26,7 +27,7 @@ use Trivago\Rumi\Process\CacheProcessFactory;
 /**
  * @covers \Trivago\Rumi\Commands\CacheStore\CacheStoreDir
  */
-class CacheStoreDirTest extends \PHPUnit_Framework_TestCase
+class CacheStoreDirTest extends TestCase
 {
     /**
      * @var CacheProcessFactory|ObjectProphecy

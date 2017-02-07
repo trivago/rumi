@@ -19,6 +19,7 @@
 namespace Trivago\Rumi\Commands;
 
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -46,7 +47,7 @@ use Trivago\Rumi\Services\ConfigReader;
  * @covers \Trivago\Rumi\Commands\RunCommand
  * @covers \Trivago\Rumi\Commands\Run\StageExecutor
  */
-class RunCommandTest extends \PHPUnit_Framework_TestCase
+class RunCommandTest extends TestCase
 {
     /**
      * @var BufferedOutput

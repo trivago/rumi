@@ -21,13 +21,14 @@ namespace Trivago\Rumi\Plugins\CouchDB;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Trivago\Rumi\Plugins\CouchDB\Models\Run;
 
 /**
- * @covers Trivago\Rumi\Plugins\CouchDB\Uploader
+ * @covers \Trivago\Rumi\Plugins\CouchDB\Uploader
  */
-class UploaderTest extends \PHPUnit_Framework_TestCase
+class UploaderTest extends TestCase
 {
     /**
      * @var Uploader
