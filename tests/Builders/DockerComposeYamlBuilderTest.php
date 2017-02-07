@@ -25,7 +25,7 @@ use Trivago\Rumi\Docker\VolumeInspector;
 use Trivago\Rumi\Models\VCSInfo\VCSInfoInterface;
 
 /**
- * @covers Trivago\Rumi\Builders\DockerComposeYamlBuilder
+ * @covers \Trivago\Rumi\Builders\DockerComposeYamlBuilder
  */
 class DockerComposeYamlBuilderTest extends TestCase
 {

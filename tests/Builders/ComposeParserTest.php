@@ -22,7 +22,7 @@ use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers Trivago\Rumi\Builders\ComposeParser
+ * @covers \Trivago\Rumi\Builders\ComposeParser
  */
 class ComposeParserTest extends TestCase
 {
