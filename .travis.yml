@@ -29,6 +29,9 @@ script:
 - docker run -v ${PWD}:/src -w /src trivago/rumi:php-dev-latest composer install
 - docker run -v ${PWD}:/src -w /src trivago/rumi:php-dev-latest vendor/bin/phpunit
 
+# test if the image can be build properly
+- docker build -t trivago/rumi:temp -f Dockerfile .
+
 # execute rumi check with passing build
 - bin/test_ci_execution https://github.com/trivago/rumi.git 24fa240fd3f1307c3e020d2ca4e8f1b1aebfa110 integration-tests-passing
 
