@@ -18,13 +18,14 @@
 
 namespace Trivago\Rumi\Docker;
 
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Process\Process;
 use Trivago\Rumi\Process\VolumeInspectProcessFactory;
 
 /**
- * @covers Trivago\Rumi\Docker\VolumeInspector
+ * @covers \Trivago\Rumi\Docker\VolumeInspector
  */
-class VolumeInspectorTest extends \PHPUnit_Framework_TestCase
+class VolumeInspectorTest extends TestCase
 {
     /**
      * @var VolumeInspector

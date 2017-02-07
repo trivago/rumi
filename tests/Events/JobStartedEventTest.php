@@ -18,10 +18,12 @@
 
 namespace Trivago\Rumi\Events;
 
+use PHPUnit\Framework\TestCase;
+
 /**
- * @covers Trivago\Rumi\Events\JobStartedEvent
+ * @covers \Trivago\Rumi\Events\JobStartedEvent
  */
-class JobStartedEventTest extends \PHPUnit_Framework_TestCase
+class JobStartedEventTest extends TestCase
 {
     public function testGivenName_WhenNewInstanceCreated_ThenGetterWorks()
     {

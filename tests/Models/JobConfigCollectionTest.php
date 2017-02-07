@@ -18,10 +18,13 @@
 
 namespace Trivago\Rumi\Models;
 
+
+use PHPUnit\Framework\TestCase;
+
 /**
  * @covers \Trivago\Rumi\Models\JobConfigCollection
  */
-class JobConfigCollectionTest extends \PHPUnit_Framework_TestCase
+class JobConfigCollectionTest extends TestCase
 {
     /**
      * @var JobConfigCollection

@@ -17,6 +17,7 @@
 
 namespace Trivago\Rumi\GitProcessExecutor;
 
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Process\Process;
 use Trivago\Rumi\Process\GitCheckoutProcessFactory;
@@ -25,7 +26,7 @@ use Trivago\Rumi\Validators\GitCheckoutValidator;
 /**
  * @covers \Trivago\Rumi\GitProcessExecutor\GitCheckoutCommit
  */
-class GitCheckoutCommitTest extends \PHPUnit_Framework_TestCase
+class GitCheckoutCommitTest extends TestCase
 {
     /**
      * @var GitCheckoutCommit

@@ -18,12 +18,14 @@
 
 namespace Trivago\Rumi\Models;
 
+use PHPUnit\Framework\TestCase;
+
 use Trivago\Rumi\Builders\JobConfigBuilder;
 
 /**
  * @covers \Trivago\Rumi\Models\StagesCollection
  */
-class StagesCollectionTest extends \PHPUnit_Framework_TestCase
+class StagesCollectionTest extends TestCase
 {
 
     public function testGivenConfig_WhenNewCollectionCreated_ThenPossibleToIterate()

@@ -18,10 +18,12 @@
 
 namespace Trivago\Rumi\Models;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * @covers \Trivago\Rumi\Models\StageConfig
  */
-class StageConfigTest extends \PHPUnit_Framework_TestCase
+class StageConfigTest extends TestCase
 {
 
     public function testGivenNameAndJobConfigCollection_WhenStageConfigCreated_ThenGettersAreFine()

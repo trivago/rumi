@@ -18,10 +18,13 @@
 
 namespace Trivago\Rumi\Process;
 
+
+use PHPUnit\Framework\TestCase;
+
 /**
  * @covers \Trivago\Rumi\Process\VolumeInspectProcessFactory
  */
-class VolumeInspectProcessFactoryTest extends \PHPUnit_Framework_TestCase
+class VolumeInspectProcessFactoryTest extends TestCase
 {
     /**
      * @var VolumeInspectProcessFactory

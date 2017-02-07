@@ -16,13 +16,14 @@
  * limitations under the License.
  */
 
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Process\Process;
 use Trivago\Rumi\Validators\GitCheckoutValidator;
 
 /**
  * @covers \Trivago\Rumi\Validators\GitCheckoutValidator
  */
-class GitCheckoutValidatorTest extends PHPUnit_Framework_TestCase
+class GitCheckoutValidatorTest extends TestCase
 {
     public function testGivenProcessRuns_whenStatusIsSuccessfull_thenNothingHappens()
     {

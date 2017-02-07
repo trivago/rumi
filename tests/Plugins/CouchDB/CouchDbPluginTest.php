@@ -18,6 +18,8 @@
 
 namespace Trivago\Rumi\Plugins\CouchDB;
 
+
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,9 +29,9 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Trivago\Rumi\Events;
 
 /**
- * @covers Trivago\Rumi\Plugins\CouchDB\CouchDbPlugin
+ * @covers \Trivago\Rumi\Plugins\CouchDB\CouchDbPlugin
  */
-class CouchDbPluginTest extends \PHPUnit_Framework_TestCase
+class CouchDbPluginTest extends TestCase
 {
     public function testGivenNoEnvVariablePassed_WhenCreated_ThenNothingHappens()
     {

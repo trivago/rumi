@@ -7,6 +7,7 @@
 namespace Trivago\Rumi\Commands\Run;
 
 
+use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -15,7 +16,7 @@ use Trivago\Rumi\Builders\DockerComposeYamlBuilder;
 use Trivago\Rumi\Models\VCSInfo\VCSInfoInterface;
 use Trivago\Rumi\Process\RunningProcessesFactory;
 
-class StageExecutorTest extends \PHPUnit_Framework_TestCase
+class StageExecutorTest extends TestCase
 {
     /**
      * @var EventDispatcherInterface|ObjectProphecy

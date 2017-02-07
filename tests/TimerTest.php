@@ -15,11 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \Trivago\Rumi\Timer
  */
-class TimerTest extends PHPUnit_Framework_TestCase
+class TimerTest extends TestCase
 {
     private $called = false;
 

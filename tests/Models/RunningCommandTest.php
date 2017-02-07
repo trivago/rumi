@@ -18,6 +18,7 @@
 
 namespace Trivago\Rumi\Models;
 
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -27,7 +28,7 @@ use Trivago\Rumi\Process\RunningProcessesFactory;
 /**
  * @covers \Trivago\Rumi\Models\RunningCommand
  */
-class RunningCommandTest extends \PHPUnit_Framework_TestCase
+class RunningCommandTest extends TestCase
 {
     /**
      * @var RunningCommand

@@ -18,6 +18,7 @@
 namespace Trivago\Rumi\GitProcessExecutor;
 
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Process\Process;
 use Trivago\Rumi\Models\RunConfig;
@@ -25,7 +26,7 @@ use Trivago\Rumi\Process\GitCheckoutProcessFactory;
 use Trivago\Rumi\Services\ConfigReader;
 use Trivago\Rumi\Validators\GitCheckoutValidator;
 
-class GitMergeProcessTest extends \PHPUnit_Framework_TestCase
+class GitMergeProcessTest extends TestCase
 {
     /**
      * @var ConfigReader

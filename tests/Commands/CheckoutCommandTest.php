@@ -19,6 +19,7 @@
 namespace Trivago\Rumi\Commands;
 
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -30,7 +31,7 @@ use Trivago\Rumi\GitProcessExecutor\GitMerge;
 /**
  * @covers \Trivago\Rumi\Commands\CheckoutCommand
  */
-class CheckoutCommandTest extends \PHPUnit_Framework_TestCase
+class CheckoutCommandTest extends TestCase
 {
     /**
      * @var GitClone

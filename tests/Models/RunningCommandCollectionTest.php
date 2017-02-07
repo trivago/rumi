@@ -18,7 +18,9 @@
 
 namespace Trivago\Rumi\Models;
 
-class RunningCommandCollectionTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class RunningCommandCollectionTest extends TestCase
 {
 
     public function testGivenRunningProcess_WhenCollectionCreated_ThenItContains()
