@@ -18,6 +18,8 @@
 
 namespace Trivago\Rumi\Commands;
 
+use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -32,7 +34,7 @@ use Trivago\Rumi\RumiApplication;
  *
  * @SuppressWarnings(PHPMD.StaticAccess)
  */
-class RunCommandTest extends \PHPUnit_Framework_TestCase
+class RunCommandTest extends TestCase
 {
     /**
      * @var RumiApplication

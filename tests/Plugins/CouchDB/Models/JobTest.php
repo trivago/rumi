@@ -18,10 +18,13 @@
 
 namespace Trivago\Rumi\Plugins\CouchDB\Models;
 
+
+use PHPUnit\Framework\TestCase;
+
 /**
- * @covers Trivago\Rumi\Plugins\CouchDB\Models\Job
+ * @covers \Trivago\Rumi\Plugins\CouchDB\Models\Job
  */
-class JobTest extends \PHPUnit_Framework_TestCase
+class JobTest extends TestCase
 {
     public function testGivenNameAndStatus_WhenNewInstanceCreated_ThenGettersAreFine()
     {

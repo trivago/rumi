@@ -44,5 +44,21 @@
         <service class="Trivago\Rumi\Process\VolumeInspectProcessFactory" id="trivago.rumi.process.volume_inspect_process_factory"/>
         <service class="Trivago\Rumi\Validators\GitCheckoutValidator" id="trivago.rumi.validators.git_checkout_validator" />
 
+        <service class="Trivago\Rumi\GitProcessExecutor\GitClone" id="trivago.rumi.git_process_executor.git_clone">
+            <argument type="service" id="trivago.rumi.process.git_checkout_process_factory"/>
+            <argument type="service" id="trivago.rumi.validators.git_checkout_validator"/>
+        </service>
+
+        <service class="Trivago\Rumi\GitProcessExecutor\GitMerge" id="trivago.rumi.git_process_executor.git_merge">
+            <argument type="service" id="trivago.rumi.services.config_reader" />
+            <argument type="service" id="trivago.rumi.process.git_checkout_process_factory" />
+            <argument type="service" id="trivago.rumi.validators.git_checkout_validator" />
+        </service>
+
+        <service class="Trivago\Rumi\GitProcessExecutor\GitCheckoutCommit" id="trivago.rumi.git_process_executor.git_checkout_commit">
+            <argument type="service" id="trivago.rumi.validators.git_checkout_validator"/>
+            <argument type="service" id="trivago.rumi.process.git_checkout_process_factory" />
+        </service>
+
     </services>
 </container>

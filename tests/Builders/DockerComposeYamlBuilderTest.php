@@ -18,15 +18,16 @@
 
 namespace Trivago\Rumi\Builders;
 
+use PHPUnit\Framework\TestCase;
 use Prophecy\Exception\Prophecy\ObjectProphecyException;
 use Prophecy\Prophecy\ObjectProphecy;
 use Trivago\Rumi\Docker\VolumeInspector;
 use Trivago\Rumi\Models\VCSInfo\VCSInfoInterface;
 
 /**
- * @covers Trivago\Rumi\Builders\DockerComposeYamlBuilder
+ * @covers \Trivago\Rumi\Builders\DockerComposeYamlBuilder
  */
-class DockerComposeYamlBuilderTest extends \PHPUnit_Framework_TestCase
+class DockerComposeYamlBuilderTest extends TestCase
 {
     /**
      * @var DockerComposeYamlBuilder

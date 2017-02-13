@@ -52,7 +52,7 @@ class Stage
     }
 
     /**
-     * @return Job
+     * @return Job[]
      */
     public function getJobs()
     {

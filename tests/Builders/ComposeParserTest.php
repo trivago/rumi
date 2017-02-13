@@ -19,11 +19,12 @@
 namespace Trivago\Rumi\Builders;
 
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\TestCase;
 
 /**
- * @covers Trivago\Rumi\Builders\ComposeParser
+ * @covers \Trivago\Rumi\Builders\ComposeParser
  */
-class ComposeParserTest extends \PHPUnit_Framework_TestCase
+class ComposeParserTest extends TestCase
 {
     /**
      * @var ComposeParser

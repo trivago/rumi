@@ -18,12 +18,13 @@
 
 namespace Trivago\Rumi\Builders;
 
+use PHPUnit\Framework\TestCase;
 use Trivago\Rumi\Models\JobConfig;
 
 /**
  * @covers \Trivago\Rumi\Builders\JobConfigBuilder
  */
-class JobConfigBuilderTest extends \PHPUnit_Framework_TestCase
+class JobConfigBuilderTest extends TestCase
 {
     /**
      * @var JobConfigBuilder

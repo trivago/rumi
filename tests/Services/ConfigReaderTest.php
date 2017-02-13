@@ -19,6 +19,7 @@
 namespace Trivago\Rumi\Services;
 
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Yaml\Dumper;
 use Trivago\Rumi\Builders\JobConfigBuilder;
 use Trivago\Rumi\Commands\CommandAbstract;
@@ -29,7 +30,7 @@ use Trivago\Rumi\Models\StagesCollection;
 /**
  * @covers \Trivago\Rumi\Services\ConfigReader
  */
-class ConfigReaderTest extends \PHPUnit_Framework_TestCase
+class ConfigReaderTest extends TestCase
 {
     /**
      * @var ConfigReader

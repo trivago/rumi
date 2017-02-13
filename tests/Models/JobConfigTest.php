@@ -18,10 +18,13 @@
 
 namespace Trivago\Rumi\Models;
 
+
+use PHPUnit\Framework\TestCase;
+
 /**
  * @covers \Trivago\Rumi\Models\JobConfig
  */
-class JobConfigTest extends \PHPUnit_Framework_TestCase
+class JobConfigTest extends TestCase
 {
     public function testGivenNoCiContainerDefined_WhenGetCiContainerAsStringCalled_ThenFirstContainerIsUsed()
     {

@@ -18,9 +18,10 @@
 
 namespace Trivago\Rumi\Events;
 
+use PHPUnit\Framework\TestCase;
 use Trivago\Rumi\Models\StageConfig;
 
-class StageStartedEventTest extends \PHPUnit_Framework_TestCase
+class StageStartedEventTest extends TestCase
 {
     public function testGivenNameAndJobs_WhenNewInstanceCreated_ThenGettersAreFine()
     {

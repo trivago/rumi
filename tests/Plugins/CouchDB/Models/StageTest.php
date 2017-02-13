@@ -18,10 +18,13 @@
 
 namespace Trivago\Rumi\Plugins\CouchDB\Models;
 
+
+use PHPUnit\Framework\TestCase;
+
 /**
- * @covers Trivago\Rumi\Plugins\CouchDB\Models\Stage
+ * @covers \Trivago\Rumi\Plugins\CouchDB\Models\Stage
  */
-class StageTest extends \PHPUnit_Framework_TestCase
+class StageTest extends TestCase
 {
     public function testGivenName_WhenNewStageCreated_ThenGetterWorks()
     {

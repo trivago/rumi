@@ -18,10 +18,13 @@
 
 namespace Trivago\Rumi\Models;
 
+
+use PHPUnit\Framework\TestCase;
+
 /**
  * @covers \Trivago\Rumi\Models\CacheConfig
  */
-class CacheConfigTest extends \PHPUnit_Framework_TestCase
+class CacheConfigTest extends TestCase
 {
 
     public function testGivenValidConfig_WhenEntityCreated_ThenGetDirectoriesReturnsContent()

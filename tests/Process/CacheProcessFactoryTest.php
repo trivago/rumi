@@ -16,12 +16,13 @@
  * limitations under the License.
  */
 
+use PHPUnit\Framework\TestCase;
 use Trivago\Rumi\Process\CacheProcessFactory;
 
 /**
- * @covers Trivago\Rumi\Process\CacheProcessFactory
+ * @covers \Trivago\Rumi\Process\CacheProcessFactory
  */
-class CacheProcessFactoryTest extends PHPUnit_Framework_TestCase
+class CacheProcessFactoryTest extends TestCase
 {
     /**
      * @var CacheProcessFactory
