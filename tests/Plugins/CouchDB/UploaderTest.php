@@ -34,6 +34,7 @@ use Trivago\Rumi\Plugins\CouchDB\Models\Stage;
  */
 class UploaderTest extends TestCase
 {
+    const COUCHDB_ENVVARIABLE = 'RUMI_COUCHDB_TEST';
     /**
      * @var Uploader
      */
@@ -139,9 +140,9 @@ class UploaderTest extends TestCase
 
     public function testGivenOutputContainsNonUtfCharacters_whenPersistedInCouchDb_ThenItCanBeHandledProperly()
     {
-        $couchdbAddress = getenv(CouchDbPlugin::ENV_VARIABLE);
+        $couchdbAddress = getenv(self::COUCHDB_ENVVARIABLE);
         if (empty($couchdbAddress)) {
-            throw new IncompleteTestError(sprintf('This test requires %s to work', CouchDbPlugin::ENV_VARIABLE));
+            throw new IncompleteTestError(sprintf('This test requires %s to work', self::COUCHDB_ENVVARIABLE));
         }
 
         // given
@@ -155,7 +156,6 @@ class UploaderTest extends TestCase
         $run->addStage($stage);
 
         // when
-
         // create couchdb db
         $request = new Request('PUT', 'http://' . $couchdbAddress . '/runs' );
         (new Client())->send($request);
