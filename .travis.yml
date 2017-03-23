@@ -27,7 +27,8 @@ before_install:
 script:
 - set -e
 - docker run -v ${PWD}:/src -w /src trivago/rumi:php-dev-latest composer install
-- docker run -v ${PWD}:/src -w /src trivago/rumi:php-dev-latest vendor/bin/phpunit
+- docker run --name=couchdb -d trivago/couchdb-cors:latest
+- docker run -v ${PWD}:/src --link couchdb:couchdb -e RUMI_COUCHDB=couchdb:5984 -w /src trivago/rumi:php-dev-latest vendor/bin/phpunit
 
 # test if the image can be build properly
 - docker build -t trivago/rumi:temp -f Dockerfile .

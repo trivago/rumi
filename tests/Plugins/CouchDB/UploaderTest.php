@@ -18,12 +18,16 @@
 
 namespace Trivago\Rumi\Plugins\CouchDB;
 
+use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\IncompleteTestError;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Trivago\Rumi\Plugins\CouchDB\Models\Job;
 use Trivago\Rumi\Plugins\CouchDB\Models\Run;
+use Trivago\Rumi\Plugins\CouchDB\Models\Stage;
 
 /**
  * @covers \Trivago\Rumi\Plugins\CouchDB\Uploader
@@ -131,5 +135,36 @@ class UploaderTest extends TestCase
         $this->SUT->flush($run);
 
         // then
+    }
+
+    public function testGivenOutputContainsNonUtfCharacters_whenPersistedInCouchDb_ThenItCanBeHandledProperly()
+    {
+        $couchdbAddress = getenv(CouchDbPlugin::ENV_VARIABLE);
+        if (empty($couchdbAddress)) {
+            throw new IncompleteTestError(sprintf('This test requires %s to work', CouchDbPlugin::ENV_VARIABLE));
+        }
+
+        // given
+        $job = new Job('name', 'SUCCESS');
+        $job->setOutput("\xe2\x82\x28"); // incorrect utf string
+
+        $stage = new Stage('SampleStage');
+        $stage->addJob($job);
+
+        $run = new Run(md5(time()));
+        $run->addStage($stage);
+
+        // when
+
+        // create couchdb db
+        $request = new Request('PUT', 'http://' . $couchdbAddress . '/runs' );
+        (new Client())->send($request);
+
+        // upload sth there
+        $uploader = new Uploader($couchdbAddress, new Client());
+        $uploader->flush($run);
+
+        // then
+        $this->assertTrue(true); // nothing happens
     }
 }
