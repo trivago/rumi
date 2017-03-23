@@ -9,6 +9,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Removed
 
+## [1.4.2] 2017-03-23
+### Changed
+- Fix couchdb utf-8 broken chars issue
+
 ## [1.4.1] 2016-12-05
 ### Changed
 - CouchDB plugin fix
