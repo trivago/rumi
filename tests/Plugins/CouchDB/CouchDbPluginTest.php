@@ -37,7 +37,6 @@ class CouchDbPluginTest extends TestCase
     {
         // given
         $eventDispatcher = $this->prophesize(EventDispatcherInterface::class);
-        putenv(CouchDbPlugin::ENV_VARIABLE . '=');
 
         // when
         new CouchDbPlugin(
