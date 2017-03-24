@@ -48,7 +48,7 @@ class GitClone
      */
     public function executeGitCloneBranch($repositoryUrl, OutputInterface $output, $workingDir = null)
     {
-        if (!file_exists($workingDir.'/.git')) {
+        if (!file_exists(($workingDir ? $workingDir . '/' : '') . '.git')) {
             $output->writeln('Cloning...');
             $process =
                 $this->gitCheckoutProcessFactory->getFullCloneProcess($repositoryUrl);

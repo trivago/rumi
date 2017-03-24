@@ -70,7 +70,7 @@ class GitCloneTest extends TestCase
         $cloneProcess = $this->prophesize(Process::class);
 
         $this->processFactory->getFullCloneProcess('repo_url')->willReturn($cloneProcess->reveal());
-        $this->gitCloneProcess->executeGitCloneBranch('repo_url', $this->output, null);
+        $this->gitCloneProcess->executeGitCloneBranch('repo_url', $this->output, vfsStream::url('directory'));
 
         $this->assertContains('Cloning...', $this->output->fetch());
     }

@@ -9,7 +9,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Removed
 
-## [1.4.2] 2017-03-23
+## [1.4.3] 2017-03-24
+### Changed
+- Fix issue when second checkout happens with .git directory in cache
+
+## [1.4.2] 2017-03-24 [YANKED]
 ### Changed
 - Fix couchdb utf-8 broken chars issue
 
