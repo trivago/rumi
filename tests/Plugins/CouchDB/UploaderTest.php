@@ -18,12 +18,15 @@
 
 namespace Trivago\Rumi\Plugins\CouchDB;
 
+use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Trivago\Rumi\Plugins\CouchDB\Models\Job;
 use Trivago\Rumi\Plugins\CouchDB\Models\Run;
+use Trivago\Rumi\Plugins\CouchDB\Models\Stage;
 
 /**
  * @covers \Trivago\Rumi\Plugins\CouchDB\Uploader
@@ -129,6 +132,27 @@ class UploaderTest extends TestCase
         // when
         $this->SUT->flush($run);
         $this->SUT->flush($run);
+
+        // then
+    }
+
+    public function testGivenOutputContainsNonUtfCharacters_whenPersistedInCouchDb_ThenItCanBeHandledProperly()
+    {
+        // given
+        $job = new Job('name', 'SUCCESS');
+        $job->setOutput("\xe2\x82\x28"); // incorrect utf string
+
+        $stage = new Stage('SampleStage');
+        $stage->addJob($job);
+
+        $run = new Run(md5(time()));
+        $run->addStage($stage);
+        $clientProphecy = $this->prophesize(Client::class);
+        $clientProphecy->send(Argument::any())->willReturn(new Response(200, [], json_encode(['rev'=>'abc'])))->shouldBeCalled();
+
+        // when
+        $uploader = new Uploader('couchdb', $clientProphecy->reveal());
+        $uploader->flush($run);
 
         // then
     }

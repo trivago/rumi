@@ -74,7 +74,7 @@ class Job
      */
     public function setOutput($output)
     {
-        $this->output = $output;
+        $this->output = mb_convert_encoding($output, 'utf-8', 'utf-8');
     }
 
     /**
