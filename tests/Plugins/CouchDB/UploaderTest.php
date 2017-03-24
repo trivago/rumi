@@ -22,7 +22,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use PHPUnit\Framework\IncompleteTestError;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Trivago\Rumi\Plugins\CouchDB\Models\Job;
@@ -34,7 +33,6 @@ use Trivago\Rumi\Plugins\CouchDB\Models\Stage;
  */
 class UploaderTest extends TestCase
 {
-    const COUCHDB_ENVVARIABLE = 'RUMI_COUCHDB_TEST';
     /**
      * @var Uploader
      */
