@@ -140,11 +140,6 @@ class UploaderTest extends TestCase
 
     public function testGivenOutputContainsNonUtfCharacters_whenPersistedInCouchDb_ThenItCanBeHandledProperly()
     {
-        $couchdbAddress = getenv(self::COUCHDB_ENVVARIABLE);
-        if (empty($couchdbAddress)) {
-            throw new IncompleteTestError(sprintf('This test requires %s to work', self::COUCHDB_ENVVARIABLE));
-        }
-
         // given
         $job = new Job('name', 'SUCCESS');
         $job->setOutput("\xe2\x82\x28"); // incorrect utf string
@@ -154,17 +149,13 @@ class UploaderTest extends TestCase
 
         $run = new Run(md5(time()));
         $run->addStage($stage);
+        $clientProphecy = $this->prophesize(Client::class);
+        $clientProphecy->send(Argument::any())->willReturn(new Response(200, [], json_encode(['rev'=>'abc'])))->shouldBeCalled();
 
         // when
-        // create couchdb db
-        $request = new Request('PUT', 'http://' . $couchdbAddress . '/runs' );
-        (new Client())->send($request);
-
-        // upload sth there
-        $uploader = new Uploader($couchdbAddress, new Client());
+        $uploader = new Uploader('couchdb', $clientProphecy->reveal());
         $uploader->flush($run);
 
         // then
-        $this->assertTrue(true); // nothing happens
     }
 }
