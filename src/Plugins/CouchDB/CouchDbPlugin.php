@@ -60,15 +60,17 @@ class CouchDbPlugin implements PluginInterface
         EventDispatcherInterface $eventDispatcher
     ) {
         if (!getenv(self::ENV_VARIABLE)) {
+            $this->output->writeln("[CouchDB plugin]: Disabled");
             return;
         }
+        $this->output->writeln("[CouchDB plugin]: Enabled");
 
         $this->output = $output;
         $this->uploader = new Uploader(getenv(self::ENV_VARIABLE), new Client());
 
         $eventDispatcher->addListener(Events::RUN_STARTED, function (Events\RunStartedEvent $e) use ($eventDispatcher, $input) {
             if (empty($input->hasArgument(RunCommand::GIT_COMMIT))) {
-                $this->output->writeln("CouchDB: ".RunCommand::GIT_COMMIT.' argument is empty. Skipping writing to CouchDB');
+                $this->output->writeln("[CouchDB plugin]: ".RunCommand::GIT_COMMIT.' argument is empty. Skipping writing to CouchDB');
                 return;
             }
             $this->run = new Run($input->getArgument(RunCommand::GIT_COMMIT));
@@ -150,7 +152,7 @@ class CouchDbPlugin implements PluginInterface
         try {
             $this->uploader->flush($this->run);
         } catch (\Exception $e) {
-            $this->output->writeln('<error>CouchDB plugin error:</error> ' . $e->getMessage());
+            $this->output->writeln('<error>[CouchDB plugin]:</error> ' . $e->getMessage());
         }
     }
 }
