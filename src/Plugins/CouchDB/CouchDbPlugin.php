@@ -60,10 +60,10 @@ class CouchDbPlugin implements PluginInterface
         EventDispatcherInterface $eventDispatcher
     ) {
         if (!getenv(self::ENV_VARIABLE)) {
-            $this->output->writeln("[CouchDB plugin]: Disabled");
+            $output->writeln("[CouchDB plugin]: Disabled");
             return;
         }
-        $this->output->writeln("[CouchDB plugin]: Enabled");
+        $output->writeln("[CouchDB plugin]: Enabled");
 
         $this->output = $output;
         $this->uploader = new Uploader(getenv(self::ENV_VARIABLE), new Client());
