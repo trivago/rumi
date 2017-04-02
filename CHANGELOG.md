@@ -9,6 +9,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Removed
 
+## [1.5.0] 2017-04-02
+### Added
+
+### Changed
+- Pull newer images on each execution
+- Store more information in the CouchDB database
+
+### Removed
+
 ## [1.4.3] 2017-03-24
 ### Changed
 - Fix issue when second checkout happens with .git directory in cache
