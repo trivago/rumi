@@ -64,7 +64,7 @@ class UploaderTest extends TestCase
 
     public function testGivenFirstRun_WhenUploadIsTriggered_ThenRevIsRequested()
     {
-        $run = new Run('commit_id');
+        $run = new Run('commit_id', 'branch', 'url');
 
         $this
             ->client
@@ -87,7 +87,7 @@ class UploaderTest extends TestCase
     public function testGivenRun_WhenUploadIsTriggered_ThenItsPerformed()
     {
         // given
-        $run = new Run('commit_id');
+        $run = new Run('commit_id', 'branch', 'url');
 
         $this
             ->client
@@ -112,7 +112,7 @@ class UploaderTest extends TestCase
     public function testGivenRun_WhenTriggeredTwice_UploadIsPerformedOnlyOnce()
     {
         // given
-        $run = new Run('commit_id');
+        $run = new Run('commit_id', 'branch', 'url');
 
         $this
             ->client
@@ -145,7 +145,7 @@ class UploaderTest extends TestCase
         $stage = new Stage('SampleStage');
         $stage->addJob($job);
 
-        $run = new Run(md5(time()));
+        $run = new Run(md5(time()), 'branch', 'url');
         $run->addStage($stage);
         $clientProphecy = $this->prophesize(Client::class);
         $clientProphecy->send(Argument::any())->willReturn(new Response(200, [], json_encode(['rev'=>'abc'])))->shouldBeCalled();
