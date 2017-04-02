@@ -30,12 +30,16 @@ class RunTest extends TestCase
     {
         //given
         $commit = 'commit_id';
+        $branch = 'branch';
+        $repository_url = 'repository_url';
 
         // when
-        $run = new Run($commit);
+        $run = new Run($commit, $branch, $repository_url);
 
         // then
         $this->assertEquals($commit, $run->getCommit());
+        $this->assertEquals($branch, $run->getBranch());
+        $this->assertEquals($repository_url, $run->getRepositoryUrl());
     }
 
     public function testGivenStage_WhenItsAdded_ThenGetterWorks()
@@ -44,7 +48,7 @@ class RunTest extends TestCase
         $stage = new Stage('abc');
 
         // when
-        $run = new Run('commit');
+        $run = new Run('commit', 'branch', 'repo');
         $run->addStage($stage);
 
         // then

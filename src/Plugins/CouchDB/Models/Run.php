@@ -31,13 +31,34 @@ class Run
     private $commit;
 
     /**
+     * @var string
+     */
+    private $branch;
+
+    /**
+     * @var string
+     */
+    private $repository_url;
+
+    /**
+     * @var string
+     */
+    private $build_url;
+
+    /**
      * Run constructor.
      *
      * @param $commit
+     * @param $branch
+     * @param $repository_url
      */
-    public function __construct($commit)
+    public function __construct($commit, $branch, $repository_url)
     {
         $this->commit = $commit;
+        $this->timestamp = time();
+        $this->branch = $branch;
+        $this->repository_url = $repository_url;
+        $this->build_url = getenv('BUILD_URL'); // jenkins specific
     }
 
     public function addStage($stage)
@@ -60,4 +81,37 @@ class Run
     {
         return $this->commit;
     }
+
+    /**
+     * @return int
+     */
+    public function getTimestamp(): int
+    {
+        return $this->timestamp;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBranch(): string
+    {
+        return $this->branch;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRepositoryUrl(): string
+    {
+        return $this->repository_url;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBuildUrl(): string
+    {
+        return $this->build_url;
+    }
+
 }
