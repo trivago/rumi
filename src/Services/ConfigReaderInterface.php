@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 /*
  * Copyright 2016 trivago GmbH
@@ -17,37 +16,18 @@ declare(strict_types=1);
  * limitations under the License.
  */
 
-namespace Trivago\Rumi\Models;
+namespace Trivago\Rumi\Services;
 
-class JobConfigCollection implements \IteratorAggregate
+
+use Trivago\Rumi\Models\RunConfig;
+
+interface ConfigReaderInterface
 {
     /**
-     * @var JobConfig[]
-     */
-    private $jobs = [];
-
-    public function add(JobConfig $job)
-    {
-        $this->jobs[] = $job;
-    }
-
-    /**
+     * @param $workingDir
+     * @param $configFile
      *
-     * @return \ArrayIterator|JobConfig[]
+     * @return RunConfig
      */
-    public function getIterator()
-    {
-        return new \ArrayIterator($this->jobs);
-    }
-
-    public function remove(JobConfig $job)
-    {
-        foreach ($this->jobs as $k=>$j) {
-            if ($j === $job) {
-                unset($this->jobs[$k]);
-                break;
-            }
-        }
-    }
-
+    public function getRunConfig($workingDir, $configFile);
 }

@@ -20,6 +20,7 @@ namespace Trivago\Rumi\Commands;
 
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Trivago\Rumi\Commands\Run\StageExecutor;
@@ -29,10 +30,9 @@ use Trivago\Rumi\Events\RunStartedEvent;
 use Trivago\Rumi\Events\StageFinishedEvent;
 use Trivago\Rumi\Events\StageStartedEvent;
 use Trivago\Rumi\Models\RunConfig;
-use Trivago\Rumi\Models\StageConfig;
 use Trivago\Rumi\Models\VCSInfo\GitInfo;
 use Trivago\Rumi\Models\VCSInfo\VCSInfoInterface;
-use Trivago\Rumi\Services\ConfigReader;
+use Trivago\Rumi\Services\ConfigReaderFilterDecorator;
 use Trivago\Rumi\Timer;
 
 class RunCommand extends CommandAbstract
@@ -42,6 +42,8 @@ class RunCommand extends CommandAbstract
     const GIT_BRANCH = 'git_branch';
 
     const VOLUME = 'volume';
+    const JOB_FILTER = 'job';
+    const STAGE_FILTER = 'stage';
 
     /**
      * @var string
@@ -54,7 +56,7 @@ class RunCommand extends CommandAbstract
     private $eventDispatcher;
 
     /**
-     * @var ConfigReader
+     * @var ConfigReaderFilterDecorator
      */
     private $configReader;
 
@@ -65,12 +67,12 @@ class RunCommand extends CommandAbstract
 
     /**
      * @param EventDispatcherInterface $eventDispatcher
-     * @param ConfigReader             $configReader
+     * @param ConfigReaderFilterDecorator    $configReader
      * @param StageExecutor            $stageExecutor
      */
     public function __construct(
         EventDispatcherInterface $eventDispatcher,
-        ConfigReader $configReader,
+        ConfigReaderFilterDecorator $configReader,
         StageExecutor $stageExecutor
     ) {
         parent::__construct();
@@ -89,7 +91,10 @@ class RunCommand extends CommandAbstract
             ->addArgument(self::VOLUME, InputArgument::OPTIONAL, 'Docker volume containing data')
             ->addArgument(self::GIT_COMMIT, InputArgument::OPTIONAL, 'Commit ID')
             ->addArgument(self::GIT_URL, InputArgument::OPTIONAL, 'Git checkout url')
-            ->addArgument(self::GIT_BRANCH, InputArgument::OPTIONAL, 'Git checkout branch');
+            ->addArgument(self::GIT_BRANCH, InputArgument::OPTIONAL, 'Git checkout branch')
+            ->addOption(self::JOB_FILTER, null, InputOption::VALUE_OPTIONAL, 'Execute only specified job' )
+            ->addOption(self::STAGE_FILTER, null, InputOption::VALUE_OPTIONAL, 'Execute only specified stage' );
+
         $this->workingDir = getcwd();
     }
 
@@ -130,6 +135,12 @@ class RunCommand extends CommandAbstract
 
             $configFilePath = $input->getOption(self::CONFIG);
 
+            $this->configReader->setJobFilter($input->getOption(self::JOB_FILTER));
+            $this->configReader->setStageFilter($input->getOption(self::STAGE_FILTER));
+
+            dump($this->configReader);
+            dump($input->getOptions());
+            die();
             $runConfig = $this->configReader->getRunConfig($this->getWorkingDir(), $configFilePath);
 
             $this->eventDispatcher->dispatch(Events::RUN_STARTED, new RunStartedEvent($runConfig));

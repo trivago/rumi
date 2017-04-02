@@ -19,13 +19,13 @@ namespace Trivago\Rumi\GitProcessExecutor;
 
 use Symfony\Component\Console\Output\OutputInterface;
 use Trivago\Rumi\Process\GitCheckoutProcessFactory;
-use Trivago\Rumi\Services\ConfigReader;
+use Trivago\Rumi\Services\ConfigReaderInterface;
 use Trivago\Rumi\Validators\GitCheckoutValidator;
 
 class GitMerge
 {
     /**
-     * @var ConfigReader
+     * @var ConfigReaderInterface
      */
     private $configReader;
 
@@ -42,12 +42,12 @@ class GitMerge
     /**
      * GitMergeProcess constructor.
      *
-     * @param ConfigReader              $configReader
+     * @param ConfigReaderInterface     $configReader
      * @param GitCheckoutProcessFactory $gitCheckoutProcessFactory
      * @param GitCheckoutValidator      $gitCheckoutValidator
      */
     public function __construct(
-        ConfigReader $configReader,
+        ConfigReaderInterface $configReader,
         GitCheckoutProcessFactory $gitCheckoutProcessFactory,
         GitCheckoutValidator $gitCheckoutValidator
         ) {

@@ -25,7 +25,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\Process;
 use Trivago\Rumi\Exceptions\SkipException;
 use Trivago\Rumi\Models\RunConfig;
-use Trivago\Rumi\Services\ConfigReader;
+use Trivago\Rumi\Services\ConfigReaderInterface;
 
 class CacheStoreCommand extends CommandAbstract
 {
@@ -180,8 +180,8 @@ class CacheStoreCommand extends CommandAbstract
     private function getCiConfig($configFile)
     {
         try {
-            /** @var ConfigReader $configReader */
-            $configReader = $this->container->get('trivago.rumi.services.config_reader');
+            /** @var ConfigReaderInterface $configReader */
+            $configReader = $this->container->get('trivago.rumi.services.config_reader_filter_decorator');
 
             return $configReader->getRunConfig($this->getWorkingDir(), $configFile);
         } catch (\Exception $e) {

@@ -25,7 +25,7 @@ use Trivago\Rumi\Models\CacheConfig;
 use Trivago\Rumi\Models\RunConfig;
 use Trivago\Rumi\Models\StagesCollection;
 
-class ConfigReader
+class ConfigReader implements ConfigReaderInterface
 {
     const CONFIG_FILE = '.rumi.yml';
     /**
