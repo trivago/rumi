@@ -74,9 +74,7 @@ Rumi injects following environment variables on the test runtime to your test co
 
 ### FAQ
 
-## How can i execute jobs locally?
-It's experimental.
-
+## Local installation/upgrade
 1. Use below code to download and install rumi
 
 * linux/mac:
@@ -90,4 +88,11 @@ chmod +x /usr/local/bin/rumi
 
 download ``https://raw.githubusercontent.com/trivago/rumi/master/rumi.bat`` and put it in your system PATH
 
-2. Run the ```rumi``` command in your project directory (where the `.rumi.yml` file is located).
+## Local usage:
+1. Run the ```rumi``` command in your project directory (where the `.rumi.yml` file is located).
+
+2. You can use ```--job``` and ```--stage``` options to execute only matching stages or jobs. Filtering is case insensitive.
+
+examples:
+* ```rumi --job "Unit tests"```
+* ```rumi --stage "prepare"```
