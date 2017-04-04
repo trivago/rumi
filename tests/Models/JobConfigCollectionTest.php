@@ -18,7 +18,6 @@
 
 namespace Trivago\Rumi\Models;
 
-
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -45,9 +44,21 @@ class JobConfigCollectionTest extends TestCase
         $this->SUT->add($job);
 
         // then
-        foreach($this->SUT as $collectionJob)
-        {
+        foreach ($this->SUT as $collectionJob) {
             $this->assertEquals($job, $collectionJob);
         }
+    }
+
+    public function testGivenJobAdded_WhenRemovedFromCollection_ThenItsNotAPartOfCollection()
+    {
+        // given
+        $job = $this->prophesize(JobConfig::class)->reveal();
+
+        // when
+        $this->SUT->add($job);
+        $this->SUT->remove($job);
+
+        // then
+        $this->assertEquals(0, $this->SUT->getIterator()->count());
     }
 }

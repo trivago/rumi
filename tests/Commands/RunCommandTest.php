@@ -42,6 +42,7 @@ use Trivago\Rumi\Models\RunConfig;
 use Trivago\Rumi\Models\StagesCollection;
 use Trivago\Rumi\Process\RunningProcessesFactory;
 use Trivago\Rumi\Services\ConfigReader;
+use Trivago\Rumi\Services\ConfigReaderFilterDecorator;
 
 /**
  * @covers \Trivago\Rumi\Commands\RunCommand
@@ -96,7 +97,7 @@ class RunCommandTest extends TestCase
         $this->processFactory = $this->prophesize(RunningProcessesFactory::class);
         $this->container->set('trivago.rumi.process.running_processes_factory', $this->processFactory->reveal());
 
-        $this->configReader = $this->prophesize(ConfigReader::class);
+        $this->configReader = $this->prophesize(ConfigReaderFilterDecorator::class);
         $this->command = new RunCommand(
             $this->eventDispatcher->reveal(),
             $this->configReader->reveal(),
@@ -403,6 +404,64 @@ class RunCommandTest extends TestCase
         $this->assertNotEquals(CommandAbstract::DEFAULT_CONFIG, $configFile);
         $this->assertSame("Required file '".$configFile."' does not exist", trim($this->output->fetch()));
         $this->assertEquals(ReturnCodes::RUMI_YML_DOES_NOT_EXIST, $returnCode);
+    }
+
+    public function testGivenJobFilterIsPassed_WhenExecuted_ThenItIsSetInTheFilter()
+    {
+        //given
+        $startProcess = $this->getStartProcess(false);
+        $tearDownProcess = $this->getTearDownProcess();
+
+        $this->setProcessFactoryMock($startProcess, $tearDownProcess);
+
+        $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
+            ->willReturn(
+                new RunConfig(
+                    new StagesCollection(
+                        $this->container->get('trivago.rumi.job_config_builder'),
+                        ['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]]
+                    ),
+                    new CacheConfig([]),
+                    ""
+                )
+            );
+        $this->configReader->setJobFilter('job')->shouldBeCalledTimes(1);
+
+        $input = new ArrayInput(['--job' => 'job']);
+
+        // when
+        $this->command->run($input, $this->output);
+
+        // then
+    }
+
+    public function testGivenStageFilterIsPassed_WhenExecuted_ThenItIsSetInTheFilter()
+    {
+        //given
+        $startProcess = $this->getStartProcess(false);
+        $tearDownProcess = $this->getTearDownProcess();
+
+        $this->setProcessFactoryMock($startProcess, $tearDownProcess);
+
+        $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
+            ->willReturn(
+                new RunConfig(
+                    new StagesCollection(
+                        $this->container->get('trivago.rumi.job_config_builder'),
+                        ['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]]
+                    ),
+                    new CacheConfig([]),
+                    ""
+                )
+            );
+        $this->configReader->setStageFilter('stage')->shouldBeCalledTimes(1);
+
+        $input = new ArrayInput(['--stage' => 'stage']);
+
+        // when
+        $this->command->run($input, $this->output);
+
+        // then
     }
 
     /**

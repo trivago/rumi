@@ -135,12 +135,14 @@ class RunCommand extends CommandAbstract
 
             $configFilePath = $input->getOption(self::CONFIG);
 
-            $this->configReader->setJobFilter($input->getOption(self::JOB_FILTER));
-            $this->configReader->setStageFilter($input->getOption(self::STAGE_FILTER));
+            if ($input->getOption(self::JOB_FILTER)) {
+                $this->configReader->setJobFilter($input->getOption(self::JOB_FILTER));
+            }
 
-            dump($this->configReader);
-            dump($input->getOptions());
-            die();
+            if ($input->getOption(self::STAGE_FILTER)) {
+                $this->configReader->setStageFilter($input->getOption(self::STAGE_FILTER));
+            }
+
             $runConfig = $this->configReader->getRunConfig($this->getWorkingDir(), $configFilePath);
 
             $this->eventDispatcher->dispatch(Events::RUN_STARTED, new RunStartedEvent($runConfig));

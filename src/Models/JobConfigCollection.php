@@ -40,6 +40,10 @@ class JobConfigCollection implements \IteratorAggregate
         return new \ArrayIterator($this->jobs);
     }
 
+    /**
+     * @param JobConfig $job
+     *
+     */
     public function remove(JobConfig $job)
     {
         foreach ($this->jobs as $k=>$j) {

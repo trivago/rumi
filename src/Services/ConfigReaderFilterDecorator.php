@@ -19,6 +19,8 @@
 namespace Trivago\Rumi\Services;
 
 
+use Trivago\Rumi\Models\RunConfig;
+
 class ConfigReaderFilterDecorator implements ConfigReaderInterface
 {
     /**
@@ -49,35 +51,37 @@ class ConfigReaderFilterDecorator implements ConfigReaderInterface
      * @param $workingDir
      * @param $configFile
      *
-     * @return mixed
+     * @return RunConfig
      */
     public function getRunConfig($workingDir, $configFile)
     {
         $config = $this->configReader->getRunConfig($workingDir, $configFile);
 
+        // filter out jobs that don't match filter
         if (!empty($this->jobFilter)) {
             $stagesCollection = $config->getStagesCollection();
             foreach ($stagesCollection as $k=>$stage){
                 $jobsCollection = $stage->getJobs();
                 foreach ($jobsCollection as $j=> $job){
-                    if (strpos($job->getName(), $this->jobFilter) === false ){
+                    if (strpos(mb_strtolower($job->getName()), $this->jobFilter) === false ){
                         $jobsCollection->remove($job);
                     }
                 }
             }
         }
 
+        // filter out stages that don't match filter
         if (!empty($this->stageFilter)) {
             $stagesCollection = $config->getStagesCollection();
             foreach ($stagesCollection->getIterator() as $k=>$stage){
-                if (strpos($stage->getName(), $this->stageFilter) === false ){
+                if (strpos(mb_strtolower($stage->getName()), $this->stageFilter) === false ){
                     $stagesCollection->remove($stage);
                 }
             }
         }
 
         if (!empty($this->jobFilter) || !empty($this->stageFilter) ) {
-            // unset all empty stages
+            // filter out all empty stages
             $stagesCollection = $config->getStagesCollection();
             foreach ($stagesCollection->getIterator() as $k => $stage) {
                 if (!count($stage->getJobs()->getIterator())) {
@@ -91,7 +95,7 @@ class ConfigReaderFilterDecorator implements ConfigReaderInterface
 
     public function setStageFilter($stageFilter)
     {
-        $this->stageFilter = $stageFilter;
+        $this->stageFilter = mb_strtolower($stageFilter);
     }
 
     /**
@@ -99,7 +103,7 @@ class ConfigReaderFilterDecorator implements ConfigReaderInterface
      */
     public function setJobFilter($jobFilter)
     {
-        $this->jobFilter = $jobFilter;
+        $this->jobFilter = mb_strtolower($jobFilter);
     }
 
 }

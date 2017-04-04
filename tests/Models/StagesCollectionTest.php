@@ -19,7 +19,6 @@
 namespace Trivago\Rumi\Models;
 
 use PHPUnit\Framework\TestCase;
-
 use Trivago\Rumi\Builders\JobConfigBuilder;
 
 /**
@@ -27,12 +26,11 @@ use Trivago\Rumi\Builders\JobConfigBuilder;
  */
 class StagesCollectionTest extends TestCase
 {
-
     public function testGivenConfig_WhenNewCollectionCreated_ThenPossibleToIterate()
     {
         //given
         $config = [
-            'stage1Name' => []
+            'stage1Name' => [],
         ];
 
         //when
@@ -46,11 +44,32 @@ class StagesCollectionTest extends TestCase
 
         // then
         /** @var StageConfig $stage */
-        foreach ($stagesCollection as $i=> $stage)
-        {
+        foreach ($stagesCollection as $i => $stage) {
             $this->assertEquals('stage1Name', $stage->getName());
             $this->assertInstanceOf(JobConfigCollection::class, $stage->getJobs());
         }
+    }
 
+    public function testGivenStageInCollection_WhenRemoved_ThenItsNotApartOfCollection()
+    {
+        //given
+        $config = [
+            'stage1Name' => [],
+        ];
+
+        //when
+        $jobConfigBuilder = $this->prophesize(JobConfigBuilder::class);
+        $jobConfigBuilder->build([])->willReturn(new JobConfigCollection());
+
+        $stagesCollection = new StagesCollection(
+            $jobConfigBuilder->reveal(),
+            $config
+        );
+        $stage = $stagesCollection->getIterator()->current();
+        $stagesCollection->remove($stage);
+
+        // then
+
+        $this->assertEquals(0, $stagesCollection->getIterator()->count());
     }
 }
