@@ -19,13 +19,9 @@
 namespace Trivago\Rumi\Integration;
 
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
-use Trivago\Rumi\Commands\CacheRestoreCommand;
-use Trivago\Rumi\Commands\CacheStoreCommand;
+use Trivago\Rumi\RumiApplication;
 use Trivago\Rumi\Services\ConfigReader;
 
 /**
@@ -34,11 +30,6 @@ use Trivago\Rumi\Services\ConfigReader;
 class CacheStoreRestoreTest extends TestCase
 {
     /**
-     * @var ContainerBuilder
-     */
-    private $container;
-
-    /**
      * @var BufferedOutput
      */
     private $output;
@@ -46,10 +37,6 @@ class CacheStoreRestoreTest extends TestCase
     public function setUp()
     {
         $this->output = new BufferedOutput();
-
-        $this->container = new ContainerBuilder();
-        $loader = new XmlFileLoader($this->container, new FileLocator(__DIR__));
-        $loader->load('../../src/Resources/config/services.xml');
     }
 
     public function testStoreRestoreWorks()
@@ -71,29 +58,38 @@ class CacheStoreRestoreTest extends TestCase
         // when
 
         chdir($tempWorkDir . '/workdir');
-        $cacheStoreCommand = new CacheStoreCommand($this->container);
-        $cacheStoreCommand->run(
-            new ArrayInput(
-                [
-                    'cache_dir' => $tempWorkDir . '/cache',
-                    'git_repository' => 'a',
-                    'git_branch' => 'origin/master',
-                ]
-            ),
-            $this->output
+        $cacheStoreInput = new ArrayInput(
+            [
+                'command' => 'cache:store',
+                'cache_dir' => $tempWorkDir . '/cache',
+                'git_repository' => 'a',
+                'git_branch' => 'origin/master',
+            ]
         );
-        chdir($tempWorkDir . '/workdir2');
-        $cacheRestoreCommand = new CacheRestoreCommand($this->container);
-        $cacheRestoreCommand->run(
-            new ArrayInput(
-                [
-                    'cache_dir' => $tempWorkDir . '/cache',
-                    'git_repository' => 'a',
-                ]
-            ),
-            $this->output
 
+        $application = new RumiApplication();
+        $application->setAutoExit(false);
+        $application->initContainer($cacheStoreInput);
+        $application->loadPlugins($cacheStoreInput, $this->output);
+        $application->setUpCommands();
+        $application->run($cacheStoreInput, $this->output);
+
+        chdir($tempWorkDir . '/workdir2');
+        $cacheRestoreInput = new ArrayInput(
+            [
+                'command' => 'cache:restore',
+                'cache_dir' => $tempWorkDir . '/cache',
+                'git_repository' => 'a',
+            ]
         );
+
+        $application = new RumiApplication();
+        $application->setAutoExit(false);
+        $application->initContainer($cacheRestoreInput);
+        $application->loadPlugins($cacheRestoreInput, $this->output);
+        $application->setUpCommands();
+
+        $application->run($cacheRestoreInput, $this->output);
 
         // then
         $this->assertFileEquals(

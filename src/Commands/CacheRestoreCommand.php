@@ -26,7 +26,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Trivago\Rumi\Exceptions\SkipException;
 use Trivago\Rumi\Timer;
 
-class CacheRestoreCommand extends Command
+class CacheRestoreCommand extends CommandAbstract
 {
     /**
      * @var ContainerInterface
@@ -40,7 +40,7 @@ class CacheRestoreCommand extends Command
 
     /**
      * RunCommand constructor.
-     * 
+     *
      * @param ContainerInterface $container
      */
     public function __construct(ContainerInterface $container)

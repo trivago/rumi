@@ -29,6 +29,8 @@ use Trivago\Rumi\Commands\CacheStoreCommand;
 use Trivago\Rumi\Commands\CheckoutCommand;
 use Trivago\Rumi\Commands\RunCommand;
 use Trivago\Rumi\Plugins\CouchDB\CouchDbPlugin;
+use Trivago\Rumi\Services\ConfigReaderFilterDecorator\FiltersInputParameters;
+use Trivago\Rumi\Services\ConfigReaderInput;
 
 class RumiApplication extends Application
 {
@@ -37,22 +39,23 @@ class RumiApplication extends Application
      */
     private $container;
 
-    /**
-     * RumiApplication constructor.
-     */
-    public function __construct()
-    {
-        parent::__construct();
-
-        $this->initContainer();
-        $this->setUpCommands();
-    }
-
-    private function initContainer()
+    public function initContainer(InputInterface $input)
     {
         $this->container = new ContainerBuilder();
         $loader = new XmlFileLoader($this->container, new FileLocator(__DIR__));
         $loader->load('Resources/config/services.xml');
+
+        $this->container->set(
+            'trivago.rumi.services.config_reader_filter_decorator.filters_input_parameters',
+            new FiltersInputParameters($input)
+        );
+
+        $this->container->set(
+            'trivago.rumi.services.config_reader_input',
+            new ConfigReaderInput($input)
+        );
+
+        $this->container->compile();
     }
 
     public function loadPlugins(InputInterface $input, OutputInterface $output)
@@ -60,11 +63,11 @@ class RumiApplication extends Application
         new CouchDbPlugin($input, $output, $this, $this->container, $this->container->get('trivago.rumi.event_dispatcher'));
     }
 
-    private function setUpCommands()
+    public function setUpCommands()
     {
         $oRunCommand = new RunCommand(
             $this->container->get('trivago.rumi.event_dispatcher'),
-            $this->container->get('trivago.rumi.services.config_reader_filter_decorator'),
+            $this->container->get('trivago.rumi.services.config_reader'),
             $this->container->get('trivago.rumi.commands.run.stage_executor')
         );
 

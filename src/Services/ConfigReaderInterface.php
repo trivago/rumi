@@ -24,10 +24,7 @@ use Trivago\Rumi\Models\RunConfig;
 interface ConfigReaderInterface
 {
     /**
-     * @param $workingDir
-     * @param $configFile
-     *
      * @return RunConfig
      */
-    public function getRunConfig($workingDir, $configFile);
+    public function getRunConfig(): RunConfig;
 }

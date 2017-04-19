@@ -4,15 +4,45 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="trivago.rumi.services.config_reader_filter_decorator.filters_input_parameters"
+                 class="Trivago\Rumi\Services\ConfigReaderFilterDecorator\FiltersInputParameters"
+                 synthetic="true" />
+        <service id="trivago.rumi.services.config_reader_input"
+                 class="Trivago\Rumi\Services\ConfigReaderInput"
+                 synthetic="true" />
+
         <service id="trivago.rumi.event_dispatcher" class="Symfony\Component\EventDispatcher\EventDispatcher"/>
 
+        <service id="trivago.rumi.services.config_reader_empty_stage_filter_decorator"
+            class="Trivago\Rumi\Services\ConfigReaderFilterDecorator\EmptyStageFilterDecorator"
+            decorates="trivago.rumi.services.config_reader"
+            decoration-priority="0"
+            public="false">
+            <argument id="trivago.rumi.services.config_reader_empty_stage_filter_decorator.inner" type="service" />
+            <argument id="trivago.rumi.services.config_reader_filter_decorator.filters_input_parameters" type="service"/>
+        </service>
 
-        <service class="Trivago\Rumi\Services\ConfigReaderFilterDecorator" id="trivago.rumi.services.config_reader_filter_decorator">
-            <argument id="trivago.rumi.services.config_reader" type="service" />
+        <service id="trivago.rumi.services.config_reader_filter_decorator.stage.stage_filter_decorator"
+            class="Trivago\Rumi\Services\ConfigReaderFilterDecorator\Stage\StageFilterDecorator"
+            decorates="trivago.rumi.services.config_reader"
+            decoration-priority="1"
+            public="false">
+            <argument id="trivago.rumi.services.config_reader_filter_decorator.stage.stage_filter_decorator.inner" type="service" />
+            <argument id="trivago.rumi.services.config_reader_filter_decorator.filters_input_parameters" type="service"/>
+        </service>
+
+        <service id="trivago.rumi.services.config_reader_filter_decorator.job.job_filter_decorator"
+            class="Trivago\Rumi\Services\ConfigReaderFilterDecorator\Job\JobFilterDecorator"
+            decorates="trivago.rumi.services.config_reader"
+            decoration-priority="2"
+            public="false">
+            <argument id="trivago.rumi.services.config_reader_filter_decorator.job.job_filter_decorator.inner" type="service" />
+            <argument id="trivago.rumi.services.config_reader_filter_decorator.filters_input_parameters" type="service"/>
         </service>
 
         <service class="Trivago\Rumi\Services\ConfigReader" id="trivago.rumi.services.config_reader">
-            <argument type="service" id="trivago.rumi.job_config_builder"/>
+            <argument type="service" id="trivago.rumi.job_config_builder" />
+            <argument type="service" id="trivago.rumi.services.config_reader_input" />
         </service>
 
         <service class="Trivago\Rumi\Commands\Run\StageExecutor" id="trivago.rumi.commands.run.stage_executor">
@@ -51,7 +81,7 @@
         </service>
 
         <service class="Trivago\Rumi\GitProcessExecutor\GitMerge" id="trivago.rumi.git_process_executor.git_merge">
-            <argument type="service" id="trivago.rumi.services.config_reader_filter_decorator" />
+            <argument type="service" id="trivago.rumi.services.config_reader" />
             <argument type="service" id="trivago.rumi.process.git_checkout_process_factory" />
             <argument type="service" id="trivago.rumi.validators.git_checkout_validator" />
         </service>

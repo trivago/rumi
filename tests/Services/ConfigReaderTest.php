@@ -20,6 +20,7 @@ namespace Trivago\Rumi\Services;
 
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Yaml\Dumper;
 use Trivago\Rumi\Builders\JobConfigBuilder;
 use Trivago\Rumi\Commands\CommandAbstract;
@@ -42,25 +43,38 @@ class ConfigReaderTest extends TestCase
      */
     private $jobConfigBuilder;
 
+    /**
+     * @var ConfigReaderInputInterface
+     */
+    private $input;
+
     public function setUp()
     {
         $this->jobConfigBuilder = $this->prophesize(JobConfigBuilder::class);
 
-        $this->SUT = new ConfigReader($this->jobConfigBuilder->reveal());
+        $this->input = $this->prophesize(ConfigReaderInputInterface::class);
+        $this->input->getConfigFile()->willReturn(ConfigReader::CONFIG_FILE);
+
+        $this->SUT = new ConfigReader(
+            $this->jobConfigBuilder->reveal(),
+            $this->input->reveal()
+        );
+
         vfsStream::setup('directory');
+        $this->SUT->setWorkingDir(vfsStream::url('directory'));
     }
 
     /**
      * @expectedException \Exception
      * @expectedExceptionCode 2
-     * @expectedExceptionMessage Required file 'not_existing' does not exist
+     * @expectedExceptionMessage Required file '.rumi.yml' does not exist
      */
     public function testGivenCiFileDoesNotExist_WhenGetConfigCalled_ThenExceptionIsThrown()
     {
         //given
 
         //when
-        $this->SUT->getRunConfig(vfsStream::url('directory'), 'not_existing');
+        $this->SUT->getRunConfig();
 
         //then
     }
@@ -84,7 +98,7 @@ class ConfigReaderTest extends TestCase
         file_put_contents(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG, $dumper->dump($config));
 
         //when
-        $runConfig = $this->SUT->getRunConfig(vfsStream::url('directory') . '/', CommandAbstract::DEFAULT_CONFIG);
+        $runConfig = $this->SUT->getRunConfig();
 
         //then
         $this->assertEquals($cache, iterator_to_array($runConfig->getCache()));
@@ -102,7 +116,7 @@ class ConfigReaderTest extends TestCase
         $this->jobConfigBuilder->build([])->willReturn(new JobConfigCollection());
 
         //when
-        $runConfig = $this->SUT->getRunConfig(vfsStream::url('directory') . '/', CommandAbstract::DEFAULT_CONFIG);
+        $runConfig = $this->SUT->getRunConfig();
 
         //then
         $this->assertEmpty(iterator_to_array($runConfig->getCache()));
@@ -120,7 +134,7 @@ class ConfigReaderTest extends TestCase
         file_put_contents(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG, 'wrong::' . PHP_EOL . '::yaml_file');
 
         // when
-        $this->SUT->getRunConfig(vfsStream::url('directory') . '/', CommandAbstract::DEFAULT_CONFIG);
+        $this->SUT->getRunConfig();
 
         // then
     }

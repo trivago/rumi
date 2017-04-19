@@ -32,7 +32,7 @@ use Trivago\Rumi\Events\StageStartedEvent;
 use Trivago\Rumi\Models\RunConfig;
 use Trivago\Rumi\Models\VCSInfo\GitInfo;
 use Trivago\Rumi\Models\VCSInfo\VCSInfoInterface;
-use Trivago\Rumi\Services\ConfigReaderFilterDecorator;
+use Trivago\Rumi\Services\ConfigReaderInterface;
 use Trivago\Rumi\Timer;
 
 class RunCommand extends CommandAbstract
@@ -56,7 +56,7 @@ class RunCommand extends CommandAbstract
     private $eventDispatcher;
 
     /**
-     * @var ConfigReaderFilterDecorator
+     * @var ConfigReaderInterface
      */
     private $configReader;
 
@@ -67,12 +67,13 @@ class RunCommand extends CommandAbstract
 
     /**
      * @param EventDispatcherInterface $eventDispatcher
-     * @param ConfigReaderFilterDecorator    $configReader
-     * @param StageExecutor            $stageExecutor
+     * @param ConfigReaderInterface $configReader
+     * @param StageExecutor $stageExecutor
+     * @throws \Symfony\Component\Console\Exception\LogicException
      */
     public function __construct(
         EventDispatcherInterface $eventDispatcher,
-        ConfigReaderFilterDecorator $configReader,
+        ConfigReaderInterface $configReader,
         StageExecutor $stageExecutor
     ) {
         parent::__construct();
@@ -109,19 +110,19 @@ class RunCommand extends CommandAbstract
     /**
      * @codeCoverageIgnore
      */
-    private function getWorkingDir()
+    private function getWorkingDir(): string
     {
         if (empty($this->workingDir)) {
-            return;
+            return '';
         }
 
-        return $this->workingDir.'/';
+        return $this->workingDir . '/';
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            if (trim($input->getArgument('volume')) != '') {
+            if (trim($input->getArgument('volume')) !== '') {
                 $volume = $input->getArgument(self::VOLUME);
             } else {
                 $volume = $this->getWorkingDir();
@@ -133,17 +134,7 @@ class RunCommand extends CommandAbstract
                 $input->getArgument(self::GIT_BRANCH)
             );
 
-            $configFilePath = $input->getOption(self::CONFIG);
-
-            if ($input->getOption(self::JOB_FILTER)) {
-                $this->configReader->setJobFilter($input->getOption(self::JOB_FILTER));
-            }
-
-            if ($input->getOption(self::STAGE_FILTER)) {
-                $this->configReader->setStageFilter($input->getOption(self::STAGE_FILTER));
-            }
-
-            $runConfig = $this->configReader->getRunConfig($this->getWorkingDir(), $configFilePath);
+            $runConfig = $this->configReader->getRunConfig();
 
             $this->eventDispatcher->dispatch(Events::RUN_STARTED, new RunStartedEvent($runConfig));
 

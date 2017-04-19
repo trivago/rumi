@@ -16,22 +16,25 @@
  * limitations under the License.
  */
 
-namespace Trivago\Rumi\Services;
+namespace Trivago\Rumi\Services\ConfigReaderFilterDecorator\Job;
 
 use PHPUnit\Framework\TestCase;
+use Prophecy\Prophecy\ObjectProphecy;
+use Symfony\Component\Console\Input\InputInterface;
 use Trivago\Rumi\Models\JobConfig;
 use Trivago\Rumi\Models\JobConfigCollection;
 use Trivago\Rumi\Models\RunConfig;
 use Trivago\Rumi\Models\StageConfig;
 use Trivago\Rumi\Models\StagesCollection;
+use Trivago\Rumi\Services\ConfigReaderInterface;
 
 /**
- * @covers \Trivago\Rumi\Services\ConfigReaderFilterDecorator
+ * @covers \Trivago\Rumi\Services\ConfigReaderFilterDecorator\Job\JobFilterDecorator
  */
-class ConfigReaderFilterDecoratorTest extends TestCase
+class JobFilterDecoratorTest extends TestCase
 {
     /**
-     * @var ConfigReaderFilterDecorator
+     * @var JobFilterDecorator
      */
     private $SUT;
 
@@ -40,12 +43,19 @@ class ConfigReaderFilterDecoratorTest extends TestCase
      */
     private $configReader;
 
+    /**
+     * @var JobFilterParametersInterface|ObjectProphecy
+     */
+    private $parameters;
+
     protected function setUp()
     {
         $this->configReader = $this->prophesize(ConfigReaderInterface::class);
+        $this->parameters = $this->prophesize(JobFilterParametersInterface::class);
 
-        $this->SUT = new ConfigReaderFilterDecorator(
-            $this->configReader->reveal()
+        $this->SUT = new JobFilterDecorator(
+            $this->configReader->reveal(),
+            $this->parameters->reveal()
         );
     }
 
@@ -53,15 +63,16 @@ class ConfigReaderFilterDecoratorTest extends TestCase
     {
         // given
         $runConfig = $this->prophesize(RunConfig::class)->reveal();
+        $this->parameters->getJobFilter()->willReturn('');
 
         $this
             ->configReader
-            ->getRunConfig('', ConfigReader::CONFIG_FILE)
+            ->getRunConfig()
             ->willReturn($runConfig)
             ->shouldBeCalled();
 
         // when
-        $config = $this->SUT->getRunConfig('', ConfigReader::CONFIG_FILE);
+        $config = $this->SUT->getRunConfig();
 
         // then
         $this->assertSame($runConfig, $config);
@@ -81,56 +92,22 @@ class ConfigReaderFilterDecoratorTest extends TestCase
 
         $stageCollection->getIterator()->willReturn(new \ArrayIterator([$stageConfig, $stageConfig2]));
 
-        $stageCollection->remove($stageConfig)->shouldNotBeCalled();
-        $stageCollection->remove($stageConfig2)->shouldBeCalled();
-
         $runConfig->getStagesCollection()->willReturn(
             $stageCollection->reveal()
         );
 
         $this
             ->configReader
-            ->getRunConfig('', ConfigReader::CONFIG_FILE)
+            ->getRunConfig()
             ->willReturn($runConfig->reveal())
             ->shouldBeCalled();
 
         // when
-        $this->SUT->setJobFilter('should_be_kept');
-        $this->SUT->getRunConfig('', ConfigReader::CONFIG_FILE);
+        $this->parameters->getJobFilter()->willReturn('should_be_kept')->shouldBeCalled();
+        $this->SUT->getRunConfig();
 
         // then
+        $this->assertEquals(1, $jobsConfigCollection->getIterator()->count());
     }
 
-    public function testGivenStageFilterIsSet_WhenExecuted_ItFiltersCorrectJobs()
-    {
-        // given
-        $runConfig = $this->prophesize(RunConfig::class);
-        $stageCollection = $this->prophesize(StagesCollection::class);
-
-        $jobConfigCollection = new JobConfigCollection();
-        $jobConfigCollection->add(new JobConfig('', '', '', '', '', 0));
-        $stageConfig = new StageConfig('should_be_kept', $jobConfigCollection);
-        $stageConfig2 = new StageConfig('stage', new JobConfigCollection());
-
-        $stageCollection->getIterator()->willReturn(new \ArrayIterator([$stageConfig, $stageConfig2]));
-
-        $stageCollection->remove($stageConfig)->shouldNotBeCalled();
-        $stageCollection->remove($stageConfig2)->shouldBeCalled();
-
-        $runConfig->getStagesCollection()->willReturn(
-            $stageCollection->reveal()
-        );
-
-        $this
-            ->configReader
-            ->getRunConfig('', ConfigReader::CONFIG_FILE)
-            ->willReturn($runConfig->reveal())
-            ->shouldBeCalled();
-
-        // when
-        $this->SUT->setStageFilter('should_be_kept');
-        $this->SUT->getRunConfig('', ConfigReader::CONFIG_FILE);
-
-        // then
-    }
 }

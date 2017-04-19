@@ -42,7 +42,7 @@ use Trivago\Rumi\Models\RunConfig;
 use Trivago\Rumi\Models\StagesCollection;
 use Trivago\Rumi\Process\RunningProcessesFactory;
 use Trivago\Rumi\Services\ConfigReader;
-use Trivago\Rumi\Services\ConfigReaderFilterDecorator;
+use Trivago\Rumi\Services\ConfigReaderInterface;
 
 /**
  * @covers \Trivago\Rumi\Commands\RunCommand
@@ -97,7 +97,7 @@ class RunCommandTest extends TestCase
         $this->processFactory = $this->prophesize(RunningProcessesFactory::class);
         $this->container->set('trivago.rumi.process.running_processes_factory', $this->processFactory->reveal());
 
-        $this->configReader = $this->prophesize(ConfigReaderFilterDecorator::class);
+        $this->configReader = $this->prophesize(ConfigReaderInterface::class);
         $this->command = new RunCommand(
             $this->eventDispatcher->reveal(),
             $this->configReader->reveal(),
@@ -110,7 +110,7 @@ class RunCommandTest extends TestCase
     public function testGivenNoCiYamlFile_WhenExecuted_ThenDisplaysErrorMessage()
     {
         // given
-        $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))->willThrow(new \Exception(
+        $this->configReader->getRunConfig()->willThrow(new \Exception(
             'Required file \''.CommandAbstract::DEFAULT_CONFIG.'\' does not exist',
             ReturnCodes::RUMI_YML_DOES_NOT_EXIST
         ));
@@ -126,7 +126,7 @@ class RunCommandTest extends TestCase
     public function testGivenCiYamlSyntaxIsWrong_WhenExecuted_ThenDisplaysErrorMessage()
     {
         // given
-        $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))->willThrow(new ParseException(
+        $this->configReader->getRunConfig()->willThrow(new ParseException(
             'Unable to parse at line 2 (near "::yaml_file").'
         ));
 
@@ -146,7 +146,7 @@ class RunCommandTest extends TestCase
             $this->getTearDownProcess()
         );
 
-        $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
+        $this->configReader->getRunConfig()
             ->willReturn(
                 new RunConfig(
                     new StagesCollection(
@@ -181,7 +181,7 @@ class RunCommandTest extends TestCase
 
         $this->setProcessFactoryMock($startProcess, $tearDownProcess);
 
-        $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
+        $this->configReader->getRunConfig()
             ->willReturn(
                 new RunConfig(
                     new StagesCollection(
@@ -220,7 +220,7 @@ class RunCommandTest extends TestCase
 
         $this->setProcessFactoryMock($startProcess, $tearDownProcess);
 
-        $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
+        $this->configReader->getRunConfig()
             ->willReturn(
                 new RunConfig(
                     new StagesCollection(
@@ -255,7 +255,7 @@ class RunCommandTest extends TestCase
 
         $this->setProcessFactoryMock($startProcess, $tearDownProcess);
 
-        $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
+        $this->configReader->getRunConfig()
             ->willReturn(
                 new RunConfig(
                     new StagesCollection(
@@ -330,7 +330,7 @@ class RunCommandTest extends TestCase
 
         $this->setProcessFactoryMock($startProcess, $tearDownProcess);
 
-        $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
+        $this->configReader->getRunConfig()
             ->willReturn(
                 new RunConfig(
                     new StagesCollection(
@@ -393,7 +393,7 @@ class RunCommandTest extends TestCase
         $input = new ArrayInput(['--config' => $configFile]);
 
         $this->configReader
-            ->getRunConfig(Argument::any(), Argument::is($configFile))
+            ->getRunConfig()
             ->willThrow(new \Exception($exceptionMessage, ReturnCodes::RUMI_YML_DOES_NOT_EXIST))
             ->shouldBeCalledTimes(1);
 
@@ -404,64 +404,6 @@ class RunCommandTest extends TestCase
         $this->assertNotEquals(CommandAbstract::DEFAULT_CONFIG, $configFile);
         $this->assertSame("Required file '".$configFile."' does not exist", trim($this->output->fetch()));
         $this->assertEquals(ReturnCodes::RUMI_YML_DOES_NOT_EXIST, $returnCode);
-    }
-
-    public function testGivenJobFilterIsPassed_WhenExecuted_ThenItIsSetInTheFilter()
-    {
-        //given
-        $startProcess = $this->getStartProcess(false);
-        $tearDownProcess = $this->getTearDownProcess();
-
-        $this->setProcessFactoryMock($startProcess, $tearDownProcess);
-
-        $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
-            ->willReturn(
-                new RunConfig(
-                    new StagesCollection(
-                        $this->container->get('trivago.rumi.job_config_builder'),
-                        ['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]]
-                    ),
-                    new CacheConfig([]),
-                    ""
-                )
-            );
-        $this->configReader->setJobFilter('job')->shouldBeCalledTimes(1);
-
-        $input = new ArrayInput(['--job' => 'job']);
-
-        // when
-        $this->command->run($input, $this->output);
-
-        // then
-    }
-
-    public function testGivenStageFilterIsPassed_WhenExecuted_ThenItIsSetInTheFilter()
-    {
-        //given
-        $startProcess = $this->getStartProcess(false);
-        $tearDownProcess = $this->getTearDownProcess();
-
-        $this->setProcessFactoryMock($startProcess, $tearDownProcess);
-
-        $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
-            ->willReturn(
-                new RunConfig(
-                    new StagesCollection(
-                        $this->container->get('trivago.rumi.job_config_builder'),
-                        ['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]]
-                    ),
-                    new CacheConfig([]),
-                    ""
-                )
-            );
-        $this->configReader->setStageFilter('stage')->shouldBeCalledTimes(1);
-
-        $input = new ArrayInput(['--stage' => 'stage']);
-
-        // when
-        $this->command->run($input, $this->output);
-
-        // then
     }
 
     /**
