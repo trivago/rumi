@@ -131,12 +131,11 @@ class StageExecutor
                     $output->writeln(sprintf('<info>Executing job: %s</info>', $runningCommand->getJobName()));
                     $output->write($runningCommand->getOutput());
                     if (!empty($timeout)) {
-                        $output->writeln(PHP_EOL.'Process timed out after '.$runningCommand->getTimeout().'s');
+                        $output->writeln('');
+                        $output->writeln('Process timed out after '.$runningCommand->getTimeout().'s');
                     }
 
                     $this->dispatchJobFinishedEvent($runningCommand);
-
-                    $runningCommand->tearDown();
 
                     if ($runningCommand->isFailed()) {
                         throw new CommandFailedException($runningCommand->getCommand());
@@ -145,11 +144,10 @@ class StageExecutor
                 usleep(500000);
             }
         } catch (CommandFailedException $e) {
-            $output->writeln("<error>Command '".$e->getMessage()."' failed</error>");
-
-            $this->tearDownProcesses($output, $commandCollection);
-
+            $output->writeln(sprintf("<error>Command '%s' failed</error>", $e->getMessage()));
             throw new \Exception('Stage failed', ReturnCodes::FAILED);
+        } finally {
+            $this->tearDownProcesses($output, $commandCollection);
         }
     }
 
