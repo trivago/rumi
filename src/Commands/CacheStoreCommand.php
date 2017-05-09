@@ -22,11 +22,9 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Process\Process;
 use Trivago\Rumi\Exceptions\SkipException;
 use Trivago\Rumi\Models\RunConfig;
 use Trivago\Rumi\Services\ConfigReader;
-use Trivago\Rumi\Services\ConfigReaderInterface;
 
 class CacheStoreCommand extends CommandAbstract
 {
@@ -85,16 +83,14 @@ class CacheStoreCommand extends CommandAbstract
         } catch (\Exception $e) {
             $output->writeln('<error>' . $e->getMessage() . '</error>');
 
-            return $e->getCode() != 0 ? $e->getCode() : -1;
+            return $e->getCode() !== 0 ? $e->getCode() : ReturnCodes::FAILED;
         }
 
-        return 0;
+        return ReturnCodes::SUCCESS;
     }
 
     /**
      * @param $cacheDir
-     *
-     * @return Process
      */
     protected function createCacheDirectory($cacheDir)
     {
@@ -142,7 +138,7 @@ class CacheStoreCommand extends CommandAbstract
      */
     protected function SkipIfNotMasterAndCacheFilled($argument, $cacheDir)
     {
-        if ($argument == 'origin/master' || $argument == 'master') {
+        if ($argument === 'origin/master' || $argument === 'master') {
             return;
         }
 
@@ -156,7 +152,6 @@ class CacheStoreCommand extends CommandAbstract
     private function getCiConfig()
     {
         try {
-            /** @var ConfigReaderInterface $configReader */
             $configReader = $this->container->get('trivago.rumi.services.config_reader');
 
             return $configReader->getRunConfig();
