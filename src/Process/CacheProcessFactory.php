@@ -33,6 +33,7 @@ class CacheProcessFactory
         $process = new Process('
                 (
                     flock -x 200 || exit 1;
+                    mkdir -p ' . $cacheDestinationDirectory . '/data/' . $directory .';
                     rsync --delete -axH ' . $directory . '/ ' . $cacheDestinationDirectory . '/data/' . $directory . '
                 ) 200>' . $cacheDestinationDirectory . '/.rsync.lock');
         $process->setTimeout(600)->setIdleTimeout(600);
