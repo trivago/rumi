@@ -44,6 +44,7 @@ class CacheProcessFactoryTest extends TestCase
         // then
         $this->assertEquals('(
                     flock -x 200 || exit 1;
+                    mkdir -p b/data/a;
                     rsync --delete -axH a/ b/data/a
                 ) 200>b/.rsync.lock', trim($process->getCommandLine()));
 
@@ -77,5 +78,34 @@ class CacheProcessFactoryTest extends TestCase
 
         $this->assertEquals(600, $process->getTimeout());
         $this->assertEquals(600, $process->getIdleTimeout());
+    }
+
+    public function testGivenNestedDirectory_WhenCacheStoreExecuted_ThenNestedDirectoriesAreCreated()
+    {
+        if (exec('uname') === 'Darwin') {
+            $this->markTestSkipped('flock not supported in unix');
+        }
+
+        // given
+        $name = md5(time());
+        $tests_dir = sys_get_temp_dir() . '/' . $name;
+        mkdir($tests_dir);
+
+        mkdir($tests_dir . '/source');
+        mkdir($tests_dir . '/source/a');
+        mkdir($tests_dir . '/source/a/b');
+        touch($tests_dir . '/source/a/b/file');
+
+        mkdir($tests_dir . '/target');
+
+        $process = $this->SUT->getCacheStoreProcess('a/b', $tests_dir . '/target');
+        $process->setWorkingDirectory($tests_dir . '/source');
+
+        // when
+        $returnCode = $process->run();
+
+        // then
+        $this->assertEquals(0, $returnCode, $process->getCommandLine() . PHP_EOL . $process->getErrorOutput());
+        $this->assertTrue(file_exists($tests_dir . '/target/data/a/b/file'));
     }
 }
