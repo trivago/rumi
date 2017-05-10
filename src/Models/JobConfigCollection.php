@@ -31,9 +31,27 @@ class JobConfigCollection implements \IteratorAggregate
         $this->jobs[] = $job;
     }
 
+    /**
+     *
+     * @return \ArrayIterator|JobConfig[]
+     */
     public function getIterator()
     {
         return new \ArrayIterator($this->jobs);
+    }
+
+    /**
+     * @param JobConfig $job
+     *
+     */
+    public function remove(JobConfig $job)
+    {
+        foreach ($this->jobs as $k=>$j) {
+            if ($j === $job) {
+                unset($this->jobs[$k]);
+                break;
+            }
+        }
     }
 
 }

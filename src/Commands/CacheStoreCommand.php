@@ -22,7 +22,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Process\Process;
 use Trivago\Rumi\Exceptions\SkipException;
 use Trivago\Rumi\Models\RunConfig;
 use Trivago\Rumi\Services\ConfigReader;
@@ -33,11 +32,6 @@ class CacheStoreCommand extends CommandAbstract
      * @var ContainerInterface
      */
     private $container;
-
-    /**
-     * @var string
-     */
-    private $workingDir = null;
 
     /**
      * RunCommand constructor.
@@ -62,30 +56,10 @@ class CacheStoreCommand extends CommandAbstract
             ->addArgument('git_branch', InputArgument::REQUIRED, 'currently built branch');
     }
 
-    /**
-     * @param $dir
-     */
-    public function setWorkingDir($dir)
-    {
-        $this->workingDir = $dir;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    private function getWorkingDir()
-    {
-        if (empty($this->workingDir)) {
-            return;
-        }
-
-        return $this->workingDir . '/';
-    }
-
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $ciConfig = $this->getCiConfig($input->getOption(self::CONFIG));
+            $ciConfig = $this->getCiConfig();
 
             $cacheDir = $input->getArgument('cache_dir') . '/' . md5($input->getArgument('git_repository'));
 
@@ -109,16 +83,14 @@ class CacheStoreCommand extends CommandAbstract
         } catch (\Exception $e) {
             $output->writeln('<error>' . $e->getMessage() . '</error>');
 
-            return -1;
+            return $e->getCode() !== 0 ? $e->getCode() : ReturnCodes::FAILED;
         }
 
-        return 0;
+        return ReturnCodes::SUCCESS;
     }
 
     /**
      * @param $cacheDir
-     *
-     * @return Process
      */
     protected function createCacheDirectory($cacheDir)
     {
@@ -166,7 +138,7 @@ class CacheStoreCommand extends CommandAbstract
      */
     protected function SkipIfNotMasterAndCacheFilled($argument, $cacheDir)
     {
-        if ($argument == 'origin/master' || $argument == 'master') {
+        if ($argument === 'origin/master' || $argument === 'master') {
             return;
         }
 
@@ -177,15 +149,14 @@ class CacheStoreCommand extends CommandAbstract
         throw new SkipException('Cache is written only for the first build and master branch. Skipping.');
     }
 
-    private function getCiConfig($configFile)
+    private function getCiConfig()
     {
         try {
-            /** @var ConfigReader $configReader */
             $configReader = $this->container->get('trivago.rumi.services.config_reader');
 
-            return $configReader->getRunConfig($this->getWorkingDir(), $configFile);
+            return $configReader->getRunConfig();
         } catch (\Exception $e) {
-            throw new \Exception('Required file \'' . $configFile . '\' does not exist');
+            throw new \RuntimeException('Required file \'' . ConfigReader::CONFIG_FILE . '\' does not exist', $e->getCode());
         }
     }
 }

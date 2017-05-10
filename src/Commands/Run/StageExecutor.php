@@ -139,13 +139,13 @@ class StageExecutor
                     $runningCommand->tearDown();
 
                     if ($runningCommand->isFailed()) {
-                        throw new CommandFailedException($runningCommand->getCommand());
+                        throw new CommandFailedException($runningCommand->getJobName());
                     }
                 }
                 usleep(500000);
             }
         } catch (CommandFailedException $e) {
-            $output->writeln("<error>Command '".$e->getMessage()."' failed</error>");
+            $output->writeln("<error>Job '".$e->getMessage()."' failed</error>");
 
             $this->tearDownProcesses($output, $commandCollection);
 

@@ -18,44 +18,76 @@
 
 namespace Trivago\Rumi\Services;
 
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Yaml\Parser;
 use Trivago\Rumi\Builders\JobConfigBuilder;
+use Trivago\Rumi\Commands\CommandAbstract;
 use Trivago\Rumi\Commands\ReturnCodes;
 use Trivago\Rumi\Models\CacheConfig;
 use Trivago\Rumi\Models\RunConfig;
 use Trivago\Rumi\Models\StagesCollection;
 
-class ConfigReader
+class ConfigReader implements ConfigReaderInterface
 {
     const CONFIG_FILE = '.rumi.yml';
+
     /**
      * @var JobConfigBuilder
      */
     private $jobConfigBuilder;
 
     /**
-     * ConfigReader constructor.
-     * @param JobConfigBuilder $jobConfigBuilder
+     * @var ConfigReaderInputInterface
      */
-    public function __construct(JobConfigBuilder $jobConfigBuilder)
+    private $parameters;
+
+    /**
+     * @var string
+     */
+    private $workingDir;
+
+    /**
+     * @param JobConfigBuilder $jobConfigBuilder
+     * @param ConfigReaderInputInterface $parameters
+     */
+    public function __construct(JobConfigBuilder $jobConfigBuilder, ConfigReaderInputInterface $parameters)
     {
         $this->jobConfigBuilder = $jobConfigBuilder;
+        $this->parameters = $parameters;
     }
 
     /**
-     * @param $workingDir
-     * @param $configFile
-     *
-     * @throws \Exception
-     *
-     * @return RunConfig
+     * @param $dir
      */
-    public function getRunConfig($workingDir, $configFile)
+    public function setWorkingDir(string $dir)
     {
-        $configFilePath = $workingDir . $configFile;
+        $this->workingDir = $dir;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    private function getWorkingDir(): string
+    {
+        if (empty($this->workingDir)) {
+            return '';
+        }
+
+        return $this->workingDir . '/';
+    }
+
+    /**
+     * @return RunConfig
+     * @throws \Exception
+     */
+    public function getRunConfig(): RunConfig
+    {
+        $configFile = $this->parameters->getConfigFile();
+
+        $configFilePath = $this->getWorkingDir() . $configFile;
 
         if (!file_exists($configFilePath)) {
-            throw new \Exception(
+            throw new \RuntimeException(
                 'Required file \'' . $configFile . '\' does not exist',
                 ReturnCodes::RUMI_YML_DOES_NOT_EXIST
             );
@@ -70,7 +102,7 @@ class ConfigReader
                 $ciConfig['stages'] ?? []
             ),
             new CacheConfig($ciConfig['cache'] ?? []),
-            $ciConfig['merge_branch'] ?? ""
+            $ciConfig['merge_branch'] ?? ''
         );
     }
 }

@@ -44,10 +44,24 @@ class StagesCollection implements \IteratorAggregate
 
     /**
      *
+     * @return \ArrayIterator|StageConfig[]
      */
     public function getIterator()
     {
         return new \ArrayIterator($this->stages);
     }
 
+    /**
+     * @param StageConfig $stage
+     *
+     */
+    public function remove(StageConfig $stage)
+    {
+        foreach($this->stages as $k => $s){
+            if ($s === $stage) {
+                unset ($this->stages[$k]);
+                break;
+            }
+        }
+    }
 }

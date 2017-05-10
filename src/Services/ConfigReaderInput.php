@@ -1,6 +1,6 @@
-#!/usr/bin/env php
 <?php
-/*!
+
+/*
  * Copyright 2016 trivago GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,20 +16,30 @@
  * limitations under the License.
  */
 
-use Symfony\Component\Console\Input\ArgvInput;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use Trivago\Rumi\RumiApplication;
+namespace Trivago\Rumi\Services;
 
-call_user_func(function () {
-    require __DIR__ . '/../vendor/autoload.php';
 
-    $application = new RumiApplication;
-    $input       = new ArgvInput;
-    $output      = new ConsoleOutput;
+use Symfony\Component\Console\Input\InputInterface;
+use Trivago\Rumi\Commands\CommandAbstract;
 
-    $application->initContainer($input);
-    $application->loadPlugins($input, $output);
-    $application->setUpCommands();
+class ConfigReaderInput implements ConfigReaderInputInterface
+{
+    /**
+     * @var InputInterface
+     */
+    private $input;
 
-    exit($application->run($input, $output));
-});
+    /**
+     * @param InputInterface $input
+     */
+    public function __construct(InputInterface $input)
+    {
+        $this->input = $input;
+    }
+
+    public function getConfigFile(): string
+    {
+        return $this->input->getOption(CommandAbstract::CONFIG);
+    }
+
+}

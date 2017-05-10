@@ -28,7 +28,11 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Process\Process;
 use Trivago\Rumi\Commands\CacheStore\CacheStoreDir;
+use Trivago\Rumi\Models\CacheConfig;
+use Trivago\Rumi\Models\RunConfig;
+use Trivago\Rumi\Models\StagesCollection;
 use Trivago\Rumi\Process\CacheProcessFactory;
+use Trivago\Rumi\Services\ConfigReaderInterface;
 
 /**
  * @covers \Trivago\Rumi\Commands\CacheStoreCommand
@@ -55,6 +59,11 @@ class CacheStoreCommandTest extends TestCase
      */
     private $cacheStoreDir;
 
+    /**
+     * @var ConfigReaderInterface
+     */
+    private $configReader;
+
     public function setUp()
     {
         vfsStream::setup('directory');
@@ -66,21 +75,24 @@ class CacheStoreCommandTest extends TestCase
         $loader->load('../../src/Resources/config/services.xml');
 
         $this->cacheStoreDir = $this->prophesize(CacheStoreDir::class);
-        $this->container->set('trivago.rumi.commands.cache_store.cache_store_dir',
-            $this->cacheStoreDir->reveal());
+        $this->container->set('trivago.rumi.commands.cache_store.cache_store_dir', $this->cacheStoreDir->reveal());
+
+        $this->configReader = $this->prophesize(ConfigReaderInterface::class);
+
+        $this->container->set('trivago.rumi.services.config_reader', $this->configReader->reveal());
 
         $this->SUT = new CacheStoreCommand(
             $this->container
         );
-        $this->SUT->setWorkingDir(vfsStream::url('directory'));
     }
 
     public function testGivenCiFileDoesNotExist_WhenCacheStoreRun_ThenItSkipsExecution()
     {
         // given
+        $this->configReader->getRunConfig()->willThrow(new \RuntimeException('', ReturnCodes::RUMI_YML_DOES_NOT_EXIST));
 
         // when
-        $this->SUT->run(
+        $returnCode = $this->SUT->run(
             new ArrayInput(
                 [
                     'cache_dir' => vfsStream::url('directory') . '/cache',
@@ -93,12 +105,15 @@ class CacheStoreCommandTest extends TestCase
 
         // then
         $this->assertEquals('Required file \'' . CommandAbstract::DEFAULT_CONFIG . '\' does not exist', trim($this->output->fetch()));
+        $this->assertEquals(ReturnCodes::RUMI_YML_DOES_NOT_EXIST, $returnCode);
     }
 
     public function testGivenCiCacheConfigIsEmpty_WhenCacheStoreRun_ThenItSkipsExecution()
     {
         // given
-        touch(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG);
+        $this->configReader->getRunConfig()->willReturn(
+            new RunConfig($this->prophesize(StagesCollection::class)->reveal(), new CacheConfig([]), '')
+        );
 
         // when
         $this->SUT->run(
@@ -106,7 +121,7 @@ class CacheStoreCommandTest extends TestCase
                 [
                     'cache_dir' => vfsStream::url('directory') . '/cache',
                     'git_repository' => 'abc',
-                    'git_branch' => 'master',
+                    'git_branch' => 'master'
                 ]
             ),
             $this->output
@@ -119,6 +134,10 @@ class CacheStoreCommandTest extends TestCase
     public function testGivenCacheDirectoryDoesExist_WhenCacheStoreRun_ThenItDoesNotCreateIt()
     {
         // given
+        $this->configReader->getRunConfig()->willReturn(
+            new RunConfig($this->prophesize(StagesCollection::class)->reveal(), new CacheConfig(['abc']), '')
+        );
+
         file_put_contents(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG, 'cache:' . PHP_EOL . '   - .git');
         mkdir(vfsStream::url('directory') . '/cache');
         mkdir(vfsStream::url('directory') . '/cache/' . md5('abc'));
@@ -152,7 +171,9 @@ class CacheStoreCommandTest extends TestCase
     public function testGivenDestinationCacheDirDoesNotExist_WhenCacheStoreRun_ThenItSkipsExecution()
     {
         // given
-        file_put_contents(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG, 'cache:' . PHP_EOL . '   - .git');
+        $this->configReader->getRunConfig()->willReturn(
+            new RunConfig($this->prophesize(StagesCollection::class)->reveal(), new CacheConfig(['abc']), '')
+        );
 
         // when
         $this->SUT->run(
@@ -172,8 +193,10 @@ class CacheStoreCommandTest extends TestCase
 
     public function testGivenNotMasterBranchAndCacheExists_WhenCacheStoreRun_ThenItSkips()
     {
+        $this->configReader->getRunConfig()->willReturn(
+            new RunConfig($this->prophesize(StagesCollection::class)->reveal(), new CacheConfig(['abc']), '')
+        );
         // given
-        file_put_contents(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG, 'cache:' . PHP_EOL . '   - .git');
         mkdir(vfsStream::url('directory') . '/cache');
         // create cache directory for repository
         mkdir(vfsStream::url('directory') . '/cache/' . md5('abc'));
@@ -197,7 +220,10 @@ class CacheStoreCommandTest extends TestCase
     public function testGivenCiCacheConfigIsCorrect_WhenCacheStoreRunWithOriginMasterBranch_ThenItStoresCache()
     {
         // given
-        file_put_contents(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG, 'cache:' . PHP_EOL . '   - .git');
+        $this->configReader->getRunConfig()->willReturn(
+            new RunConfig($this->prophesize(StagesCollection::class)->reveal(), new CacheConfig(['.git']), '')
+        );
+
         mkdir(vfsStream::url('directory') . '/cache');
 
         /** @var CacheProcessFactory $factory */
@@ -232,7 +258,9 @@ class CacheStoreCommandTest extends TestCase
     public function testGivenCiCacheConfigIsCorrect_WhenCacheStoreRunWithMasterBranch_ThenItStoresCache()
     {
         // given
-        file_put_contents(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG, 'cache:' . PHP_EOL . '   - .git');
+        $this->configReader->getRunConfig()->willReturn(
+            new RunConfig($this->prophesize(StagesCollection::class)->reveal(), new CacheConfig(['.git']), '')
+        );
         mkdir(vfsStream::url('directory') . '/cache');
 
         /** @var CacheProcessFactory $factory */
@@ -267,7 +295,9 @@ class CacheStoreCommandTest extends TestCase
     public function testGivenCiCacheConfigIsCorrect_WhenCacheStoreFails_ThenItReturnsErrorCode()
     {
         // given
-        file_put_contents(vfsStream::url('directory') . '/' . CommandAbstract::DEFAULT_CONFIG, 'cache:' . PHP_EOL . '   - .git');
+        $this->configReader->getRunConfig()->willReturn(
+            new RunConfig($this->prophesize(StagesCollection::class)->reveal(), new CacheConfig(['.git']), '')
+        );
         mkdir(vfsStream::url('directory') . '/cache');
 
         /** @var CacheProcessFactory $factory */

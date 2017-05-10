@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
-
+- Add --job and --stage options used to filter jobs during execution
 ### Changed
 
 ### Removed
