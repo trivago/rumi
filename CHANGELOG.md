@@ -9,6 +9,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Removed
 
+## [1.5.1] 2017-04-02
+### Added
+
+### Changed
+- Fixed cache handling with nested directories (for example "directory_a/directory_b")
+
+### Removed
+
 ## [1.5.0] 2017-04-02
 ### Added
 
