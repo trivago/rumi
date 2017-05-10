@@ -82,6 +82,10 @@ class CacheProcessFactoryTest extends TestCase
 
     public function testGivenNestedDirectory_WhenCacheStoreExecuted_ThenNestedDirectoriesAreCreated()
     {
+        if (exec('uname') === 'Darwin') {
+            $this->markTestSkipped('flock not supported in unix');
+        }
+
         // given
         $name = md5(time());
         $tests_dir = sys_get_temp_dir() . '/' . $name;

@@ -4,8 +4,6 @@ ADD bin/.gitconfig /root/.gitconfig
 
 RUN apk add --update php7 php7-ctype php7-json php7-zlib php7-iconv php7-mbstring php7-phar php7-dom php7-openssl curl bash wget rsync git ca-certificates openssh && rm /var/cache/apk/*
 
-RUN ln -s /usr/bin/php7 /usr/bin/php
-
 WORKDIR /tmp
 
 ADD bin /scripts
