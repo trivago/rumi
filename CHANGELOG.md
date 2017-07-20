@@ -3,11 +3,10 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
-### Added
-
 ### Changed
 
-### Removed
+### Fixed
+- Log to standard out if docker pull fails
 
 ## [1.5.1] 2017-05-10
 ### Added
