@@ -4,6 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Changed
+- Added --debug option to the run command. It turns off tear down method and enables local debugging.
 
 ### Fixed
 - Log to standard out if docker pull fails
