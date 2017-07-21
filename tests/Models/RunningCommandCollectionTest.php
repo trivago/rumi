@@ -26,7 +26,7 @@ class RunningCommandCollectionTest extends TestCase
     public function testGivenRunningProcess_WhenCollectionCreated_ThenItContains()
     {
         // given
-        $process = $this->prophesize(RunningCommand::class)->reveal();
+        $process = $this->prophesize(RunningCommandInterface::class)->reveal();
 
         // when
         $collection = new RunningCommandCollection();
@@ -35,6 +35,26 @@ class RunningCommandCollectionTest extends TestCase
         // then
 
         $this->assertContains($process, $collection->getIterator()->getArrayCopy());
+    }
 
+    public function testGivenRunningProcesses_WhenCollectionCreated_ThenIteratorWorks()
+    {
+        //given
+        $collection = new RunningCommandCollection();
+        $collection->add($this->prophesize(RunningCommandInterface::class)->reveal());
+        $collection->add($this->prophesize(RunningCommandInterface::class)->reveal());
+        $collection->add($this->prophesize(RunningCommandInterface::class)->reveal());
+        $collection->add($this->prophesize(RunningCommandInterface::class)->reveal());
+
+        // when
+        $collection->offsetSet(4, $this->prophesize(RunningCommandInterface::class)->reveal());
+
+        $collection->add($this->prophesize(RunningCommandInterface::class)->reveal());
+        $collection->offsetUnset(5);
+
+        // then
+        $this->assertInstanceOf(RunningCommandInterface::class, $collection->offsetGet(0));
+        $this->assertTrue($collection->offsetExists(0));
+        $this->assertEquals(5, count($collection->getIterator()));
     }
 }

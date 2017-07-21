@@ -23,6 +23,7 @@ use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
@@ -30,6 +31,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Exception\ParseException;
+use Trivago\Rumi\Commands\Run\StageExecutor;
 use Trivago\Rumi\Events;
 use Trivago\Rumi\Events\JobFinishedEvent;
 use Trivago\Rumi\Events\JobStartedEvent;
@@ -382,6 +384,39 @@ class RunCommandTest extends TestCase
                 return $e->getStatus() == RunFinishedEvent::STATUS_FAILED;
             }))
             ->shouldBeCalledTimes(1);
+    }
+
+    public function testGivenDebugFlagIsEnabled_WhenExecuted_ThenDebugFlagIsPassedToTheStageExecutor()
+    {
+        // given
+        $input = new StringInput('--debug');
+
+        $this->configReader->getRunConfig(Argument::any(), Argument::is(CommandAbstract::DEFAULT_CONFIG))
+            ->willReturn(
+                new RunConfig(
+                    new StagesCollection(
+                        $this->container->get('trivago.rumi.job_config_builder'),
+                        ['Stage one' => ['Job one' => ['docker' => ['www' => ['image' => 'abc']]]]]
+                    ),
+                    new CacheConfig([]),
+                    '')
+            );
+
+        $this->command = new RunCommand(
+            $this->eventDispatcher->reveal(),
+            $this->configReader->reveal(),
+            $this->prophesize(StageExecutor::class)->reveal(),
+            $this->container->get('trivago.rumi.job_config_builder')
+        );
+
+        // when
+        $returnCode = $this->command->run($input, $this->output);
+
+
+        // then
+        $this->assertEquals(0, $returnCode);
+        $this->assertContains("Debug mode is enabled. Tear down will not be invoked.", $this->output->fetch());
+
     }
 
     public function testGivenDifferentCiYamlFileName_WhenExecuted_ThenLookForThatFileInstead()

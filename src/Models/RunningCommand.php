@@ -24,7 +24,7 @@ use Symfony\Component\Process\Process;
 use Trivago\Rumi\Events;
 use Trivago\Rumi\Process\RunningProcessesFactory;
 
-class RunningCommand
+class RunningCommand implements RunningCommandInterface
 {
     /**
      * @var Process
@@ -34,7 +34,7 @@ class RunningCommand
     /**
      * @var string
      */
-    private $yamlPath = '';
+    private $yamlPath;
 
     /**
      * @var RunningProcessesFactory

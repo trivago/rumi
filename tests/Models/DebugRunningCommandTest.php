@@ -1,0 +1,76 @@
+<?php
+
+/*
+ * Copyright 2016 trivago GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+namespace Trivago\Rumi\Models;
+
+use PHPUnit\Framework\TestCase;
+use Prophecy\Prophecy\ObjectProphecy;
+
+/**
+ * @covers \Trivago\Rumi\Models\DebugRunningCommand
+ */
+class DebugRunningCommandTest extends TestCase {
+
+    /**
+     * @var DebugRunningCommand
+     */
+    private $SUT;
+
+    /**
+     * @var RunningCommandInterface|ObjectProphecy
+     */
+    private $decorated;
+
+    public function setUp()
+    {
+        $this->decorated = $this->prophesize(RunningCommandInterface::class);
+
+        $this->SUT = new DebugRunningCommand(
+            $this->decorated->reveal()
+        );
+    }
+
+    public function testGivenDebugRunningCommand_WhenTearDownCalled_ThenItDoesnothing()
+    {
+        // given
+        $this->decorated->tearDown()->shouldNotBeCalled();
+
+        // when
+        $this->SUT->tearDown();
+
+        // then
+    }
+
+    public function testGivenDebugRunningCommand_WhenAnyMethodCalled_ThenItProxiesIt()
+    {
+        $methods = array_flip(get_class_methods(RunningCommandInterface::class));
+        unset($methods['tearDown']);
+        $methods = array_flip($methods);
+
+        foreach ($methods as $method)
+        {
+            call_user_func([$this->decorated, $method])->shouldBeCalled();
+        }
+
+        foreach ($methods as $method)
+        {
+            call_user_func([$this->SUT, $method]);
+        }
+    }
+
+}

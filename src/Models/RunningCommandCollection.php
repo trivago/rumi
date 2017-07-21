@@ -21,14 +21,14 @@ namespace Trivago\Rumi\Models;
 class RunningCommandCollection implements \IteratorAggregate, \ArrayAccess
 {
     /**
-     * @var RunningCommand[]
+     * @var RunningCommandInterface[]
      */
     private $commands = [];
 
     /**
-     * @param RunningCommand $command
+     * @param RunningCommandInterface $command
      */
-    public function add(RunningCommand $command){
+    public function add(RunningCommandInterface $command){
         $this->commands[] = $command;
     }
 

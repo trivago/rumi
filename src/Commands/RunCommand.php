@@ -20,6 +20,7 @@ namespace Trivago\Rumi\Commands;
 
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Trivago\Rumi\Commands\Run\StageExecutor;
@@ -41,6 +42,7 @@ class RunCommand extends CommandAbstract
     const GIT_URL = 'git_url';
     const GIT_BRANCH = 'git_branch';
 
+    const DEBUG = 'debug';
     const VOLUME = 'volume';
 
     /**
@@ -89,7 +91,8 @@ class RunCommand extends CommandAbstract
             ->addArgument(self::VOLUME, InputArgument::OPTIONAL, 'Docker volume containing data')
             ->addArgument(self::GIT_COMMIT, InputArgument::OPTIONAL, 'Commit ID')
             ->addArgument(self::GIT_URL, InputArgument::OPTIONAL, 'Git checkout url')
-            ->addArgument(self::GIT_BRANCH, InputArgument::OPTIONAL, 'Git checkout branch');
+            ->addArgument(self::GIT_BRANCH, InputArgument::OPTIONAL, 'Git checkout branch')
+            ->addOption(self::DEBUG, null, InputOption::VALUE_NONE, 'Enable debug mode');
         $this->workingDir = getcwd();
     }
 
@@ -133,6 +136,11 @@ class RunCommand extends CommandAbstract
             $runConfig = $this->configReader->getRunConfig($this->getWorkingDir(), $configFilePath);
 
             $this->eventDispatcher->dispatch(Events::RUN_STARTED, new RunStartedEvent($runConfig));
+
+            if ($input->getOption(self::DEBUG)) {
+                $this->stageExecutor->setDebugMode(true);
+                $output->writeln('<comment>Debug mode is enabled. Tear down will not be invoked.</comment>');
+            }
 
             $timeTaken = Timer::execute(function () use ($runConfig, $output, $VCSInfo, $volume) {
                 $this->startRun($runConfig, $output, $VCSInfo, $volume);

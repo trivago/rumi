@@ -26,10 +26,12 @@ use Trivago\Rumi\Commands\ReturnCodes;
 use Trivago\Rumi\Events;
 use Trivago\Rumi\Events\JobFinishedEvent;
 use Trivago\Rumi\Exceptions\CommandFailedException;
+use Trivago\Rumi\Models\DebugRunningCommand;
 use Trivago\Rumi\Models\JobConfig;
 use Trivago\Rumi\Models\JobConfigCollection;
 use Trivago\Rumi\Models\RunningCommand;
 use Trivago\Rumi\Models\RunningCommandCollection;
+use Trivago\Rumi\Models\RunningCommandInterface;
 use Trivago\Rumi\Models\StageConfig;
 use Trivago\Rumi\Models\VCSInfo\VCSInfoInterface;
 use Trivago\Rumi\Process\RunningProcessesFactory;
@@ -52,6 +54,11 @@ class StageExecutor
     private $runningProcessesFactory;
 
     /**
+     * @var bool
+     */
+    private $debug = false;
+
+    /**
      * @param EventDispatcherInterface $eventDispatcher
      * @param DockerComposeYamlBuilder $dockerComposeYamlBuilder
      * @param RunningProcessesFactory  $runningProcessesFactory
@@ -64,6 +71,10 @@ class StageExecutor
         $this->eventDispatcher = $eventDispatcher;
         $this->dockerComposeYamlBuilder = $dockerComposeYamlBuilder;
         $this->runningProcessesFactory = $runningProcessesFactory;
+    }
+
+    public function setDebugMode($mode = true) {
+        $this->debug = $mode;
     }
 
     /**
@@ -94,12 +105,19 @@ class StageExecutor
 
         /** @var JobConfig $jobConfig */
         foreach ($jobConfigCollection as $jobConfig) {
-            $commandsCollection->add(new RunningCommand(
+            $command = new RunningCommand(
                 $jobConfig,
                 $this->dockerComposeYamlBuilder->build($jobConfig, $VCSInfo, $volume),
                 $this->runningProcessesFactory,
                 $this->eventDispatcher
-            ));
+            );
+
+            // decorate it in the debug mode
+            if ($this->debug){
+                $command = new DebugRunningCommand($command);
+            }
+
+            $commandsCollection->add($command);
         }
 
         return $commandsCollection;
@@ -115,7 +133,7 @@ class StageExecutor
     {
         try {
             while ($commandCollection->getIterator()->count()) {
-                /** @var RunningCommand $runningCommand */
+                /** @var RunningCommandInterface $runningCommand */
                 foreach ($commandCollection as $id => $runningCommand) {
                     try {
                         if ($runningCommand->isRunning()) {
@@ -175,10 +193,10 @@ class StageExecutor
     }
 
     /**
-     * @param RunningCommand $runningCommand
+     * @param RunningCommandInterface $runningCommand
      * @param string|null $status
      */
-    private function dispatchJobFinishedEvent(RunningCommand $runningCommand, string $status = null)
+    private function dispatchJobFinishedEvent(RunningCommandInterface $runningCommand, string $status = null)
     {
         if (null === $status) {
             $status = $runningCommand->isSuccessful()
@@ -203,7 +221,7 @@ class StageExecutor
             $runningCommand->start();
 
             // add random delay to put less stress on the docker daemon
-            usleep(rand(100000, 500000));
+            usleep(random_int(100000, 500000));
         }
     }
 }
